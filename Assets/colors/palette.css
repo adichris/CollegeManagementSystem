@@ -1,0 +1,8 @@
+.bg-light-red {
+    background-color:hsl(0deg 69% 59% / 20%);
+    color: red;
+}
+
+.bg-light-success {
+    background-color: green;
+}

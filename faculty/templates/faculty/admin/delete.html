@@ -1,0 +1,52 @@
+{% extends 'base/admin/base.html' %}
+
+{% block header %}
+    <style>
+        body {
+            background-image: url("{{ faculty.picture.url }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-md-auto mx-auto">
+                <h4 class="text-center">{{ header }} Faculty</h4>
+                <hr>
+                <div class="card shadow transparent-bg" style="background-color: rgba(255,255,255,0.64)">
+                    <div class="card-img-top text-center">
+                        <img src="{{ faculty.icon.url }}" alt="" class="img-fluid">
+                    </div>
+                    <div class="card-body table-responsive">
+                        <table class="table">
+                            <tr>
+                                <td>Name</td>
+                                <td>{{ faculty.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Note</td>
+                                <td class="overflow-wrap" style="overflow-wrap: anywhere;"><p>{{ faculty.note|safe }}</p></td>
+                            </tr>
+                            <tr>
+                                <td>Date created</td>
+                                <td>{{ faculty.timestamp }}</td>
+                            </tr>
+                        </table>
+                        <form method="post">
+                            <div class="d-flex justify-content-end gap-3">
+                                {% csrf_token %}
+                                <a href="{{ faculty.get_absolute_url }}" class="btn btn-secondary" onclick="dynamicSpinner(this)">Cancel</a>
+                                <button type="submit" class="btn btn-danger" onclick="dynamicSpinner(this)">Delete Faculty</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

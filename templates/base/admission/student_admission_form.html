@@ -1,0 +1,75 @@
+{% load institution_extra %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}
+    {% if title %}
+        -
+    {% endif %}
+        {% institutionFullName %}
+    </title>
+    <link rel="shortcut icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'bootstrap5/css/bootstrap.min.css' %}">
+    {% block header %}
+
+    {% endblock %}
+</head>
+<body>
+    {% include 'base/admission/navbar.html' %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-auto mx-auto text-center">
+                <h4>Admission Form</h4>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-auto mx-auto " >
+                <div class="card card_rounded border-0 shadow-sm"  style="overflow-x: auto;">
+                    <div class="p-2 d-flex align-items-center justify-content-center gap-2 w-100">
+                        <a href="{% if 1 in steps %} {% url 'Accounts:admission_student_profile' serial_number=serial_number %} {% endif %}" class="btn {% if step == 1 %} btn-primary {% elif step %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace">Profile</span>
+                        </a>
+                        <a href="{% if 2 in steps %} {% url 'Address:admission_student_create' %} {% endif %}" class="p-2 btn {% if step == 2 %} btn-primary {% elif 2 in steps %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace ">Address</span>
+                        </a>
+                        <a href="{% if 3 in steps %} {% url 'EmploymentHistory:student_admission_create_history' %} {% endif %}" class="p-2 btn {% if step == 3 %} btn-primary {% elif 3 in steps %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace ">Employment</span>
+                        </a>
+                        <a href="{% if 4 in steps %} {% url 'Sponsor:student_admission' %} {% endif %}" class="p-2 btn {% if step == 4 %} btn-primary {% elif 4 in steps %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace ">Sponsor</span>
+                        </a>
+                        <a class="p-2 btn {% if step == 5 %} btn-primary {% elif 5 in steps %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace ">Programme</span>
+                        </a>
+                        <a class="p-2 btn {% if step == 6 %} btn-primary {% elif 6 in steps %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace ">Certificate</span>
+                        </a>
+                        <a class="p-2 btn {% if step == 7 %} btn-primary {% elif 7 in steps %} alert-success {% else %} alert-secondary {% endif %} rounded-pill">
+                            <span class="font-monospace ">Education</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3 my-md-5">
+            <div class="col-md-auto {% block col_css_class %} {% endblock col_css_class %} mx-auto ">
+                <legend>{{ subtitle }}</legend>
+                <hr>
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'fontawesome5.1/js/all.min.js' %}"></script>
+    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
+{% block scripts %}
+
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends 'base/admission/student_admission_form.html' %}
+
+{% block scripts %}
+    <script>
+        let specific_duty = document.getElementById("{{ form.specific_duty.id_for_label }}");
+        specific_duty.labels[0].classList.add('d-block');
+    
+    </script>
+{% endblock %}

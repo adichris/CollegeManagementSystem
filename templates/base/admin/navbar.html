@@ -1,0 +1,90 @@
+{% load institution_extra %}
+{% load staticfiles %}
+{% url 'Home:landing_page' as home %}
+{% url 'Faculty:list' as faculties %}
+{% url 'Department:list' as departments %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white50 transparent-bg sticky-md-top" aria-label="Navigation bar">
+    <div class="container justify-content-between justify-content-md-center">
+        <a class="navbar-brand {% if request.path == home %} active {% endif %}" href="{{ home }}">{% institutionFullName %}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="topNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0 mx-auto justify-content-center align-items-start align-items-md-center ">
+                <li class="nav-item">
+                    <a class="nav-link text-nowrap {% if request.path == about %} active {% endif %}" aria-current="page" href="{{ about }}">Dashboard</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path == faculties or departments == request.path %} active {% endif %}" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Faculty</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownAcademics">
+                        <li><a class="dropdown-item" href="{{ faculties }}">Faculty</a></li>
+                        <li><a class="dropdown-item" href="{{ departments }}">Department</a></li>
+                        <li><a class="dropdown-item" href="#">Programmes</a></li>
+                        <li><a class="dropdown-item" href="#">Courses</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path == admission %} active {% endif %}" href="#" id="dropdownAdmission " data-bs-toggle="dropdown" aria-expanded="false">Admissions</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownAdmission">
+                        <li><a class="dropdown-item {% if request.path == admission %} active {% endif %}" href="#">Admission</a></li>
+                        <li><a class="dropdown-item" href="#">Admission Forms</a></li>
+                        <li><a class="dropdown-item" href="#">Applications</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Statistic</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Student Permission</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Fess & Financial Aid</a></li>
+                        <li><a class="dropdown-item" href="#">2021 / 2022 Admission Requirement</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownNewsEvents" data-bs-toggle="dropdown" aria-expanded="false">Staff</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownNewsEvents">
+                        <li><a class="dropdown-item" href="#">Teaching Staff</a></li>
+                        <li><a class="dropdown-item" href="#">No Teaching Staff</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Lecturers</a></li>
+                        <li><a class="dropdown-item" href="#" title="Head of Departments">HODs</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownResearch" data-bs-toggle="dropdown" aria-expanded="false">Research</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownResearch">
+                        <li><a class="dropdown-item" href="#">University Library</a></li>
+                        <li><a class="dropdown-item" href="#">Electronic Resource</a></li>
+                        <li><a class="dropdown-item" href="#">Become a Member</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownStaff" data-bs-toggle="dropdown" aria-expanded="false">Staff</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownStaff">
+                        <li><a class="dropdown-item" href="#">Staff Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Mail</a></li>
+                        <li><a class="dropdown-item" href="#">Application Forms</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">Student</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
+                        <li><a class="dropdown-item" href="#">SRC</a></li>
+                        <li><a class="dropdown-item" href="#">Hall & Hostel Reservation</a></li>
+                        <li><a class="dropdown-item" href="#">Student Portal</a></li>
+                        <li><a class="dropdown-item" href="#">Fees & Financial Aid</a></li>
+                        <li><a class="dropdown-item" href="#">Dean of Students</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            {% include 'base/admin/userMiniMenu.html' %}
+
+        </div>
+    </div>
+</nav>

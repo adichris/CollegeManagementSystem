@@ -1,0 +1,53 @@
+{% extends 'base/base.html' %}
+{% load institution_extra %}
+{% load staticfiles %}
+
+{% block header %}
+    <style>
+         #AdmissionContainer {
+            background-image: url("{% static 'images/admission.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+             height: calc(100vh - 56px);
+        }
+    </style>
+{% endblock header %}
+
+{% block container %}
+   <div id="AdmissionContainer" class="container-fluid">
+     <div class="container">
+        <div class="row my-3">
+            <div class="col-auto mx-auto text-center">
+                <h4>{% institutionFullName %} Admission</h4>
+                <h4>{{ academic_year }}</h4>
+            </div>
+        </div>
+        {% if admission_forms_types %}
+            <div class="row my-3 my-md-4 my-lg-5">
+                {% for admission_forms_type in admission_forms_types %}
+                    <div class="col-md-4">
+                        <a href="{% url 'Admission:login' formtypeid=admission_forms_type.id %}" class="list-group-item-action">
+                            <div class="card card_hover_shadow card_rounded" style="height: 15em">
+                                <div class="card-body text-center h-100 d-flex align-items-center flex-column justify-content-center">
+                                    <h4>{{ admission_forms_type.title }}</h4>
+                                    <h4>{{ admission_forms_type.subtitle }}</h4>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row my-5">
+                <div class="col-auto mx-auto">
+                    <div class="text-center">
+                        <h3><span class="badge bg-success50 transparent-bg">{% institutionShortName %}</span></h3>
+                        <h3>ADMISSION</h3>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+   </div>
+{% endblock %}

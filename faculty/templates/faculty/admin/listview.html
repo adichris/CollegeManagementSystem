@@ -1,0 +1,73 @@
+{% extends 'base/admin/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-auto mx-auto">
+                <h4 class="text-center">{{ header }}</h4>
+            </div>
+        </div>
+
+            <div class="row my-3">
+                <div class="col">
+                    <div class="bg-light rounded d-flex gap-2 flex-column flex-md-row justify-content-between align-items-center p-2">
+                        {% if hadPerms %}
+                            <div class="">
+                                <a onclick="dynamicSpinner(this)" href="{% url 'Faculty:create' %}" class="btn btn-primary">Faculty <span class="fa fa-plus-circle me-2"></span></a>
+                            </div>
+                        {% endif %}
+                       {% if facultyQry %}
+                           <div class="">
+                                <span><b>"{{ facultyQry }}"</b> matches {{ faculty_list.count }} faculties</span>
+                           </div>
+                       {% endif %}
+                        <form method="get" class="align-self-end">
+                            <div class="input-group">
+                                <input type="text" value="{{ facultyQry|default:'' }}" name="facultyQry" class="form-control" placeholder="Search Faculty">
+                                <button onclick="dynamicSpinner(this)" type="submit" class="btn btn-info text-white" title="search"><span class="fa fa-search me-2"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+       {% if faculty_list %}
+           <div class="row">
+               {% for faculty in faculty_list %}
+                   <div class="col-md-4 my-3 my-md-0">
+                        <div class="card h-100">
+                            <a href="{{ faculty.get_absolute_url }}" class="text-decoration-none list-group-item-action">
+                                {% if faculty.picture %}
+                                    <div class="card-body d-flex flex-column align-items-center gap-3  btn-light" style="background: url({{ faculty.picture.url }}) no-repeat; background-size: cover">
+                                {% else %}
+                                    <div class="bg-light card-body d-flex flex-column align-items-center gap-3">
+                                {% endif %}
+                                    {% if faculty.icon %}
+                                        <img src="{{ faculty.icon.url }}" alt="" width="64" height="64" class="align-self-center transparent-bg p-1 rounded">
+                                    {% else %}
+                                        <span class="fa fa-school fa-4x"></span>
+                                    {% endif %}
+                                    <h4 class="alert bg-white50 transparent-bg">{{ faculty.name }}</h4>
+                                </div>
+                            </a>
+                        </div>
+                   </div>
+               {% endfor %}
+           </div>
+
+       {% else %}
+           <div class="row">
+               <div class="col-md-6 mx-auto">
+                   <div class="card">
+                       <div class="card-body d-flex align-items-center flex-column gap-3">
+                           <span class="fa fa-box-open fa-3x"></span>
+                           <p class="p-0 m-0">{{ empty_text }}</p>
+                           <a  class="btn btn-link text-decoration-none" href="{% url 'Faculty:create' %}"  onclick="rotateElement(this)">add a faculty <span class="fa fa-plus-circle me-2" id="addFaculty"></span></a>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       {% endif %}
+    </div>
+{% endblock %}

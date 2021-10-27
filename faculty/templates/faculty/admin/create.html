@@ -1,0 +1,11 @@
+{% extends 'base/admin/create.html' %}
+
+
+
+{% block scripts %}
+    <script>
+        let noteElm = document.getElementById('{{ form.note.id_for_label }}').parentElement;
+        noteElm.classList.add('d-block');
+        noteElm.classList.add('table-responsive')
+    </script>
+{% endblock %}

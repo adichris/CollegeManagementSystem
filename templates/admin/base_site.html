@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}
+{% load institution_extra %}
+{% block title %}{{ title }} | {% institutionShortName %} site admin {% endblock %}
+
+{% block branding %}
+<h1 id="site-name" style="text-align: center"><a href="{% url 'admin:index' %}">{% institutionFullName %} System Administration</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

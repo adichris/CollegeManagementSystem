@@ -1,0 +1,26 @@
+.transparent-bg {
+    backdrop-filter: blur(10px) saturate(2.2);
+}
+.bg-white50 {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.bg-success50 {
+    background-color: rgba(15, 81, 50, 0.5);
+}
+
+.card_rounded {
+    border-radius: 25px;
+}
+
+.card_hover_shadow:hover {
+    box-shadow: 0 0 6px 1px #e8e8e8;
+}
+
+.overflow-wrap {
+    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+}
+
+.hover-shadow {
+    box-shadow: ;
+}

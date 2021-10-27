@@ -1,0 +1,39 @@
+{% load institution_extra %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} 
+    {% if title %}
+        -
+    {% endif %}
+        {% institutionFullName %}
+    </title>
+    <link rel="shortcut icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'fontawesome5.1/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap5/css/bootstrap-grid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap5/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'colors/palette.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/designs.css' %}">
+    {% block header %}
+    
+    {% endblock %}
+</head>
+<body>
+    {% block navbar %}
+        {% include 'base/navbar.html' %}
+    {% endblock %}
+
+    {% block container %}  {% endblock container %}
+    <script src="{% static 'fontawesome5.1/js/all.min.js' %}"></script>
+    <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'javaScripts/btn/loading.js' %} "> </script>
+{% block scripts %}
+
+{% endblock %}
+</body>
+</html>

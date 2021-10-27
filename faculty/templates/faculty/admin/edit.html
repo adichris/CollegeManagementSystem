@@ -1,0 +1,20 @@
+
+{% extends 'base/admin/create.html' %}
+
+
+
+{% block scripts %}
+    <script>
+        let noteElm = document.getElementById('{{ form.note.id_for_label }}').parentElement;
+        noteElm.classList.add('d-block');
+        noteElm.classList.add('table-responsive');
+
+        let backBtn= document.getElementById('resetBtn');
+        backBtn.parentElement.classList.add('d-flex');
+        backBtn.parentElement.classList.add('justify-content-between');
+
+        document.getElementById('repalceWBtn').insertAdjacentHTML('afterbegin',
+            '<a href="{{ faculty.get_absolute_url }}" id="backBtn" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-chevron-left"> </span> back </a>'
+        )
+    </script>
+{% endblock %}

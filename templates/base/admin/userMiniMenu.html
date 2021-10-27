@@ -1,0 +1,26 @@
+{% load staticfiles %}
+{% url 'Home:admin' as admin_page %}
+{% url 'Home:landing_page' as landing_page %}
+{% with admin=request.user  %}
+    <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{% if admin.picture  %}{{ admin.picture.url }}{% else %}{% static 'favicon.png' %} {% endif %}" alt="" height="46" width="46" srcset="">
+            <span class="ms-1">{{ admin.get_short_name|title }}</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
+            {% if request.path == landing_page %}
+                <li><a class="dropdown-item" href="{{ admin_page }}">Administration</a></li>
+            <li class="dropdown-divider"></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Dashboard</a></li>
+            <li class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li class="dropdown-divider"></li>
+
+            <li><a class="dropdown-item" href="#">Your university</a></li>
+             <li class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'Home:logout' %}">Logout</a></li>
+        </ul>
+    </div>
+{% endwith %}

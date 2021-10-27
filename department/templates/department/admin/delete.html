@@ -1,0 +1,61 @@
+{% extends 'base/admin/base.html' %}
+
+{# TODO check if it is safe to delete the department #}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-auto mx-auto">
+                <h4>Delete Department</h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body table-responsive">
+                        <table class="table">
+                            <tr>
+                                <td>Name</td>
+                                <td>{{ department.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Faculty</td>
+                                <td>{{ department.faculty }}</td>
+                            </tr>
+                            <tr>
+                                <td>Programmes</td>
+                                <td><a href="">----</a></td>
+                            </tr>
+                             <tr>
+                                <td>Courses</td>
+                                <td><a href="">----</a></td>
+                            </tr>
+                            <tr>
+                                <td>Lecturers</td>
+                                <td><a href="">----</a></td>
+                            </tr>
+                            <tr>
+                                <td>Students</td>
+                                <td><a href="">----</a></td>
+                            </tr>
+                        </table>
+                        <div class="alert alert-warning">
+                            <p>Deleting <b>"{{ department }}"</b> department will delete it's related:</p>
+                            <ul>
+                                <li>Programmes data</li>
+                                <li>Courses data</li>
+                                <li>And department records</li>
+                            </ul>
+                            <p>all will be deleted cascade!</p>
+                        </div>
+                        <form action="" method="post" class="d-flex flex-column flex-md-row justify-content-end gap-3">
+                            <a href="{{ department.get_absolute_url }}" class="btn alert-primary" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span> Back</a>
+                            <button type="submit" class="btn btn-warning">Delete <span class="ms-2 text-danger fa fa-trash"></span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

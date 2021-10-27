@@ -1,0 +1,91 @@
+{% load institution_extra %}
+{% url 'Home:landing_page' as home %}
+{% url 'Home:about_institution' as about %}
+{% url 'Admission:main_template_page' as admission %}
+
+<nav class="navbar navbar-expand-lg navbar-light transparent-bg sticky-md-top" aria-label="Navigation bar">
+    <div class="container">
+        <a class="navbar-brand {% if request.path == home %} active {% endif %}" href="{{ home }}">{% institutionFullName %}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="topNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0 mx-auto align-items-center ">
+                <li class="nav-item">
+                    <a class="nav-link text-nowrap {% if request.path == about %} active {% endif %}" aria-current="page" href="{{ about }}">About Us</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Academics</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownAcademics">
+                        <li><a class="dropdown-item-text" href="#">Academics</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Faculty</a></li>
+                        <li><a class="dropdown-item" href="#">Programs</a></li>
+                        <li><a class="dropdown-item" href="#">Congregation</a></li>
+                        <li><a class="dropdown-item" href="#">Directorate & Institute</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path == admission %} active {% endif %}" href="#" id="dropdownAdmission " data-bs-toggle="dropdown" aria-expanded="false">Admissions</a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownAdmission">
+                        <li><a class="dropdown-item-text {% if request.path == admission %} active {% endif %}" href="{{ admission }}">Admission</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Fess & Financial Aid</a></li>
+                        <li><a class="dropdown-item" href="#">2021 / 2022 Admission Requirement</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Admission Forms</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Apply for Admission Now</a></li>
+                        <li><a class="dropdown-item" href="#">Check Admission Status</a></li>
+                        <li><a class="dropdown-item" href="#">How to apply</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownNewsEvents" data-bs-toggle="dropdown" aria-expanded="false">News and Events</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownNewsEvents">
+              <li><a class="dropdown-item" href="#">News and Articles</a></li>
+              <li><a class="dropdown-item" href="#">Announcements</a></li>
+              <li><a class="dropdown-item" href="#">Events</a></li>
+            </ul>
+          </li>
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownResearch" data-bs-toggle="dropdown" aria-expanded="false">Research</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownResearch">
+              <li><a class="dropdown-item" href="#">University Library</a></li>
+              <li><a class="dropdown-item" href="#">Electronic Resource</a></li>
+              <li><a class="dropdown-item" href="#">Become a Member</a></li>
+            </ul>
+          </li>
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownStaff" data-bs-toggle="dropdown" aria-expanded="false">Staff</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownStaff">
+              <li><a class="dropdown-item" href="#">Staff Profile</a></li>
+              <li><a class="dropdown-item" href="#">Mail</a></li>
+              <li><a class="dropdown-item" href="#">Application Forms</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+
+           <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">Student</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
+              <li><a class="dropdown-item" href="#">SRC</a></li>
+              <li><a class="dropdown-item" href="#">Hall & Hostel Reservation</a></li>
+              <li><a class="dropdown-item" href="#">Student Portal</a></li>
+              <li><a class="dropdown-item" href="#">Fees & Financial Aid</a></li>
+              <li><a class="dropdown-item" href="#">Dean of Students</a></li>
+              <li><a class="dropdown-item" href="#">Your university</a></li>
+            </ul>
+          </li>
+
+        </ul>
+
+        {# responsive user mini menu #}
+        {% include 'base/userMiniMenu.html' %}
+      </div>
+    </div>
+</nav>

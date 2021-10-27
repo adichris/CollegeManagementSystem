@@ -1,0 +1,13 @@
+{% extends 'base/admin/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <div class="{% block col %} col-md-auto {% endblock col %} mx-auto my-3 ">
+                <h5>{{ header }}</h5>
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% with user=request.user  %}
+    {% if user.is_admin %}
+        {% include 'base/admin/userMiniMenu.html' %}
+    {% elif user.is_superuser %}
+        {% include 'base/admin/userMiniMenu.html' %}
+    {% elif user.is_student %}
+
+    {% elif user.is_teaching_staff %}
+
+    {% elif user.is_non_teaching_staff %}
+
+    {% elif user.is_studentApplying %}
+        {% include 'base/admission/userMiniMenu.html' %}
+    {% else %}
+        <a href="{% url 'Home:login' %}" class="btn btn-primary" onclick="dynamicSpinner(this)">Login <span class="fa fa-sign-in-alt"></span></a>
+    {% endif %}
+{% endwith %}

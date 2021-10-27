@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block header %}
+    <style>
+         #landingContainer {
+            background-image: url("{% static 'images/bg.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+             height: calc(100vh - 56px);
+        }
+    </style>
+{% endblock %}
+{% block container %}
+    <div class="container-fluid" id="landingContainer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mx-auto mt-3 mt-lg-5">
+                    <div class="bg-white50 alert alert-light  transparent-bg">
+                        <h1>WELCOME TO, <br>{{ institution_full_name|upper }}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
