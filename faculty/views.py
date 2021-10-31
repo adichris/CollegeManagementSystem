@@ -3,6 +3,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView, DetailView,
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .forms import Faculty, FacultyCreationForm, FacultyChangeForm
+from department.models import Department
 
 
 class FacultyCreationView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -55,20 +56,35 @@ class FacultyDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
     def get_context_data(self, **kwargs):
         ctx = super(FacultyDetailView, self).get_context_data(**kwargs)
         ctx['title'] = self.object.name + ' - details'
+        ctx['departments'] = self.get_department_queryset()
+        ctx['has_department_perm'] = self.can_user_add_department()
+        ctx['has_faculty_perm'] = self.can_user_change_faculty()
         return ctx
+
+    def get_department_queryset(self):
+        # return the first 6 departments
+        return Department.objects.get_for_faculty(self.object.slug)[:6]
+
+    def can_user_add_department(self):
+        return self.request.user.has_perm('department.add_department')
+
+    def can_user_change_faculty(self):
+        return self.request.user.has_perm('faculty.change_faculty')
 
 
 class FacultyUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Faculty
     template_name = 'faculty/admin/edit.html'
     permission_required = 'faculty.change_faculty'
-    form_class = FacultyChangeForm
 
     def get_context_data(self, **kwargs):
         ctx = super(FacultyUpdateView, self).get_context_data(**kwargs)
         ctx['title'] = 'Edit %s' % self.object.name
         ctx['header'] = 'Edit %s Faculty' % self.object.name
         return ctx
+
+    def get_form_class(self):
+        return FacultyChangeForm
 
 
 class FacultyDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -81,7 +97,11 @@ class FacultyDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
         ctx = super(FacultyDeleteView, self).get_context_data(**kwargs)
         ctx['title'] = 'Delete %s' % self.object.name
         ctx['header'] = 'Delete %s' % self.object.name
+        ctx['departments'] = self.get_department_set()
         return ctx
 
     def get_success_url(self):
         return reverse('Faculty:list')
+
+    def get_department_set(self):
+        return Department.objects.get_for_faculty(self.object.slug)

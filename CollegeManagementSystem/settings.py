@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'sponsor',
     'faculty',
     'department',
-    'programme'
+    'programme',
 ]
 
 MIDDLEWARE = [
@@ -69,7 +69,7 @@ ROOT_URLCONF = 'CollegeManagementSystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / "templates"],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -147,8 +147,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # College Name in full and short form or short name
-COLLEGE_FULL_NAME = 'Dormaa Nursing Training'
-COLLEGE_SHORT_NAME = 'DNT'
+COLLEGE_FULL_NAME = 'University for Development Studies'
+COLLEGE_SHORT_NAME = 'UDS'
 
 # expire session immediate at browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

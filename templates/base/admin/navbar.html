@@ -3,6 +3,8 @@
 {% url 'Home:landing_page' as home %}
 {% url 'Faculty:list' as faculties %}
 {% url 'Department:list' as departments %}
+{% url 'Department:Programme:list' as programmes %}
+{% url 'Admission:admins' as admission_administration %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white50 transparent-bg sticky-md-top" aria-label="Navigation bar">
     <div class="container justify-content-between justify-content-md-center">
@@ -18,19 +20,19 @@
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if request.path == faculties or departments == request.path %} active {% endif %}" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Faculty</a>
+                    <a class="nav-link dropdown-toggle {% if request.path == faculties or departments == request.path or programmes == request.path %} active {% endif %}" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Faculty</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownAcademics">
                         <li><a class="dropdown-item" href="{{ faculties }}">Faculty</a></li>
                         <li><a class="dropdown-item" href="{{ departments }}">Department</a></li>
-                        <li><a class="dropdown-item" href="#">Programmes</a></li>
+                        <li><a class="dropdown-item" href="{{ programmes }}">Programmes</a></li>
                         <li><a class="dropdown-item" href="#">Courses</a></li>
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if request.path == admission %} active {% endif %}" href="#" id="dropdownAdmission " data-bs-toggle="dropdown" aria-expanded="false">Admissions</a>
+                    <a class="nav-link dropdown-toggle {% if request.path == admission_administration %} active {% endif %}" href="#" id="dropdownAdmission " data-bs-toggle="dropdown" aria-expanded="false">Admissions</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownAdmission">
-                        <li><a class="dropdown-item {% if request.path == admission %} active {% endif %}" href="#">Admission</a></li>
+                        <li><a class="dropdown-item {% if request.path == admission_administration %} active {% endif %}" href="{{ admission_administration }}">Admission</a></li>
                         <li><a class="dropdown-item" href="#">Admission Forms</a></li>
                         <li><a class="dropdown-item" href="#">Applications</a></li>
                         <li class="dropdown-divider"></li>

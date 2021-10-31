@@ -1,0 +1,57 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-auto mx-auto">
+                <h4 class="text-center">{{ header }}</h4>
+            </div>
+        </div>
+
+        <div class="row my-3">
+            <div class="col-md-8 col-lg-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <td>Name</td>
+                                    <td>{{ programme.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>department</td>
+                                    <td>{{ programme.department }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Courses</td>
+                                    <td><a href="">----</a></td>
+                                </tr>
+                                <tr>
+                                    <td>Students</td>
+                                    <td><a href="">----</a></td>
+                                </tr>
+                            </table>
+                            <div class="alert alert-warning">
+                                <p>Deleting <b>"{{ programme }}"</b> programme will delete it's related:</p>
+                                <ul>
+                                    <li>Programmes data</li>
+                                    <li>Courses data</li>
+                                </ul>
+                                <p>all will be deleted cascade!</p>
+                            </div>
+                        </div>
+
+                        <form action="" method="post" class="d-flex justify-content-end gap-2">
+                            {% csrf_token %}
+                            <a href="{{ programme.get_absolute_url }}" onclick="spinBack(this)" class="btn btn-light"><span class="fa fa-chevron-left me-2"></span>back</a>
+                            <button type="submit" onclick="dynamicSpinner(this)" class="btn btn-warning">Delete programme</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}

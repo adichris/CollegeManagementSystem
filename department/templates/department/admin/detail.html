@@ -3,22 +3,39 @@
 {% block header %}
     <style>
         .top-row {
-        {% if department.faculty %}
+        {% if department.picture %}
+            background-image: url("{{ department.picture.url }}");
+        {% elif department.faculty %}
             background-image: url("{{ department.faculty.picture.url }}");
+        {% endif %}
             background-position: center;
             background-size: cover;
-        {% endif %}
         height: 45vh;
         }
     </style>
 {% endblock %}
 
 {% block container %}
+
+    <div class="container">
+        <div class="row my-2">
+            <div class="col d-flex justify-content-start">
+                {% if back_url %}
+                    <a href="{{ back_url }}" class="btn btn-light" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span> {{ back_name|default:'back' }}</a>
+                {% elif department.faculty %}
+                    <a href="{{ department.faculty.get_absolute_url }}" class="btn btn-light" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span> {{ department.faculty }}</a>
+                {% else %}
+                    <a href="{% url 'Department:list' %}" class="btn btn-light" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span>Department</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    
     <div class="container-fluid">
         <div class="row top-row">
             <div class="col-auto mx-auto h-100 d-flex justify-content-center flex-column">
-                <h4 class="alert transparent-bg bg-white50 text-center">{{ department }} <span class="badge alert-light">Department</span>
-                </h4>
+                <h4 class="alert transparent-bg bg-white50 text-center">{{ department }}</h4>
             </div>
         </div>
     </div>
@@ -67,11 +84,79 @@
             </div>
         </div>
 
-        <div class="row my-4">
-            <div class="col-auto mx-auto">
-                <p>Department programmes will be shown here!</p>
+        {% if programmes_page %}
+            <div class="row my-4">
+                {% for programme in programmes_page %}
+                    <div class="col-md-6 col-lg-4 my-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="text-center">{{ programme.name }}</h6>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <p class="list-group-item">
+                                    <small>Student</small> <br>
+                                    <span class="h6 ml-2">----</span>
+                                </p>
+                                <p class="list-group-item">
+                                    <small>Courses</small> <br>
+                                    <span class="h6 ml-2">----</span>
+                                </p>
+                                <div class="list-group-item d-flex justify-content-end">
+                                    <a class="btn btn-secondary" href="{{ programme.get_absolute_url }}" onclick="dynamicSpinner(this)">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="col-md-6 col-lg-4 my-3">
+                    <div class="card h-100 ">
+                        <div class="card-body d-flex align-items-center justify-content-center">
+                            <a href="{% url 'Department:Programme:create' %}?departmentslug={{ department.slug }}#id_name" class="btn btn-link" onclick="rotateElement(this)">
+                                <span class="fa fa-plus fa-2x"></span>
+                                <br>
+                                Add another programme</a>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </div>
+
+            <div class="row col my-3">
+                <ul class="pagination">
+                    {% if programmes_page.has_previous %}
+                        <li class="page-item">
+                            <a href="?page=1" class="page-link">&laquo; first</a>
+                        </li>
+                        <li class="page-item">
+                            <a  class="page-link" href="?page={{ programmes_page.previous_page_number }}">previous</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item disabled" aria-label="current">
+                        <span class="page-link" title="current programmes page">
+                            Page {{ programmes_page.number }} of {{ programmes_page.paginator.num_pages }}.
+                        </span>
+                    </li>
+
+                    {% if programmes_page.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ programmes_page.next_page_number }}">next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ programmes_page.paginator.num_pages }}">last &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-auto mx-auto text-center">
+                    <p>These department has no  programme yet!</p>
+                    <a href="{% url 'Department:Programme:create' %}?departmentslug={{ department.slug }}#id_name" class="btn btn-link" onclick="rotateElement(this)"><span class="fa fa-plus"></span> programme to this department</a>
+                </div>
+            </div>
+        {% endif %}
 
     </div>
 {% endblock %}

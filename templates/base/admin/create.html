@@ -3,7 +3,14 @@
 
 {% block container %}
     <div class="container">
-        <div class="row">
+        {% if object and object.get_absolute_url %}
+        <div class="row my-3">
+            <div class="col">
+                <a href="{{ object.get_absolute_url }}" onclick="spinBack(this)" class="btn btn-light"><span class="fa fa-chevron-left me-2"></span> back</a>
+            </div>
+        </div>
+         {% endif %}
+        <div class="row my-3">
             <div class="{% block col %} col-md-auto {% endblock col %} mx-auto my-3 ">
                 <h5>{{ header }}</h5>
                 {% crispy form %}

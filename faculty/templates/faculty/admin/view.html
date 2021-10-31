@@ -17,12 +17,12 @@
     <div class="container-fluid faculty_toBg  bg-light">
         <div class="row  d-flex justify-content-center flex-column">
             <div class="col-auto align-self-end p-2 gap-3">
-                <a href="{{ faculty.get_absolute_change_url }}" class="btn transparent-bg shadow" onclick="dynamicSpinner(this)">Edit Faculty <span class="fa fa-edit ml-2"></span></a>
+                <a href="{{ faculty.get_absolute_change_url }}" class="btn transparent-bg shadow text-primary" onclick="dynamicSpinner(this)">Edit Faculty <span class="fa fa-edit ml-2"></span></a>
                 <a href="{{ faculty.get_absolute_delete_url }}" class="btn transparent-bg shadow bg-light-red " onclick="dynamicSpinner(this)">Delete Faculty <span class="fa fa-trash ml-2"></span></a>
             </div>
             <div class="col-auto min-height-40 mx-auto align-self-center d-flex justify-content-center flex-column">
                 <div class="p-1 rounded-pill transparent-bg shadow-sm">
-                    <h1 class="text-black-50 text-center ">{{ faculty.name }} Faculty</h1>
+                    <h1 class="text-black-50 text-center ">{{ faculty.name }}</h1>
                 </div>
             </div>
         </div>
@@ -30,25 +30,55 @@
 
     <div class="container">
         <div class="row my-3">
-            {% if faculty.note %}
-            <div class="col-md-6  mb-4 mb-md-0">
-                <div class="card">
+{#            {% if faculty.note %}#}
+            <div class="col-12  mb-4">
                     <div class="card-body" title="notes">
-                        <h5 class="text-center">
+                        <div class="text-center mb-2">
                             <img src="{{ faculty.icon.url|default:'' }}" alt="{{ faculty }}" class="img-fluid" height="60" width="80">
-                        </h5>
-                        <p>{{ faculty.note|safe }}</p>
+                            <h4>{{ faculty }}</h4>
+                        </div>
+                        {% if faculty.note %}
+                            <p>{{ faculty.note|safe }}</p>
+                        {% elif has_faculty_perm %}
+                            <div class="text-center">
+                                <a onclick="dynamicSpinner(this)" href="{{ faculty.get_absolute_change_url }}#div_id_note" class="btn btn-link">add faculty notes</a>
+                            </div>
+                        {% endif %}
                     </div>
-                </div>
             </div>
-            {% endif %}
-            <div class="col-md-6  mb-4 mb-md-0 mx-auto">
+{#            {% endif %}#}
+            <div class="col-md-6  mb-4 mx-auto">
                 <div class="card h-100">
-                    <div class="card-body text-center gap-3 ">
-                        <span class="fa fa-building fa-4x"></span>
-                        <h5>Faculty Departments</h5>
-                        <h4>----</h4>
+                    <div class="card-body">
+                        <div class=" text-center gap-3">
+                            <span class="fa fa-building fa-4x"></span>
+                            <h5>Faculty Departments ({{ departments.count }})</h5>
+                        </div>
+                            {% if departments %}
+                            <span class="">Departments list</span>
+
+                            <div class="list-group">
+                                {% for department in departments %}
+                                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="dynamicSpinner(this)" href="{{ department.get_absolute_url }}?back={{ request.path }}&backname={{ faculty.name }}">{{ department.name }} <span class="fa fa-chevron-right"></span></a>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                <div class="text-center">
+                                    <p>This faculty has no department yet</p>
+                                    {% if has_department_perm %}
+                                        <a href="{% url 'Department:create' %}?facultyslug={{ faculty.slug }}" class="btn btn-link" onclick="dynamicSpinner(this)">add department to this faculty</a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                     </div>
+                    {% if departments %}
+                        <div class="p-2 d-flex justify-content-end">
+                            {% if has_department_perm %}
+                                <a href="{% url 'Department:create' %}?facultyslug={{ faculty.slug }}" class="btn btn-link" onclick="rotateElement(this)"><span class="fa fa-plus me-2"></span> department</a>
+                            {% endif %}
+                            <a href="{% url 'Department:4faculty' faculty_slug=faculty.slug %}?back={{ request.path }}&backname={{ faculty.name }}" class="btn btn-light" onclick="dynamicSpinner(this)">ALL <span class="fa fa-th-list ms-2"></span> <span class="fa fa-chevron-right ms-2"></span></a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

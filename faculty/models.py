@@ -29,8 +29,10 @@ class FacultyManager(models.Manager):
 
 
 class Faculty(models.Model):
-    name = models.CharField(max_length=120, unique=True, validators=(validation.v_name, ))
-    slug = models.SlugField()
+    name = models.CharField(max_length=120, unique=True, validators=(validation.v_name, ),
+                            help_text='Name of Faculty,College, or School'
+                            )
+    slug = models.SlugField(unique=True)
     icon = models.ImageField(help_text='Faculty icon', upload_to=upload_icon_to)
     picture = models.ImageField(help_text='Picture of the faculty building, student , etc.', upload_to=upload_picture_to)
     note = RichTextField(null=True, blank=True)

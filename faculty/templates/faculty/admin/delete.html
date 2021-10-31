@@ -37,6 +37,33 @@
                                 <td>{{ faculty.timestamp }}</td>
                             </tr>
                         </table>
+                        <div class="d-flex justify-content-center">
+                            <div class="alert alert-warning width-fit-content" style="width: fit-content">
+                            <p class="">
+                                Deleting this faculty will affect all department and programmes under it.
+                            </p>
+                            {% if departments %}
+                                <ol>
+                                {% for department in departments %}
+                                    <li>{{ department }} Department</li>
+                                    {% if department.programmes %}
+                                        <ol type="a">
+                                            {% for programme in department.programmes %}
+                                                <li>{{ programme }} Programme</li>
+                                            {% endfor %}
+                                        </ol>
+                                    {% endif %}
+                                {% endfor %}
+                                </ol>
+{#                                TODO Link this to a more detail page #}
+                                <p class="text-danger"><span class="fa fa-exclamation-triangle"></span> It is not safe to delete this faculty</p>
+                            {% endif %}
+                            <hr>
+                            <span>
+                                <span class="fa fa-exclamation-circle"></span> This operation is not reversible
+                            </span>
+                        </div>
+                        </div>
                         <form method="post">
                             <div class="d-flex justify-content-end gap-3">
                                 {% csrf_token %}

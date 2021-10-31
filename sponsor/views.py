@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, reverse
 from django.views.generic import UpdateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 # Create your views here.
@@ -24,7 +24,7 @@ class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, Upda
 
     def form_valid(self, form):
         returns = super(StudentSponsorCreateView, self).form_valid(form)
-        admission_form = self.get_object().admission_form
+        admission_form = self.get_object().student.admission_form
         admission_form.status = FormStatusChoice.AT_PROGRAMME
         admission_form.save()
 
@@ -38,3 +38,8 @@ class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, Upda
         ctx['steps'] = tuple(range(1, 5, 1))
         ctx['serial_number'] = self.request.user.identity
         return ctx
+
+    def get_success_url(self):
+        return reverse('Student:admission-redirect', kwargs={
+            "serial_number": self.request.user.identity
+        })

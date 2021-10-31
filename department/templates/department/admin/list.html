@@ -2,16 +2,28 @@
 
 {% block container %}
     <div class="container">
+        {% if back_url %}
+            <div class="row my-3">
+                <div class="col">
+                    <a href="{{ back_url }}" class="btn btn-light" onclick="dynamicSpinner(this)"><span class="fa fa-chevron-left me-2"></span>{{ back_name }} </a>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="row my-4">
             <div class="col-auto mx-auto">
-                <h4 class="text-center">{{ header }}</h4>
+                <h4 class="text-center">{{ header }} {% if top_badge %} <span>({{ top_badge }})</span> {% endif %}</h4>
+                {% if subheader %}
+                    <h5 class="text-center"><span class="badge bg-light text-dark" >{{ subheader }}</span></h5>
+                {% endif %}
             </div>
         </div>
         <div class="row">
             <div class="col-12">
-                 <div class="alert shadow-sm d-flex flex-column gap-2 flex-md-row justify-content-between">
+                 <div class="alert shadow-sm d-flex flex-column gap-2 flex-md-row justify-content-between align-items-baseline">
                      {% if hasPerms %}
-                         <a href="{% url 'Department:create' %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">Department <span class="fa fa-plus-circle me-2"></span></a>
+                         <a href="{% url 'Department:create' %}{% if faculty_sug %}?facultyslug={{ faculty_sug }}{% endif %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">Department <span class="fa fa-plus-circle me-2"></span></a>
+                         <h6>Showing {{ page_obj.object_list.count }}</h6>
                          <form action="" method="get">
                             <div class="input-group">
                                 <input name="department_query" type="search" value="{{ department_query|default:'' }}" placeholder="search department" class="form-control">
@@ -23,11 +35,11 @@
             </div>
         </div>
 
-        {% if department_list %}
+        {% if page_obj %}
             <div class="row my-3">
-                {% for department in department_list %}
-                    <div class="col-md-6 col-lg-4 my-2 my-md-0">
-                        <div class="card shadow-sm">
+                {% for department in page_obj %}
+                    <div class="col-md-6 col-lg-4 my-3">
+                        <div class="card hover_shadow h-100">
                             <div class="card-body table-responsive">
                                 <table class="table">
                                     <tr>
@@ -63,5 +75,34 @@
                 </div>
             </div>
         {% endif %}
+
+        <div class="row my-4">
+            <div class="col">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <div class="page-item">
+                            <a href="?page=1" class="page-link">&laquo; first</a>
+                        </div>
+                        <div class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        </div>
+                    {% endif %}
+                    <div class="page-item disabled">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                        </span>
+                    </div>
+
+                    {% if page_obj.has_next %}
+                        <div class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                        </div>
+                        <div class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

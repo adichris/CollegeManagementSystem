@@ -50,6 +50,7 @@
                             <p>all will be deleted cascade!</p>
                         </div>
                         <form action="" method="post" class="d-flex flex-column flex-md-row justify-content-end gap-3">
+                            {% csrf_token %}
                             <a href="{{ department.get_absolute_url }}" class="btn alert-primary" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span> Back</a>
                             <button type="submit" class="btn btn-warning">Delete <span class="ms-2 text-danger fa fa-trash"></span></button>
                         </form>

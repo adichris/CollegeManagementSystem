@@ -1,0 +1,121 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container-fluid">
+        <div class="row my-3">
+            <div class="col d-flex flex-column flex-md-row justify-content-between">
+                <a href="{{ backurl }}" class="btn btn-light" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span>{{ backname }}</a>
+                <div class="gap-2">
+                    <a href="{{ programme.get_absolute_update_url }}" onclick="dynamicSpinner(this)" class="btn btn-warning ">Edit <span class="fa fa-edit ms-2"></span></a>
+                    <a href="{{ programme.get_absolute_delete_url }}" onclick="dynamicSpinner(this)" class="btn btn-danger ">Delete <span class="fa fa-trash ms-2"></span></a>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3 bg-light p-4">
+            <div class="col-auto mx-auto text-center">
+                <h1>{{ programme|upper }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-md-10 col-lg-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <td>Programme</td>
+                                    <td>{{ programme.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Student</td>
+                                    <td>----</td>
+                                </tr>
+                                <tr>
+                                    <td>Courses</td>
+                                    <td>----</td>
+                                </tr>
+                                <tr>
+                                    <td>Department</td>
+                                    <td><a class="btn btn-link" href="{{ programme.department.get_absolute_url }}" onclick="dynamicSpinner(this)">{{ programme.department }}</a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row my-3">
+            <div class="col-md-6 col-lg-4 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-center">Level 100</h4>
+                        <p>{% lorem 1 p %}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">Expand <span class="fa fa-external-link-alt"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-center">Level 200</h4>
+                        <p>{% lorem 1 p %}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">Expand <span class="fa fa-external-link-alt"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-center">Level 300</h4>
+                        <p>{% lorem 1 p %}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">Expand <span class="fa fa-external-link-alt"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-center">Level 400</h4>
+                        <p>{% lorem 1 p %}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">Expand <span class="fa fa-external-link-alt"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-center">Course</h4>
+                        <p>{% lorem 1 p %}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">Programme courses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="text-center">Lecturers</h4>
+                        <p>{% lorem 1 p %}</p>
+                        <div class="d-flex justify-content-end">
+                            <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">Programme lecturers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

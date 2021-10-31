@@ -1,0 +1,98 @@
+{% extends 'base/admin/base.html' %}
+{% load staticfiles %}
+
+{% block container %}
+<div class="container">
+        <div class="row my-3">
+        <div class="col-auto mx-auto">
+            <h4>{{ title }}</h4>
+        </div>
+    </div>
+    <div class="row my-4">
+        <div class="col-12">
+            <div class="p-2 rounded shadow-sm d-flex flex-column flex-md-row justify-content-between gap-2">
+                {% if has_perm %}
+                    <a href="{% url 'Department:Programme:create' %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">Programme <span class="fa fa-plus-circle ms-2"></span></a>
+                {% endif %}
+                {% if p_counts_msg %}
+                    <span>{{ p_counts_msg }}</span>
+                {% endif %}
+                <form action="{{ request.path }}" method="get">
+                    <div class="input-group">
+                        <input type="search" name="programmeQuery" value="{{ programme_query|default:'' }}" class="form-control" placeholder="search programmes">
+                        <button type="submit" onclick="dynamicSpinner(this)" class="btn btn-primary"><span class="fa fa-search"></span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if programme_list %}
+        <div class="row">
+            {% for programme in programme_list %}
+                <div class="col-md-6 col-lg-4 my-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th colspan="2" class="text-center">{{ programme }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Courses</td>
+                                    <td>----</td>
+                                </tr>
+                                <tr>
+                                    <td>Students</td>
+                                    <td>----</td>
+                                </tr>
+                            </table>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><b>{{ programme.department }}</b> programme</small>
+                                <a href="{{ programme.get_absolute_url }}" class="btn btn-light" onclick="dynamicSpinner(this)">view</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="row my-3">
+            <div class="col d-flex flex-column flex-md-row gap-2 align-items-center">
+                <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</p>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a href="?page=1" class="page-link">&laquo; first</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        </li>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="row my-3">
+            <div class="col-md-6 mx-auto text-center">
+                <div class="card">
+                    <div class="card-body">
+                        <span class="fa fa-box-open fa-3x"></span>
+                        <p>{{ empty_text|safe }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

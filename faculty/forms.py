@@ -32,12 +32,8 @@ class FacultyCreationForm(forms.ModelForm):
 
 class FacultyChangeForm(forms.ModelForm):
     class Meta:
-        fields = '__all__'
+        fields = ('name', 'icon', 'picture', 'note')
         model = Faculty
-        # widgets = {
-        #     'picture': forms.FileInput(attrs={'type': 'file'}),
-        #     'icon': forms.FileInput(attrs={'type': 'file'}),
-        # }
 
     @property
     def helper(self):

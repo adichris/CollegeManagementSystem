@@ -5,6 +5,27 @@ from faculty.models import Faculty, auto_slug_faculty
 from accounts.models import User
 
 
+def upload_picture_to(instance, filename):
+    import os
+    new_filename = instance.name + os.path.splitext(filename)[-1]
+    if instance.faculty:
+        return os.path.join('faculty', instance.faculty.name, 'department', new_filename)
+    return os.path.join('nonfacultydepartment', instance.name, new_filename)
+
+
+class DepartmentManager(models.Manager):
+    def get_for_faculty(self, faculty_slug, query=None):
+        if query:
+            return self.filter(faculty__slug=faculty_slug, name__icontains=query)
+        return self.filter(faculty__slug=faculty_slug)
+
+    def search(self, name):
+        if name:
+            return self.filter(name__icontains=name)
+        else:
+            return self.all()
+
+
 class Department(models.Model):
     faculty = models.ForeignKey(
         on_delete=models.CASCADE,
@@ -30,6 +51,8 @@ class Department(models.Model):
     slug = models.SlugField(unique=True)
     updated = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    picture = models.ImageField(null=True, blank=True, upload_to=upload_picture_to)
+    objects = DepartmentManager()
 
     class Meta:
         db_table = 'department'
@@ -57,6 +80,10 @@ class Department(models.Model):
         return reverse('Department:delete', kwargs={
             'slug': self.slug
         })
+
+    def programmes(self):
+        from programme.models import Programme
+        return Programme.objects.filter(department_id=self.id)
 
 
 models.signals.pre_save.connect(auto_slug_faculty, sender=Department)

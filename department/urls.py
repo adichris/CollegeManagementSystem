@@ -6,6 +6,7 @@ from .views import (
     DepartmentDetailView,
     DepartmentUpdateView,
     DepartmentDeleteView,
+    FacultyDepartmentListView
 )
 
 
@@ -16,6 +17,7 @@ department_urlpatterns = [
     path('<slug:slug>/', DepartmentDetailView.as_view(), name='detail'),
     path('change/<slug:slug>/', DepartmentUpdateView.as_view(), name='update'),
     path('delete/<slug:slug>/', DepartmentDeleteView.as_view(), name='delete'),
+    path('inthisfaculty/<slug:faculty_slug>/', FacultyDepartmentListView.as_view(), name='4faculty')
 ]
 
 

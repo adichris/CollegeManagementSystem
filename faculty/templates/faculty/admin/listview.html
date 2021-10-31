@@ -35,14 +35,14 @@
        {% if faculty_list %}
            <div class="row">
                {% for faculty in faculty_list %}
-                   <div class="col-md-4 my-3 my-md-0">
-                        <div class="card h-100">
-                            <a href="{{ faculty.get_absolute_url }}" class="text-decoration-none list-group-item-action">
-                                {% if faculty.picture %}
-                                    <div class="card-body d-flex flex-column align-items-center gap-3  btn-light" style="background: url({{ faculty.picture.url }}) no-repeat; background-size: cover">
-                                {% else %}
-                                    <div class="bg-light card-body d-flex flex-column align-items-center gap-3">
-                                {% endif %}
+                   <div class="col-md-4 my-3">
+                        {% if faculty.picture %}
+                            <div class="card h-100 hover_shadow-long" style="background: url({{ faculty.picture.url }}); background-size: cover; background-position: center; background-attachment: scroll">
+                        {% else %}
+                            <div class="card h-100">
+                        {% endif %}
+                            <a href="{{ faculty.get_absolute_url }}" class="text-decoration-none bg-transparent">
+                                <div class="bg-light card-body d-flex flex-column align-items-center gap-3 bg-transparent">
                                     {% if faculty.icon %}
                                         <img src="{{ faculty.icon.url }}" alt="" width="64" height="64" class="align-self-center transparent-bg p-1 rounded">
                                     {% else %}

@@ -12,15 +12,22 @@
     border-radius: 25px;
 }
 
-.card_hover_shadow:hover {
+.hover_shadow:hover {
     box-shadow: 0 0 6px 1px #e8e8e8;
+}
+.hover_shadow-long:hover {
+   box-shadow:#cccccc 9px 7px 9px 2px;
 }
 
 .overflow-wrap {
     overflow-wrap: anywhere;
-    overflow-wrap: break-word;
+    /*overflow-wrap: break-word;*/
 }
 
-.hover-shadow {
-    box-shadow: ;
+.hover-inset {
+    box-shadow: inset #CCCCCC 0 0 4px;
+}
+
+.width-fit-content {
+    width: fit-content !important
 }

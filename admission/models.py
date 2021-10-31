@@ -7,6 +7,7 @@ from CollegeManagementSystem.validation import v_name
 #         return self.aggregate(models.Max())
 #
 
+
 class FormTypeChoicesModel(models.Model):
     title = models.CharField(max_length=120)
     subtitle = models.CharField(max_length=120)

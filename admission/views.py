@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import FormTypeChoicesModel, StudentForms, FormStatusChoice
 from .form import AdmissionLoginForm
@@ -59,3 +60,13 @@ class StudentFormLoginTemplateView(TemplateView):
         ctx = self.get_context_data()
         ctx['form'] = admission_login_form
         return render(request, context=ctx, template_name=self.template_name)
+
+
+class AdmissionAdministrationTemplateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    template_name = 'admission/admin/main_page.html'
+    permission_required = 'admission.view_studentforms'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AdmissionAdministrationTemplateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Admission'
+        return ctx
