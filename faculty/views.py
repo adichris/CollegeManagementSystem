@@ -59,7 +59,11 @@ class FacultyDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         ctx['departments'] = self.get_department_queryset()
         ctx['has_department_perm'] = self.can_user_add_department()
         ctx['has_faculty_perm'] = self.can_user_change_faculty()
+        ctx['all_departments_count'] = self.get_departments_count()
         return ctx
+
+    def get_departments_count(self):
+        return Department.objects.get_for_faculty(self.object.slug).count()
 
     def get_department_queryset(self):
         # return the first 6 departments

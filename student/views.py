@@ -1,21 +1,24 @@
-from django.shortcuts import get_object_or_404, reverse, render
+from django.shortcuts import get_object_or_404, redirect, reverse, render
 from django.views.generic import RedirectView, View
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from accounts.models import User
 from django.contrib.auth.models import Permission, Group
 from django.forms import modelformset_factory
+from django.db import IntegrityError
 
+from accounts.models import User
 from .models import (
     Student,
     CertExamRecord,
     AdmissionCertificate,
+    StudentPreviousEducation,
     )
 from admission.models import StudentForms, FormStatusChoice
 from .forms import (
     ProgrammeSelectionChangeForm,
     StudentProgrammeChoice,
-    CertExamRecordForm
+    CertExamRecordForm,
+    StudentPreviousEducationChangeForm,
 )
 
 
@@ -53,6 +56,12 @@ class StudentAdmissionRedirectView(RedirectView):
             elif admission_form.status == FormStatusChoice.AT_PROGRAMME:
                 return reverse('Student:programmes_choices')
 
+            elif admission_form.status == FormStatusChoice.AT_CERTIFICATION:
+                return reverse('Student:admission_cert_exam_records')
+
+            elif admission_form.status == FormStatusChoice.AT_EDUCATION:
+                return reverse('Student:admission_previous_education')
+
         elif admission_form.status == FormStatusChoice.COMPLETED:
             pass
 
@@ -70,6 +79,10 @@ class StudentAdmissionRedirectView(RedirectView):
                           'change_address',
                           'view_programme',
                           'view_student',
+                          'add_certexamrecord',
+                          'change_certexamrecord',
+                          'add_studentpreviouseducation',
+                          'change_studentpreviouseducation',
                           )
             ),
                                               )
@@ -112,50 +125,136 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
         form_instance = self.form_class(data=request.POST, instance=programmes_choices_instance)
         ctx = self.get_context_data()
         if form_instance.is_valid():
+            student_instance = Student.objects.get(profile_id=self.request.user.id)
             if programmes_choices_instance:
                 instance = form_instance.save(True)
             else:
                 programmes_choices_instance = form_instance.save(False)
-                student_instance = Student.objects.get(profile_id=self.request.user.id)
                 programmes_choices_instance.student_id = student_instance.id
                 programmes_choices_instance.save()
+            admission_form = student_instance.admission_form
+            admission_form.status = FormStatusChoice.AT_CERTIFICATION
+            admission_form.save()
+            return redirect(
+                'Student:admission-redirect', serial_number=admission_form.serial_number
+            )
         ctx['form'] = form_instance
         return render(self.request, self.template_name, context=ctx)
 
 
-class AdmissionCertificate(LoginRequiredMixin, PermissionRequiredMixin, View):
+class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequiredMixin, View):
     model = CertExamRecord
     formset_class = modelformset_factory(
         model=model, 
         form=CertExamRecordForm, 
-        max_num=20, 
+        max_num=15,
         validate_max=True, 
         extra=1,
         min_num=6,
         validate_min=True,
+        absolute_max=15,
+        can_delete=True,
+        can_delete_extra=True,
         )
     permission_required = ('student.add_certexamrecord', 'student.change_certexamrecord')
     permission_denied_message = 'You need permission to add and change student admission certificate exam records'
-    template_name = 'student/admission/create.html'
+    template_name = 'student/admission/CertExamRecord.html'
 
     def get_context_data(self):
         return {
             'title': 'Certificate',
             'subtitle': 'Certificate Records',
-            'step':7,
-            'steps': range(1, 8),
-            'serial_number':self.request.user.identity,
+            'step': 6,
+            'steps': range(1, 7),
+            'serial_number': self.request.user.identity,
         }
     
     def get(self, request, *args, **kwargs):
         content = self.get_context_data()
-        content['form'] = self.formset_class(queryset=self.get_certificate_queryset())
+        content['formset'] = self.formset_class(
+            queryset=self.get_cert_exam_record_queryset(),
+            form_kwargs={
+                'certificate_id': self.certificate_object.id
+            }
+        )
         return render(
             request=request,
             template_name=self.template_name,
             context=content,
         )
-    
-    def get_certificate_queryset(self):
-        return 
 
+    def get_cert_exam_record_queryset(self):
+        return CertExamRecord.objects.filter(
+            certificate=self.get_certificate_object()
+        )
+
+    def get_certificate_object(self):
+        instance, created = AdmissionCertificate.objects.get_or_create(
+            student=Student.objects.get(profile=self.request.user),
+        )
+        self.certificate_object = instance
+        return instance
+
+    def get_login_url(self):
+        return reverse('Admission:main_template_page')
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        ecr_queryset = self.get_cert_exam_record_queryset()
+        formset = self.formset_class(data=request.POST,
+                                     queryset=ecr_queryset,
+                                     form_kwargs={
+                                         'certificate_id': self.certificate_object.id
+                                     })
+        try:
+            if formset.is_valid():
+                ecr_instances = formset.save(True)
+                # for ecr_instance in ecr_instances:
+                #     ecr_instance.certificate_id = self.certificate_object.id
+                #     ecr_instance.save()
+                # for form2delete in formset.deleted_forms:
+                #     form2delete.delete()
+                admission_form = self.certificate_object.student.admission_form
+                admission_form.status = FormStatusChoice.AT_EDUCATION
+                admission_form.save()
+                return redirect('Student:admission-redirect',
+                                serial_number=admission_form.serial_number)
+        except IntegrityError:
+            non_field_errors = formset.get_form_error()
+            context['integrityError'] = f"""
+                There are some duplication or repeated entries in your form,
+                check and try again <br/>
+                <ul>
+                    <li>examination type</li>
+                    <li>examination year</li>
+                    <li>subject</li>
+                </ul>
+                <p>{non_field_errors}</p>
+                """
+
+        context['formset'] = formset
+        return render(request, self.template_name, context)
+
+
+class StudentPreviousEducationChangeView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    model = StudentPreviousEducation
+    template_name = 'student/admission/create.html'
+    permission_required = ('student.add_studentpreviouseducation', 'student.change_studentpreviouseducation')
+    form_class = StudentPreviousEducationChangeForm
+
+    def get_login_url(self):
+        return reverse('Admission:main_template_page')
+
+    def get(self, request, *args, **kwargs):
+        ctx = self.get_content_data()
+        ctx['form'] = self.form_class()
+        return render(request, self.template_name, context=ctx)
+
+    def get_content_data(self):
+        return {
+            'title': 'Previous Education',
+            'step': 7,
+            'steps': range(1, 8),
+            'serial_number': self.request.user.identity,
+            'subtitle': 'Previous Education'
+        }

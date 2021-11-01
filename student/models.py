@@ -9,7 +9,10 @@ from programme.models import Programme
 
 
 class Student(models.Model):
-    profile = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='student_profile',
+    # add choice give field / programme
+    profile = models.OneToOneField(User,
+                                   on_delete=models.CASCADE,
+                                   unique=True, related_name='student_profile',
                                    related_query_name='student',
                                    )
     admission_form = models.OneToOneField(StudentForms, related_name='student_admission_form',
@@ -34,21 +37,28 @@ class StudentProgrammeChoice(models.Model):
         db_table = 'studentprogrammechoice'
         unique_together = ('first_choice', 'second_choice', 'student')
 
+    def __str__(self):
+        return str(self.student.admission_form.serial_number)
+
 
 def upload_certificate_copy_to(instance, filename):
     return os.path.join('student', instance.name, instance.slug, 'certificate_copy', filename)
 
 
 class AdmissionCertificate(models.Model):
-    student = models.OneToOneField(Student, related_query_name='student', related_name='student',
+    student = models.OneToOneField(Student, related_name='cert_student',
                                    on_delete=models.CASCADE, unique=True)
     certificate_picture = models.FileField(
+        null=True,
         upload_to=upload_certificate_copy_to,
         help_text='Include all the necessary(WASSCE, NOV/DEC, HND, SRN, Diploma Cert, etc) certificate in one pdf file'
     )
 
     class Meta:
         db_table = 'student_admission_exam_certificate'
+
+    def __str__(self):
+        return str(self.student) + ' exam certificate'
 
 
 class AdmissionExaminationTextChoice(models.TextChoices):
@@ -57,20 +67,22 @@ class AdmissionExaminationTextChoice(models.TextChoices):
 
 
 EXAMINATION_YEAR_START = 1980
+EXAMINATION_YEAR_END = datetime.date.today().year + 1
 
 
 def examination_year_tuple():
     """ :return  iterable containing (actual value, human readable name) tuples. """
-    return ((yr, yr) for yr in range(EXAMINATION_YEAR_START, datetime.date.today().year + 1))
+
+    return ((yr, yr) for yr in range(EXAMINATION_YEAR_END, EXAMINATION_YEAR_START, -1))
 
 
 class CertExamRecord(models.Model):
     certificate = models.ForeignKey(AdmissionCertificate, on_delete=models.CASCADE, related_name='certificate')
     subject = models.CharField(max_length=120)
-    index_number = models.CharField(max_length=30, help_text='Examination number')
+    index_number = models.CharField(max_length=20, help_text='Examination number')
     examination_year = models.IntegerField(choices=examination_year_tuple())
     school = models.CharField(max_length=200, help_text='School Name', null=True, blank=True)
-    Grade = models.CharField(max_length=3)
+    grade = models.CharField(max_length=3)
     examination_type = models.CharField(max_length=120,
                                         choices=AdmissionExaminationTextChoice.choices,
                                         default=AdmissionExaminationTextChoice.SCHOOL_CANDIDATE
@@ -78,3 +90,25 @@ class CertExamRecord(models.Model):
 
     class Meta:
         db_table = 'student_admission_exam_result'
+        unique_together = ('certificate', 'examination_type', 'examination_year', 'subject')
+
+    def __str__(self):
+        return self.subject
+
+
+class StudentPreviousEducation(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='student')
+    school = models.CharField(max_length=200, help_text='Previous school name')
+    region = models.CharField(max_length=200, help_text='Region the school is located')
+    from_year = models.CharField(max_length=4, choices=examination_year_tuple())
+    to_year = models.CharField(max_length=4, choices=examination_year_tuple())
+
+    class Meta:
+        db_table = 'studentpreviouseducation'
+        verbose_name_plural = 'Student Previous Education'
+        unique_together = (
+            'student', 'school', 'to_year'
+        )
+
+    def __str__(self):
+        return self.school

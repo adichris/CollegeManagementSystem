@@ -16,8 +16,9 @@ function rotateElement(htmlElement) {
 }
 
 function stopRotation(htmlElement) {
-    if (htmlElement.classList.contains('fa-spin')){
-        htmlElement.classList.remove('fa-spin');
+    let htmlElementChild = htmlElement.children[0];
+    if (htmlElementChild.classList.contains('fa-spin')){
+        htmlElementChild.classList.remove('fa-spin');
     }
     else{
         htmlElement.innerHTML = htmlElement.innerText;

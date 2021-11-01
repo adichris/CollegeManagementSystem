@@ -25,7 +25,11 @@ class ProgrammeListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         ctx['programme_query'] = self.get_programme_query()
         ctx['p_counts_msg'] = self.get_programme_counts_msg()
         ctx['empty_text'] = self.get_empty_text()
+        ctx['total_programmes'] = self.get_total_programmes()
         return ctx
+
+    def get_total_programmes(self):
+        return self.model.objects.count()
 
     def get_empty_text(self):
         query = self.get_programme_query()
@@ -38,7 +42,7 @@ class ProgrammeListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         msg = f'{counts} Programme'
         query = self.get_programme_query()
         if counts > 1 and query:
-            msg = f'"{query}" matches {counts} programme'
+            msg = f'"<b>{query}</b>" matches {counts} programme'
         if counts > 1:
             msg += 's'
         elif counts == 0:
@@ -107,7 +111,6 @@ class ProgrammeDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
             return self.request.GET.get('backname') or self.object.department.name
         except FieldDoesNotExist:
             return 'Programmes'
-
 
 
 class ProgrammeUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

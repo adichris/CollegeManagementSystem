@@ -27,10 +27,19 @@ class DepartmentsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView)
         ctx['hasPerms'] = self.can_user_add_department()
         ctx['department_query'] = self.get_department_query()
         ctx['top_badge'] = self.get_top_badge()
+        ctx['department_qry_cnt_msg'] = self.get_department_counts_msg()
         return ctx
 
     def get_top_badge(self):
         return ' %s' % self.model.objects.count()
+
+    def get_department_counts_msg(self):
+        counts = self.object_list.count()
+        query = self.get_department_query()
+        if query:
+            if counts > 1:
+                return f'"<b>{query}</b>" matches {counts} departments'
+            return f'"<b>{query}</b>" match {counts} department'
 
     def get_department_query(self):
         return self.request.GET.get('department_query')
@@ -157,6 +166,7 @@ class FacultyDepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
         ctx['back_url'] = self.faculty.get_absolute_url()
         ctx['back_name'] = self.faculty.name
         ctx['top_badge'] = self.get_top_badge()
+        ctx['department_qry_cnt_msg'] = self.get_department_counts_msg()
         return ctx
 
     def get_department_query(self):
@@ -185,4 +195,12 @@ class FacultyDepartmentListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
         )
 
     def get_top_badge(self):
-        return ' %s' % self.model.objects.count()
+        return '%s' % self.model.objects.get_for_faculty(faculty_slug=self.kwargs['faculty_slug']).count()
+
+    def get_department_counts_msg(self):
+        counts = self.object_list.count()
+        query = self.get_department_query()
+        if query:
+            if counts > 1:
+                return f'"<b>{query}</b>" matches {counts} departments'
+            return f'"<b>{query}</b>" match {counts} department'

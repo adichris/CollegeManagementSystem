@@ -51,6 +51,9 @@ class StudentForms(models.Model):
     class Meta:
         verbose_name_plural = 'Student Forms'
 
+    def __str__(self):
+        return str(self.form_type)
+
 
 def auto_set_forms_status(instance, created, **kwargs):
     if created:
