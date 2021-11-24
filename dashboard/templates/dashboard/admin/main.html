@@ -1,0 +1,89 @@
+{% extends 'base/admin/base.html' %}
+{% load static %}
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-auto mx-auto">
+                <h5>DASHBOARD</h5>
+            </div>
+        </div>
+        <div class="row bg-light p-2 my-4 g-3">
+            <div class="col-12">
+                <span>System Control</span>
+                <hr>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/regular_file.svg' as forms_src%}
+                {% url 'Admission:admins' as admission_url %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=forms_src link=admission_url label='Admission Forms' %}
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% include 'dashboard/link_thumbnail.html' with img_src=forms_src link='' label='Staff Application' %}
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/mortarboard.svg' as sa_src %}
+                {% url 'System:semester_academic_year' as sa_link %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=sa_src link=sa_link label='Semester and Academica Year' %}
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/security_pass.svg' as security_pass_src %}
+                {% url 'System:permission_group' as permission_link %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=security_pass_src link=permission_link label='Permissions' %}
+            </div>
+
+        </div>
+        <div class="row bg-light p-2 my-4 g-3">
+            <div class="col-12 my-3">
+                <span>Institution</span>
+                <hr>
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/university_building.svg' as ubuild_src %}
+                {% url 'Faculty:list' as faculty_url %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=ubuild_src link=faculty_url label='Faculty' %}
+
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/shop.svg' as short_src %}
+                {% url 'Department:list' as department_url %}
+                {% include 'dashboard/link_thumbnail.html' with link=department_url img_src=short_src label='Department' %}
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/study.svg' as study_src %}
+                {% url 'Department:Programme:list' as programme_url %}
+                {% include 'dashboard/link_thumbnail.html' with link=programme_url img_src=study_src label='Programme' %}
+
+            </div>
+            <div class="col-6 col-md-4 col-lg-3">
+                {% static 'icons/blackboard.svg' as blackboard_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=blackboard_src label='Courses' %}
+            </div>
+        </div>
+
+        <div class="row bg-light p-2 my-4 g-3 my-3">
+                <div class="col-12">
+                    <span>School People</span>
+                    <hr>
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                    {% static 'icons/Student_Male.svg' as stu_male %}
+                    {% include 'dashboard/link_thumbnail.html' with img_src=stu_male link='' label='Students' %}
+                </div>
+                <div class="col-6 col-md-4 col-lg-3">
+                        {% static 'icons/staff.svg' as staff %}
+                        {% include 'dashboard/link_thumbnail.html' with img_src=staff link='' label='Staff' %}
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        {% static 'icons/lecture.svg' as lecture %}
+                        {% include 'dashboard/link_thumbnail.html' with link='' img_src=lecture label='Lecturers' %}
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-3">
+                        {% static 'icons/customs_Officer.svg' as custom_officer %}
+                        {% include 'dashboard/link_thumbnail.html' with link='' img_src=custom_officer label='Security' %}
+                    </div>
+
+            </div>
+
+
+    </div>
+{% endblock %}

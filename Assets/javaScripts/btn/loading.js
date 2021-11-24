@@ -8,6 +8,11 @@ function spinnerGrowRight(htmlElement) {
     htmlElement.innerHTML = elm + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>'
 }
 
+function spinnerGrowRightChangeText(text, htmlElement) {
+    let elm = htmlElement.innerText;
+    htmlElement.innerHTML = text + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>'
+}
+
 function rotateElement(htmlElement) {
     let htmlElementChild = htmlElement.children[0];
     if (!htmlElementChild.classList.contains('fa-spin')) {

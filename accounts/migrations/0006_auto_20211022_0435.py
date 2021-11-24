@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='first_name',
-            field=models.CharField(max_length=30, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(max_length=30, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
         migrations.AlterField(
             model_name='user',
             name='last_name',
-            field=models.CharField(help_text='last name and other names', max_length=120, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(help_text='last name and other names', max_length=120, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
     ]

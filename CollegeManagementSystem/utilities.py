@@ -19,5 +19,3 @@ def unique_slug_generate(instance, new_slug=None):
         return unique_slug_generate(instance, new_slug=slug)
     else:
         return slug
-
-

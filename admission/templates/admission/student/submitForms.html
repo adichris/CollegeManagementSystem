@@ -1,0 +1,32 @@
+{% extends 'base/admission/admission_base.html' %}
+
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-12 my-3">
+                <a href="{% url 'Student:admission-redirect' serial_number=admission_form.serial_number %}" class="btn btn-link" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span>Back</a>
+            </div>
+            <div class="col-md-10 col-lg-6 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        {% if submitted %}
+                            <h5 class="text-center">Forms Submitted Successfully</h5>
+                        {% else %}
+                            <h5 CLASS="text-center">Forms has been submitted successfully</h5>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <p>Your Admission form has been submitted successfully.
+                            Continue to print your declaration form
+                            </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="#" class="">Print Declaration Form</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock container %}
+    

@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, reverse, render
-from django.views.generic import RedirectView, View
+from django.views.generic import RedirectView, View, DetailView
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Permission, Group
@@ -20,6 +20,7 @@ from .forms import (
     CertExamRecordForm,
     StudentPreviousEducationChangeForm,
 )
+from INSTITUTION.utils import get_admission_steps
 
 
 class StudentAdmissionRedirectView(RedirectView):
@@ -32,7 +33,7 @@ class StudentAdmissionRedirectView(RedirectView):
                 "serial_number": admission_form.serial_number
             })
 
-        if admission_form.status != FormStatusChoice.Expired:
+        if admission_form.status != FormStatusChoice.EXPIRED:
             user = User.objects.get(identity=admission_form.serial_number)
             if self.request.user != user:
                 if self.request.user.is_authenticated:
@@ -62,7 +63,9 @@ class StudentAdmissionRedirectView(RedirectView):
             elif admission_form.status == FormStatusChoice.AT_EDUCATION:
                 return reverse('Student:admission_previous_education')
 
-        elif admission_form.status == FormStatusChoice.COMPLETED:
+            elif admission_form.status in (FormStatusChoice.SUBMITTED,
+                                           FormStatusChoice.COMPLETED):
+                return reverse('Student:admission_detail')
             pass
 
         else:
@@ -103,7 +106,7 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
         return {
             'title': 'Programmes Choices',
             'step': 5,
-            'steps': range(1, 6),
+            'steps': get_admission_steps(self.request.user.student_profile.admission_form.status),
             'serial_number': self.request.user.identity,
             'subtitle': '3 programme of choice'
         }
@@ -165,8 +168,11 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
             'title': 'Certificate',
             'subtitle': 'Certificate Records',
             'step': 6,
-            'steps': range(1, 7),
+            'steps': get_admission_steps(self.request.user.student_profile.admission_form.status),
             'serial_number': self.request.user.identity,
+            'col_css_class': 'col-lg-11',
+            'legend': 'Subject Form',
+            'show_counter': True,
         }
     
     def get(self, request, *args, **kwargs):
@@ -238,23 +244,84 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
 
 class StudentPreviousEducationChangeView(LoginRequiredMixin, PermissionRequiredMixin, View):
     model = StudentPreviousEducation
-    template_name = 'student/admission/create.html'
+    template_name = 'student/admission/CertExamRecord.html'
     permission_required = ('student.add_studentpreviouseducation', 'student.change_studentpreviouseducation')
-    form_class = StudentPreviousEducationChangeForm
+    form_class = modelformset_factory(
+        model=model,
+        form=StudentPreviousEducationChangeForm,
+        extra=0,
+        max_num=3,
+        validate_max=True,
+        min_num=1,
+        validate_min=True,
+        absolute_max=3,
+        can_delete=True,
+        can_delete_extra=True
+    )
 
     def get_login_url(self):
         return reverse('Admission:main_template_page')
 
     def get(self, request, *args, **kwargs):
         ctx = self.get_content_data()
-        ctx['form'] = self.form_class()
+        ctx['formset'] = self.form_class(
+            form_kwargs={
+                "student_id": self.request.user.student_profile.id,
+            },
+            queryset=self.get_queryset()
+        )
         return render(request, self.template_name, context=ctx)
+
+    def get_queryset(self):
+        return self.model.objects.filter(
+            student_id=self.request.user.student_profile.id
+        )
 
     def get_content_data(self):
         return {
             'title': 'Previous Education',
             'step': 7,
-            'steps': range(1, 8),
+            'steps': get_admission_steps(self.request.user.student_profile.admission_form.status),
             'serial_number': self.request.user.identity,
-            'subtitle': 'Previous Education'
+            'subtitle': 'Previous Education',
+            'legend': 'Previous school',
+            'col_css_class': 'col-md-auto',
+            'container_css_class': 'container',
+            'show_counter': False,
         }
+
+    def post(self, request, *args, **kwargs):
+        ctx = self.get_content_data()
+        formset = self.form_class(data=self.request.POST,
+                                  form_kwargs={"student_id": self.request.user.student_profile.id},
+                                  queryset=self.get_queryset()
+                                  )
+        if formset.is_valid():
+            # formset.save(True)
+            instances = formset.save(False)
+            for instance in instances:
+                instance.save()
+            admission_form = self.request.user.student_profile.admission_form
+            admission_form.status = FormStatusChoice.COMPLETED
+            admission_form.save()
+            return redirect('Student:admission-redirect', serial_number=admission_form.serial_number)
+        ctx['formset'] = formset
+        return render(request, self.template_name, context=ctx)
+
+
+class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    template_name = 'student/admission/detail.html'
+    permission_required = 'student.view_student'
+    model = Student
+
+    def get_object(self, queryset=None):
+        return self.request.user.student_profile
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StudentAdmissionDetails, self).get_context_data(**kwargs)
+        ctx['title'] = self.request.user
+        ctx['subtitle'] = 'You have successful completed'
+        return ctx
+
+
+# TODO CHECK ADMISSION STATUS does not allow edit edited redirect to appropriate admission error page

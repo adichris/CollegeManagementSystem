@@ -2,11 +2,11 @@
 {% load crispy_forms_tags %}
 
 {% block container_css_class %}
-    container-fluid
+    {{ container_css_class|default:'container-fluid' }}
 {% endblock %}
 
 {% block col_css_class %}
-    col-lg-11
+    {{ col_css_class }}
 {% endblock %}
 
 {% block form_render %}
@@ -20,7 +20,7 @@
         {{ formset.management_form }}
         <ul  id="form_content">
             {% for form in formset %}
-                <li class=""><span>Subject Form {{ forloop.counter }}</span> <br>
+                <li class=""><span>{{ legend }} {% if show_counter %}{{ forloop.counter }}{% endif %}</span> <br>
                     <div class="d-flex table-responsive justify-content-center align-items-baseline gap-3 shadow-sm p-2 my-4">
                         {{ form|crispy }}
                     </div>
@@ -45,8 +45,8 @@
 
     <div class="d-flex justify-content-evenly">
         <div class="alert alert-info my-3">
-            <span>To remove a subject, click on delete or tick/check the delete label.</span><br>
-            <span>The system will auto delete subject forms with the delete checked.</span>
+            <span>To remove a {{ legend|lower }}, click on delete or tick/check the delete label.</span><br>
+            <span>The system will auto delete {{ legend|lower }} with the delete checked.</span>
         </div>
     </div>
 {% endblock %}
@@ -58,7 +58,7 @@
         function appendSubjectForm(htmlElement) {
             if (frmContentElm.childElementCount < 15){
                 let emptyForm = `
-                                    <li><span> Subject Form ${frmContentElm.childElementCount +1 }</span>
+                                    <li><span> {{ legend }} ${frmContentElm.childElementCount +1 }</span>
                                         <div class="d-flex table-responsive justify-content-center align-items-baseline gap-3 shadow-sm p-2 my-4">
                                             {{ formset.empty_form|crispy }}
                                         </div>

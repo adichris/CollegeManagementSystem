@@ -30,6 +30,9 @@ urlpatterns = [
     path('sponsor/', include('sponsor.urls')),
     path('faculty/', include('faculty.urls')),
     path('department/', include('department.urls')),
+    path('institution/', include('INSTITUTION.urls')),
+    path('dashboard/', include('dashboard.urls')),
+    path('system/', include('system.urls')),
 ]
 
 if settings.DEBUG:

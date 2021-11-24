@@ -7,6 +7,7 @@ from .models import StudentSponsor
 from .forms import StudentSponsorCreationForm
 from student.models import Student
 from admission.models import FormStatusChoice
+from INSTITUTION.utils import get_admission_steps
 
 
 class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -35,7 +36,7 @@ class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, Upda
         ctx['title'] = 'Admission Sponsor'
         ctx['subtitle'] = ctx['title']
         ctx['step'] = 4
-        ctx['steps'] = tuple(range(1, 5, 1))
+        ctx['steps'] = get_admission_steps(self.request.user.student_profile.admission_form.status)
         ctx['serial_number'] = self.request.user.identity
         return ctx
 

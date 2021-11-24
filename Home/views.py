@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import reverse, resolve_url, redirect
-
+from django.utils.http import is_safe_url
 
 INSTITUTION_NAME = dict(
     institution_full_name=settings.COLLEGE_FULL_NAME,
@@ -62,9 +62,13 @@ class LoginPage(LoginView):
         return ctx
 
     def get_success_url(self):
+        next_url = self.request.GET.get(self.redirect_field_name)
+        if next_url and is_safe_url(next_url, self.request.get_host()):
+            return next_url
         user = self.request.user
         if user.is_admin or user.is_superuser:
             return reverse('Home:admin')
+        return reverse('Home:landing_page')
 
 
 class LogoutPage(LogoutView):

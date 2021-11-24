@@ -1,0 +1,53 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-auto mx-auto text-center">
+                <h4>{{ num_objs_created }} Admission Created</h4>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="table-responsive" style="max-height: 95vh; overflow-y: auto;">
+                    <table class="table table-hover table-bordered shadow-sm">
+                        <tr>
+                            <td>#</td>
+                            <th>Type</th>
+                            <th>Serial Number</th>
+                            <th>Pin Code</th>
+                            <th>Status</th>
+                            <th>Cost</th>
+                            <th>Academic Year</th>
+                            <th>Last Modified</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for studentform in studentforms_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ studentform.form_type }}</td>
+                                <td>{{ studentform.serial_number }}</td>
+                                <td>{{ studentform.pin_code }}</td>
+                                <td class="text-center" title="status | used by (identity)">
+                                    <span class="p-2 {% if studentform.status == form_status.COMPLETED %}text-primary{% elif studentform.status == form_status.SUBMITTED %}text-success{% else %}text-dark{% endif %}">
+                                        {{ studentform.get_status_display }} | {{ studentform.student.profile.identity|default:'Not Used' }}
+                                    </span>
+                                </td>
+                                <td>{{ studentform.cost }}</td>
+                                <td>{{ studentform.academic_year }}</td>
+                                <td>{{ studentform.updated_at }}</td>
+                                <td>
+                                    {% if studentform.student %}
+                                        <a href="{{ studentform.get_absolute_student_form_url }}?back={{ request.path }}&backname={{ title }}" class="btn btn-outline-primary btn-sm" onclick="dynamicSpinner(this)">student</a>
+                                        <a href="{{ studentform.get_absolute_url }}" class="btn btn-outline-primary btn-sm" title="view form">form</a>
+                                    {% else %}
+                                        <a href="{{ studentform.get_absolute_url }}" class="btn btn-outline-primary btn-sm" title="view form">form</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+        </div>
+    </div>
+{% endblock %}

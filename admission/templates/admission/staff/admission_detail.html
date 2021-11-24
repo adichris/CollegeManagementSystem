@@ -1,0 +1,173 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+    <div class="row my-4">
+        <div class="col-auto">
+            <a href="{% url 'Admission:allforms' %}" class="btn btn-light shadow-sm" onclick="spinBack(this)"><span class="fa fa-chevron-left"></span> back</a>
+        </div>
+    </div>
+        <div class="row">
+            <div class="col-auto mx-auto text-center">
+                <h4>{{ studentforms.serial_number }}</h4>
+                <h4>ADMISSION FORM</h4>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 col-lg-4 my-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Detail</span>
+                        <span class="fa fa-info-circle"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Serial Number</span>
+                            <h4>{{ studentforms.serial_number }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Pin Code</span>
+                            <h4>{{ studentforms.pin_code }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Form Type</span>
+                            <h4>{{ studentforms.form_type }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Status</span>
+                            <h4>{{ studentforms.get_status_display }}</h4>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Date</span>
+                        <span class="fa fa-calendar"></span>
+                    </div>
+                    <div class="card-body">
+                       <div class="d-flex flex-column gap-3 align-items-center">
+                           <span>Current/Active</span>
+                           <h4 class="{% if studentforms.is_current %}text-success{% else %}text-danger{% endif %}">{{ studentforms.is_current|yesno|title }}</h4>
+                       </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                           <span>Academic Year</span>
+                           <h4>{{ studentforms.get_academic_year_display|default_if_none:'---' }}</h4>
+                       </div>
+                        <hr>
+
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                           <span>Date Created/Timestamp</span>
+                           <h4>{{ studentforms.timestamp }}</h4>
+                       </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Last Modified</span>
+                            <h4>{{ studentforms.updated_at }}</h4>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Sales</span>
+                        <span class="fa fa-credit-card"></span>
+                    </div>
+                    <div class="card-body">
+                       <div class="d-flex flex-column gap-3 align-items-center">
+                           <span>Cost</span>
+                           <h4>{{ studentforms.cost|default_if_none:'---' }}</h4>
+                       </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Sales Point</span>
+                            <h4>{{ studentforms.sales_point|default_if_none:'---' }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Sales Agent</span>
+                            <h4>{{ studentforms.sales_agent|default_if_none:'---' }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Sales Location</span>
+                            <h4>{{ studentforms.sales_point_location|default_if_none:'---' }}</h4>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Sold To</span>
+                        <span class="fa fa-user"></span>
+                    </div>
+                    <div class="card-body">
+                       <div class="d-flex flex-column gap-3 align-items-center">
+                           <span>Candidate Name</span>
+                           <h4>{{ studentforms.candidate_name|default_if_none:'---' }}</h4>
+                       </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Candidate Phone Number</span>
+                            <h4>{{ studentforms.candidate_phone_number|default_if_none:'---' }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Is Used?</span>
+                            <h4>{{ studentforms.student|yesno|title }}</h4>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>Student Form</span>
+                        <span class="fa fa-address-card"></span>
+                    </div>
+                    <div class="card-body">
+                       <div class="d-flex flex-column gap-3 align-items-center">
+                           <span>Name</span>
+                           <h4>{{ studentforms.student.profile.get_full_name|default:'---' }}</h4>
+                       </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Phone Number</span>
+                            <h4>{{ studentforms.student.profile.phone_number|default:'---' }}</h4>
+                        </div>
+                        <hr>
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <span>Index Number | Identity</span>
+                            <h4><span title="index number">{{ studentforms.student.index_number|default:'---' }}</span> | <span title="identity">{{ studentforms.student.profile.identity|default:'---' }}</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 my-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column justify-content-center">
+                       <a onclick="dynamicSpinner(this)" href="{{ studentforms.get_absolute_update_url }}" class="btn btn-warning btn-lg w-100 d-flex justify-content-between align-items-center"><span>Edit Admission Form </span><span class="fa fa-edit"></span></a>
+                            <hr>
+                        {% if studentforms.student %}
+                            <a onclick="dynamicSpinner(this)" href="{{ studentforms.get_absolute_student_form_url }}?back={{ request.path }}" class="btn btn-primary btn-lg w-100 d-flex justify-content-between align-items-center"><span>View Student Form </span><span class="fa fa-file"></span></a>
+                        {% else %}
+                            <a onclick="dynamicSpinner(this)" href="#" class="btn btn-danger btn-lg w-100 d-flex justify-content-between align-items-center"><span>Delete Form</span> <span class="fa fa-trash"></span></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -7,5 +7,122 @@
                 <h4>STUDENT ADMISSION</h4>
             </div>
         </div>
+
+        <div class="row my-4">
+            <div class="col p-2 shadow-sm d-flex justify-content-center gap-3">
+               {% if can_audit %}
+                    <a href="{% url 'Admission:create' %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Admission Form </a>
+                    <a href="#" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-cog"></span> Manage Forms </a>
+                    <a href="{% url 'Admission:create_batch' %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-plus"></span> Add Batch Admission Forms </a>
+                    <a href="{% url 'Admission:form_type_list' %}?back={{ request.path }}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-asterisk"></span> Form Types</a>
+               {% endif %}
+                    <a href="{% url 'Admission:allforms' %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-list"></span> All Forms </a>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card hover_shadow">
+                    <div class="card-header">
+                        <h5 class="text-center">2020 Academic Year Admission</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a onclick="dynamicSpinner(this)" class="list-group-item list-group-item-action d-flex justify-content-between">
+                            <span>Total Student Applied</span>
+                            <span>---</span>
+                            <span class="fa fa-chevron-right"></span>
+                        </a>
+                        <a onclick="dynamicSpinner(this)" class="list-group-item list-group-item-action d-flex justify-content-between">
+                            <span>Forms Sold</span>
+                            <span>---</span>
+                            <span class="fa fa-chevron-right"></span>
+                        </a>
+                        <a onclick="dynamicSpinner(this)" class="list-group-item list-group-item-action d-flex justify-content-between">
+                            <span>Student Accepted</span>
+                            <span>---</span>
+                            <span class="fa fa-chevron-right"></span>
+                        </a>
+                        <a onclick="dynamicSpinner(this)" class="list-group-item list-group-item-action d-flex justify-content-between">
+                            <span>Student Rejected</span>
+                            <span>---</span>
+                            <span class="fa fa-chevron-right"></span>
+                        </a>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        <a onclick="dynamicSpinner(this)" href="#" class="btn btn-outline-secondary">view</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-6 col-md-4 col-lg-4">
+                <div class="card hover_shadow">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        Manage Student
+                        <span class="fa fa-users"></span>
+                    </div>
+                    <div class="card-footer p-0 m-0">
+                        <div class="accordion" id="managestudent">
+                            <div class="accordion-item border-0">
+                                <h4 class="accordion-header" id="managestudentHeading">
+                                    <button class="accordion-button collapsed bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#manageStudentBody" aria-expanded="false" aria-controls="manageStudentBody">
+                                       <span class="">more</span>
+                                    </button>
+                                </h4>
+                                <div id="manageStudentBody" class="accordion-collapse collapse" aria-labelledby="managestudentHeading" data-bs-parent="#managestudent" style="">
+                                    <div class="accordion-body p-0 m-0">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Admission</a>
+                                            <a href="{% url 'Admission:allforms' %}" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Ongoing Admission</a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Completed Admission</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-4">
+                <div class="card hover_shadow">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        Admission Forms
+                        <span class="fa fa-paperclip"></span>
+                    </div>
+                    <div class="card-footer p-0 m-0">
+                        <div class="accordion" id="admissionForm">
+                            <div class="accordion-item border-0">
+                                <h4 class="accordion-header" id="admissionFormHeading">
+                                    <button class="accordion-button collapsed bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#admissionFormBody" aria-expanded="false" aria-controls="admissionFormBody">
+                                       <span class="">more</span>
+                                    </button>
+                                </h4>
+                                <div id="admissionFormBody" class="accordion-collapse collapse" aria-labelledby="admissionFormHeading" data-bs-parent="#admissionForm" style="">
+                                    <div class="accordion-body p-0 m-0">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Remaining</a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Used</a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Statistics</a>
+                                            <a href="#" class="list-group-item list-group-item-action" onclick="dynamicSpinner(this)">Expired</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Admission</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 {% endblock %}

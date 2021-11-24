@@ -32,7 +32,8 @@ class FacultyListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         ctx = super(FacultyListView, self).get_context_data(object_list=object_list, **kwargs)
         ctx['title'] = 'Faculties'
         ctx['header'] = 'All Faculties in this Institution'
-        ctx['empty_text'] = 'There are no faculties in the system'
+        ctx['empty_text'] = '"%s" matches no faculty in the system' % self.searched_query if self.searched_query else\
+            'There are no faculties in the system'
         ctx['facultyQry'] = self.searched_query
         ctx['hadPerms'] = self.request.user.has_perms(*('faculty.change_faculty',  'faculty.add_faculty'))
         return ctx

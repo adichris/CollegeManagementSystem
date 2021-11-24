@@ -1,0 +1,66 @@
+{% extends 'base/admission/admission_base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-md-10 col-lg-8 h-100 mx-auto">
+                <span class="d-block">{{ student.profile.get_short_name }}!,</span>
+                <span class="d-block">You have successful completed filling your admission forms,</span>
+                <span class="d-block">Submit to mark it as final for further processing.</span>
+                <span class="d-block text-warning my-2"> <span class="fa fa-exclamation-circle me-2"></span> Note that after submission you will not be allowed to make modification to the admission form.</span>
+                <hr>
+                <div class="card-group">
+                   <div class="card">
+                        <div class="card-img-top">
+                            <img src="{{ student.profile.picture.url  }}" alt="" class="img-fluid">
+                        </div>
+                       <div class="card-body">
+                           <h4 class="text-center">{{ student }}</h4>
+                       </div>
+                   </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="{% url 'Admission:stu_print_form' %}" onclick="dynamicSpinner(this)" class="btn btn-link w-100">
+                                <span class="float-start">Preview form</span>
+                                <span class="fa fa-print fa-2x float-end"></span>
+                            </a>
+                            <hr>
+                            <div class="d-flex justify-content-center flex-column">
+                                <ul class="list-group list-group-flush">
+                                    {% if student.admission_form.can_edit %}
+                                    <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Profile
+                                        <a onclick="dynamicSpinner(this)" href="{% url 'Accounts:admission_student_profile' serial_number=student.admission_form.serial_number %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Address <a onclick="dynamicSpinner(this)" href="{% url 'Address:admission_student_create' %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Certificate <a onclick="dynamicSpinner(this)" href="{% url 'Student:admission_cert_exam_records' %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Employment <a onclick="dynamicSpinner(this)" href="{%  url 'EmploymentHistory:student_admission_create_history' %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Sponsor <a onclick="dynamicSpinner(this)" href="{% url 'Sponsor:student_admission' %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Programme <a onclick="dynamicSpinner(this)" href="{% url 'Student:programmes_choices' %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Education <a onclick="dynamicSpinner(this)" href="{% url 'Student:admission_previous_education' %}"><span class="float-end fa fa-edit"></span></a> </li>
+                                    {% else %}
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Profile</li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Address </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Certificate </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Employment </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Sponsor </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Programme </li>
+                                        <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Education </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            {% if student.admission_form.has_submitted %}
+                                <a href="#" class="btn btn-primary w-100">Print Declaration Form <span class="fa fa-print"></span></a>
+{#                            TODO design forms progress or processing tracking page of student #}
+                            {% else %}
+                            <a onclick="dynamicSpinner(this)" href="{% url 'Admission:stu_submit_form' %}" class="btn btn-success btn-lg w-100">Submit Form <span class="fa fa-plane ms-2"></span></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{#        TODO I am thinking of showing admission form detail here too. #}
+    </div>
+{% endblock %}

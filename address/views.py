@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from .forms import AddressCreationForm
 from address.models import Address
 from admission.models import StudentForms, FormStatusChoice
+from INSTITUTION.utils import get_admission_steps
 
 
 class StudentAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -17,7 +18,7 @@ class StudentAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, Upda
         ctx = super(StudentAddressCreateView, self).get_context_data(**kwargs)
         ctx['title'] = 'Student Address'
         ctx["step"] = 2
-        ctx["steps"] = (1, 2)
+        ctx["steps"] = get_admission_steps(self.request.user.student_profile.admission_form.status)
         ctx["subtitle"] = 'Your Address'
         ctx['serial_number'] = self.request.user.identity
         return ctx

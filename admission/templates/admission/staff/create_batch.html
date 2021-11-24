@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-auto">
+                <a href="{% url 'Admission:allforms' %}" class="btn btn-light shadow-sm" onclick="spinBack(this)"><span class="fa fa-chevron-left"></span> back</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row my-4">
+            <div class="col-auto mx-auto text-center">
+                <h4>Create Batch Admission Form</h4>
+                <p>Generate/create multiple admission forms at one go!</p>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-8 col-lg-6 mx-auto">
+                <div class="rounded p-2 shadow-sm">
+                    {% crispy form %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

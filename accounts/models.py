@@ -4,7 +4,7 @@ from CollegeManagementSystem.utilities import unique_slug_generate
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import user_logged_in, user_logged_out
-from CollegeManagementSystem.validation import v_name
+from CollegeManagementSystem.validation import validate_alphanumberic_space
 
 
 class GenderChoices(models.TextChoices):
@@ -48,8 +48,8 @@ class UserManager(BaseUserManager):
 
 
 class User(PermissionsMixin, AbstractBaseUser):
-    first_name = models.CharField(max_length=30, validators=(v_name, ))
-    last_name = models.CharField(max_length=120, help_text='last name and other names', validators=(v_name, ))
+    first_name = models.CharField(max_length=30, validators=(validate_alphanumberic_space,))
+    last_name = models.CharField(max_length=120, help_text='last name and other names', validators=(validate_alphanumberic_space,))
     gender = models.CharField(max_length=5, choices=GenderChoices.choices, null=True)
     date_of_birth = models.DateField(null=True)
     email = models.EmailField(unique=True)
@@ -83,6 +83,13 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     def get_short_name(self):
         return self.first_name
+
+    @property
+    def student(self):
+        try:
+            return self.student_profile
+        except models.ObjectDoesNotExist:
+            return None
 
     def get_name_abr(self):
         f_abr = "".join([list(n)[0] for n in self.first_name.split(" ")]).upper()

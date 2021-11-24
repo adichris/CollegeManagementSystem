@@ -5,6 +5,7 @@ from .views import (
     StudentProgrammeSelectionView,
     AdmissionCertificateExaminationView,
     StudentPreviousEducationChangeView,
+    StudentAdmissionDetails
 )
 
 app_name = 'Student'
@@ -14,4 +15,5 @@ urlpatterns = [
     path('programmechoices/', StudentProgrammeSelectionView.as_view(), name='programmes_choices'),
     path('admissioncertificateexamsrecords/', AdmissionCertificateExaminationView.as_view(), name='admission_cert_exam_records'),
     path('studentpreviouseducation/', StudentPreviousEducationChangeView.as_view(), name='admission_previous_education'),
+    path('admission/details/', StudentAdmissionDetails.as_view(), name='admission_detail')
 ]

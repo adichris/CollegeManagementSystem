@@ -14,21 +14,21 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='address',
             name='current_region',
-            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
         migrations.AlterField(
             model_name='address',
             name='district',
-            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
         migrations.AlterField(
             model_name='address',
             name='home_town',
-            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
         migrations.AlterField(
             model_name='address',
             name='region',
-            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(max_length=120, null=True, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
     ]

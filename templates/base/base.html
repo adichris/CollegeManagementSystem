@@ -1,5 +1,5 @@
 {% load institution_extra %}
-{% load staticfiles %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,13 +19,19 @@
     <link rel="stylesheet" href="{% static 'colors/palette.css' %}">
     <link rel="stylesheet" href="{% static 'styles/designs.css' %}">
     {% block header %}
-    
+
     {% endblock %}
 </head>
 <body>
-    {% block navbar %}
-        {% include 'base/navbar.html' %}
-    {% endblock %}
+    <div class="d-print-none">
+        {% block navbar %}
+            {% if request.user.is_superuser or request.user.is_admin %}
+                {% include 'base/admin/navbar.html' %}
+            {% else %}
+                {% include 'base/navbar.html' %}
+            {% endif %}
+        {% endblock %}
+    </div>
 
     {% block container %}  {% endblock container %}
     <script src="{% static 'fontawesome5.1/js/all.min.js' %}"></script>

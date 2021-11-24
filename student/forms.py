@@ -95,3 +95,15 @@ class StudentPreviousEducationChangeForm(forms.ModelForm):
             )
         )
         return helper
+
+    def clean_to_year(self):
+        to_year = self.cleaned_data.get('to_year')
+        from_year = self.cleaned_data.get('from_year')
+        if to_year <= from_year + 1:
+            raise forms.ValidationError('The year you completed that school is invalid')
+        return to_year
+
+    def __init__(self, student_id, *args, **kwargs):
+        super(StudentPreviousEducationChangeForm, self).__init__(*args, **kwargs)
+        self.instance.student_id = student_id
+

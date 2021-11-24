@@ -1,10 +1,12 @@
 {% load institution_extra %}
-{% load staticfiles %}
+{% load static %}
 {% url 'Home:landing_page' as home %}
 {% url 'Faculty:list' as faculties %}
 {% url 'Department:list' as departments %}
 {% url 'Department:Programme:list' as programmes %}
 {% url 'Admission:admins' as admission_administration %}
+{% url 'Dashboard:admin' as admin_dashboard %}
+
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white50 transparent-bg sticky-md-top" aria-label="Navigation bar">
     <div class="container justify-content-between justify-content-md-center">
@@ -16,7 +18,7 @@
         <div class="collapse navbar-collapse" id="topNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-md-0 mx-auto justify-content-center align-items-start align-items-md-center ">
                 <li class="nav-item">
-                    <a class="nav-link text-nowrap {% if request.path == about %} active {% endif %}" aria-current="page" href="{{ about }}">Dashboard</a>
+                    <a class="nav-link text-nowrap {% if request.path == admin_dashboard %} active {% endif %}" aria-current="page" href="{{ admin_dashboard }}">Dashboard</a>
                 </li>
 
                 <li class="nav-item dropdown">

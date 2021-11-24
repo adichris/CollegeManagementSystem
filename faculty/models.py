@@ -29,7 +29,7 @@ class FacultyManager(models.Manager):
 
 
 class Faculty(models.Model):
-    name = models.CharField(max_length=120, unique=True, validators=(validation.v_name, ),
+    name = models.CharField(max_length=120, unique=True, validators=(validation.validate_alphanumberic_space,),
                             help_text='Name of Faculty,College, or School'
                             )
     slug = models.SlugField(unique=True)

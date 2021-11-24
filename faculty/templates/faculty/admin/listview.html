@@ -21,6 +21,8 @@
                            <div class="">
                                 <span><b>"{{ facultyQry }}"</b> matches {{ faculty_list.count }} faculties</span>
                            </div>
+                       {% else %}
+                           <h5>{{ faculty_list.count }} faculties</h5>
                        {% endif %}
                         <form method="get" class="align-self-end">
                             <div class="input-group">

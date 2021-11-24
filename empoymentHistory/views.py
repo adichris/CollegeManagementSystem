@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from .models import EmploymentHistoryModel
 from .forms import EmploymentHistoryCreationForm
 from admission.models import StudentForms, FormStatusChoice
+from INSTITUTION.utils import get_admission_steps
 
 
 class EmploymentHistoryCreateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -20,7 +21,7 @@ class EmploymentHistoryCreateUpdateView(LoginRequiredMixin, PermissionRequiredMi
         ctx['title'] = 'Employment History'
         ctx['subtitle'] = 'Employment History'
         ctx['step'] = 3
-        ctx['steps'] = (1, 2, 3)
+        ctx['steps'] = get_admission_steps(self.request.user.student_profile.admission_form.status)
         ctx["serial_number"] = self.request.user.identity
         return ctx
 

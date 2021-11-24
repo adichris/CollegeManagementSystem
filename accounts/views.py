@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.contrib.auth import login
 from .forms import UserProfileForm
 from .models import User
+from INSTITUTION.utils import get_admission_steps
 
 
 class StudentProfileCreateView(View):
@@ -25,7 +26,7 @@ class StudentProfileCreateView(View):
         return {
             "step": 1,
             "subtitle": 'Personal Information',
-            "steps": (1,),
+            "steps": get_admission_steps(self.request.user.student_profile.admission_form.status),
         }
 
     def get_initial(self):

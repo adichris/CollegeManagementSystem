@@ -1,0 +1,273 @@
+{% extends 'base/admission/admission_base.html' %}
+
+
+{% block container %}
+    <div class="container">
+        <div class="row my-md-4 d-print-none">
+            <div class="col-12">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'Student:admission-redirect' serial_number=student.admission_form.serial_number %}" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span> back</a>
+                    <button onclick="print()">Print <span class="fa fa-print"></span></button>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+    <div class="container m-p-n">
+        <div class="">
+            <div class="row my-4">
+                <div class="col-auto mx-auto d-flex flex-column align-items-center gap-4">
+                    <h4>{{ institution_name|upper }} ADMISSION FORM</h4>
+                    <img src="{{ profile.picture.url }}" alt="" class="img-fluid" height="300" width="300">
+                    <table class="table">
+                        <tr>
+                            <td>Serial Number</td>
+                            <td>{{ admission_form.serial_number }}</td>
+                        </tr>
+                         <tr>
+                            <td>Pin Code</td>
+                            <td>{{ admission_form.pin_code }}</td>
+                         </tr>
+                         <tr>
+                            <td>Form Type</td>
+                            <td>{{ admission_form.form_type }}</td>
+                         </tr>
+                         <tr>
+                            <td>Academic Year/ Year Of Admission</td>
+                            <td>{{ admission_form.academic_year }}</td>
+                         </tr>
+                        <tr>
+                            <td>Remarks</td>
+                            <td>Admission is {{ admission_form.get_status_display }}</td>
+                        </tr>
+                    </table>
+                    <div class="d-none d-print-block" style="height: 35vh">
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>PROFILE</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>First Name</th>
+                            <td>{{ profile.first_name }}</td>
+                            <th>Gender</th>
+                            <td>{{ profile.get_gender_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Name</th>
+                            <td>{{ profile.last_name }}</td>
+                            <th>Email</th>
+                            <td>{{ profile.email }}</td>
+                        </tr>
+                         <tr>
+                            <th>Phone Number</th>
+                            <td>{{ profile.phone_number.as_international }}</td>
+                            <th>Date of Birth</th>
+                            <td><abbr title="{{ profile.date_of_birth|date:'F dS, Y' }}">{{ profile.date_of_birth }}</abbr> </td>
+                        </tr>
+
+                    </table>
+            </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>ADDRESS</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>Country</th>
+                            <td>{{ address.country.name }}</td>
+                            <th>Region</th>
+                            <td>{{ address.region }}</td>
+                            <th>Home Town</th>
+                             <td>{{ address.home_town }}</td>
+                        </tr>
+                         <tr>
+                             <th>District</th>
+                            <td>{{ profile.district }}</td>
+                            <th>Current Region</th>
+                            <td>{{ address.current_region }}</td>
+                             <th>Address</th>
+                            <td>{{ address.address }}</td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>CERTIFICATE</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>#</th>
+                            <th>Subject</th>
+                            <th>Index Number</th>
+                            <th>Examination Year</th>
+                            <th>School</th>
+                            <th>Grade</th>
+                            <th>Examination Type</th>
+                        </tr>
+                        {% for cert in certificate %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ cert.subject|upper }}</td>
+                                <td>{{ cert.index_number }}</td>
+                                <td>{{ cert.examination_year }}</td>
+                                <td>{{ cert.school|upper }}</td>
+                                <td>{{ cert.grade|upper }}</td>
+                                <td>{{ cert.get_examination_type_display|upper }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>EMPLOYMENT HISTORY</h4>
+                </div>
+                {% if employment_history.has_history %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Employee</th>
+                                <td>{{ employment_history.employee|default:'---' }}</td>
+                                <th>Company Name</th>
+                                <td>{{ employment_history.company_name|default:'---' }}</td>
+                                <th>Address</th>
+                                <td>{{ employment_history.address|default:'---' }}</td>
+                            </tr>
+                            <tr>
+                                <th>State</th>
+                                <td>{{ employment_history.state|default:'---' }}</td>
+                                <th>City</th>
+                                <td>{{ employment_history.city|default:'---' }}</td>
+                                <th>Job Title</th>
+                                <td>{{ employment_history.job_title|default:'---' }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <b>Specific Duty</b><br>
+                                    <p>{{ employment_history.specific_duty|default:'---' }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Supervisor</th>
+                                <td>{{ employment_history.spuervisor|default:'---' }}</td>
+                                <th>Employed From</th>
+                                <td>{{ employment_history.employed_from|default:'---' }}</td>
+                                <th>Employed To</th>
+                                <td>{{ employment_history.employ_to|default:'---' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Why Leave</th>
+                                <td colspan="5">{{ employment_history.why_leave|default:'---' }}</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-light">
+                        <h5>No employment history</h5>
+                    </div>
+                {% endif %}
+
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>SPONSOR</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ sponsor.name|default:'---' }}</td>
+                            <th>Email</th>
+                            <td>{{ sponsor.email|default:'---' }}</td>
+                            <th>Phone number</th>
+                            <td>{{ sponsor.phone_number.as_international|default:'---' }}</td>
+                        </tr>
+                        <tr>
+                            <th>State</th>
+                            <td>{{ sponsor.state|default:'---' }}</td>
+                            <th>City</th>
+                            <td>{{ sponsor.city|default:'---' }}</td>
+                            <th>Address</th>
+                            <td>{{ sponsor.address|default:'---' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Relationship</th>
+                            <td>{{ sponsor.relationship|default:'---' }}</td>
+                            <th>Government Sponsorship</th>
+                            <td>{{ sponsor.on_government_support|yesno|title }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>PROGRAMME CHOICES</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>First Choice</th>
+                            <td>{{ programme_choices.first_choice|default:'---' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Second Choice</th>
+                            <td>{{ programme_choices.second_choice|default:'---' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Third Choice</th>
+                            <td colspan="3">{{ programme_choices.third_choice|default:'---' }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+            </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <h4>PREVIOUS EDUCATION</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>School</th>
+                            <td>{{ previous_education.school|upper|default:'---' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Region</th>
+                            <td>{{ previous_education.region|upper|default:'---' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Years</th>
+                            <td>FROM {{ previous_education.from_year|default:'---' }} <b>:</b> TO {{ previous_education.to_year|default:'---' }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <div class="row my-4 d-print-none">
+            <div class="col-md-6 mx-auto">
+                <button class="btn btn-primary btn-lg w-100" onclick="print()">PRINT <span class="fa fa-print"></span></button>
+            </div>
+        </div>
+    </div>
+{% endblock container %}
+    

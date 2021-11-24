@@ -25,7 +25,7 @@ SECRET_KEY = ')=fs6&fvx)yf_g&br2k-g3r6!akdg%55z0f&9!wz2h1fi940-p'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'faculty',
     'department',
     'programme',
+    'dashboard',
+    'system',
 ]
 
 MIDDLEWARE = [
@@ -91,7 +93,9 @@ WSGI_APPLICATION = 'CollegeManagementSystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'CollegeManagementSystem.sqlite3',
+        'NAME': 'CollegeManagementSystem.sqlite3',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'admin',
     }
 }
 
@@ -147,8 +151,11 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # College Name in full and short form or short name
-COLLEGE_FULL_NAME = 'University for Development Studies'
-COLLEGE_SHORT_NAME = 'UDS'
+COLLEGE_FULL_NAME = 'The University Development'
+COLLEGE_SHORT_NAME = 'TUD'
+
+INSTITUTION_FULL_NAME = COLLEGE_FULL_NAME
+INSTITUTION_SHORT_NAME = COLLEGE_SHORT_NAME
 
 # expire session immediate at browser close
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

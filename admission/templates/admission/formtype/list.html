@@ -1,0 +1,85 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-auto mx-auto text-center">
+                <h4>All Form Category</h4>
+            </div>
+        </div>
+    
+        <div class="row my-4">
+            <div class="col">
+                <div class="p-2 rounded shadow-sm d-flex justify-content-between align-baseline">
+                    <a href="{% url 'Admission:form_type_create' %}?back={{ request.path }}" class="btn btn-outline-primary" onclick="dynamicSpinner(this)"><span>Add Form Category</span> <span class="fa fa-plus-circle"></span></a>
+                    <span>Showing {{ tt_result }} out of {{ tt_category }} Categories</span>
+                    <form action="" method="get">
+                        <div class="input-group">
+                            <input type="search" name="{{ search_name }}" id="" placeholder="title or subtitle" class="form-control" value="{{ search_value|default:'' }}">
+                            <button type="submit" class="btn btn-primary">search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if formtypechoicesmodel_list %}
+
+        <div class="row my-4">
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered shadow-sm">
+                        <tr>
+                            <td>#</td>
+                            <th>Title</th>
+                            <th>Subtitle</th>
+                            <th>Timestamp</th>
+                            <th>Extra</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for formtypechoicesmodel in formtypechoicesmodel_list %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ formtypechoicesmodel.title }}</td>
+                                <td>{{ formtypechoicesmodel.subtitle }}</td>
+                                <td>{{ formtypechoicesmodel.timestamp }}</td>
+                                <td>Referenced by <b>{{ formtypechoicesmodel.forms_referenced.count }}</b> Admission Forms</td>
+                                <td class="d-flex gap-2">
+                                    <a href="{{ formtypechoicesmodel.get_absolute_url }}" class="btn btn-outline-secondary btn-sm" onclick="dynamicSpinner(this)">View</a>
+                                    <a href="#" class="btn btn-outline-secondary btn-sm" onclick="dynamicSpinner(this)">Edit</a>
+                                    {% if can_delete and formtypechoicesmodel.forms_referenced.count == 0 %}
+                                        <a href="#" class="btn btn-outline-danger btn-sm" onclick="dynamicSpinner(this)">Edit</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {% elif not tt_category %}
+            <div class="row my-4">
+                <div class="col-md-8 col-lg-6 mx-auto text-center">
+                    <div class="alert alert-light shadow">
+                        <span class="fa fa-box-open fa-3x"></span>
+                        <h6>There are no admission form category/type registered yet</h6>
+                        <a href="{% url 'Admission:form_type_create' %}" onclick="dynamicSpinner(this)">Register/Add new admission form</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-md-8 col-lg-6 mx-auto text-center">
+                    <div class="alert alert-light shadow">
+                        <span class="fa fa-box-open fa-3x"></span>
+                        <p>No form category/type matches "<b>{{ search_value }}</b>"</p>
+                        <a href="{% url 'Admission:form_type_create' %}" onclick="dynamicSpinner(this)">Register/Add new admission form</a>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+{% endblock %}

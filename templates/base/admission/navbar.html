@@ -1,9 +1,9 @@
 {% load institution_extra %}
 {% url 'Home:landing_page' as home %}
 {% url 'Admission:main_template_page' as admission %}
-{% load staticfiles %}
+{% load static %}
 
-<div class="container rounded mt-2 d-flex flex-column flex-md-row bg-light shadow-sm justify-content-between  py-1 align-items-center sticky-top" >
+<div class="d-print-none container rounded mt-2 d-flex flex-column flex-md-row bg-light shadow-sm justify-content-between  py-1 align-items-center sticky-md-top" >
         <a title="{% institutionFullName %}" class="navbar-brand {% if request.path == home %} active {% endif %}" href="{{ home }}"><img src="{% static 'favicon.png' %}" alt="" width="46" height="46" > {% institutionShortName %}</a>
         <h4 class="text-muted">{{ subtitle|upper }}</h4>
 

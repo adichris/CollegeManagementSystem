@@ -1,0 +1,60 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-auto mx-auto text-center">
+                <h4>Permission Groups</h4>
+            </div>
+        </div>
+
+        {% if group_list1 %}
+            <div class="row my-4">
+                {% for group in group_list %}
+                    <div class="col-md-6 col-lg-4 my-2">
+                        <div class="card hover_shadow">
+                            <div class="card-body">
+                                <h5 class="text-center">{{ group.name|title }}</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <span>Permissions</span>
+                                    <h6 class="ms-2">{{ group.permissions.count }}</h6>
+                                </li>
+                                <li class="list-group-item">
+                                    <span>Members</span>
+                                    <h5 class="ms-2">{{ group.user_set.count }}</h5>
+                                </li>
+                            </ul>
+                            <div class="card-footer d-flex justify-content-end">
+                                <a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-md-6 mx-auto">
+                    <div class="alert alert-info text-center shadow-sm">
+                        <h5>No permission group found!</h5>
+                        <hr class="m-1">
+                        <a href="#" class="btn btn-link" onclick="dynamicSpinner(this)">Add new group</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row my-5">
+            <hr>
+            <div class="col-auto">
+                <h5>Reset System Default Permission Groups</h5>
+                <div class="card card-body my-3 hover_shadow">
+                    <p>RESET TO DEFAULT PERMISSIONS AND GROUPS</p>
+                    <a href="#" onclick="spinnerGrowRightChangeText('RESETTING...', this)" class="btn btn-warning btn-lg stretched-link">RESET</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

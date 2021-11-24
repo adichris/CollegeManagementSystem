@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='faculty',
             name='name',
-            field=models.CharField(help_text='Name of Faculty,College, or School', max_length=120, unique=True, validators=[CollegeManagementSystem.validation.v_name]),
+            field=models.CharField(help_text='Name of Faculty,College, or School', max_length=120, unique=True, validators=[CollegeManagementSystem.validation.validate_alphanumberic_space]),
         ),
     ]
