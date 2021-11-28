@@ -1,5 +1,4 @@
 {% extends 'base/base.html' %}
-
 {% block container %}
     <div class="container">
         <div class="row my-4">
@@ -15,7 +14,7 @@
             {% if semestermodel_list %}
                 {% for semestermodel in semestermodel_list %}
                     <div class="col-md-6 col-lg-4 my-3">
-                        <div class="card {% if semestermodel.is_current %} shadow-lg {% else %} hover_shadow {% endif %}">
+                        <div class="card {% if semestermodel.is_current %} shadow {% else %} hover_shadow {% endif %}">
                             <ul class="list-group list-group-flush">
                                <li class="list-group-item d-flex justify-content-between">
                                    <div>
@@ -61,7 +60,7 @@
             {% endif %}
         </div>
 
-        <div class="row my-4">
+        <div class="row my-4 ">
             <div class="col-12">
                 <h5>Academic Year</h5>
                 <hr>
@@ -92,5 +91,54 @@
                 </div>
             </div>
         </div>
+
+        <div class="row my-4 shadow-sm rounded">
+            <div class="col-12">
+                <h5 title="Academic Level">Levels</h5>
+            </div>
+            {% if levels %}
+                {% for level in levels %}
+                    <div class="col-md-6 col-lg-4 my-3">
+                        <div class="card hover_shadow">
+                            <div class="card-body">
+                                <span>Name</span>
+                                <h4>{{ level.name }}</h4>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+                     <div class="col-md-6 col-lg-4 my-3">
+                        <div class="card h-100 hover_shadow">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="loadModal()" data-target="#systemmodal">Add New Course</button>
+                            </div>
+                        </div>
+                     </div>
+
+            {% else %}
+                <div class="col-md-6 mx-auto">
+                <div class="alert alert-info text-center">
+                    <span class="fa fa-box-open fa-2x"></span>
+                    <h5>There no  level in the system yet!</h5>
+                    <hr>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="loadModal()" data-target="#systemmodal">Add New Course</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </div>
+
+    <section>
+    {% include 'base/modelFooterless.html' with modal_title=level_Mtitel m_form=level_form %}>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+        function loadModal() {
+            $('#systemmodal').modal('show')
+        }
+    </script>
 {% endblock %}

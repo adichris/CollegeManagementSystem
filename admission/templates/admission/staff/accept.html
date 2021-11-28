@@ -1,27 +1,81 @@
 {% extends 'base/base.html' %}
+{% load institution_extra %}
+{% load static %}
 {% block container %}
     <div class="container">
+    {% if back_url %}
     <div class="row">
         <div class="col-auto">
             <a href="{{ back_url }}" class="btn btn-light shadow-sm" onclick="spinBack(this)"><span class="fa fa-chevron-left"></span> back</a>
         </div>
     </div>
+    {% endif %}
         <div class="row my-4">
             <div class="col-auto mx-auto">
-                <h4>Accept Student Admission Form</h4>
+                <h4 class="text-success">{% filter title %}
+                    Student Has been Successfully Admitted
+                {% endfilter %}</h4>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row my-4">
+            <div class="col-md-6 mx-auto">
                 <div class="card">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <tr>
-                                <td></td>
-                            </tr>
-                        </table>
+                    <div class="card-body text-center">
+                        <span>Programme Given</span>
+                        <h4>{{ student.programme }}</h4>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col-md-auto mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><img src="{% static 'favicon.png' %}" style="height: 4em;" class="img-fluid" alt="{% institutionFullName %} logo"></td>
+                            <td>{% institutionFullName as INS %}
+                                <h4 class="text-center">{{ INS|upper }}</h4>
+                                <h5 class="bg-success rounded-pill text-center text-white">STUDENT IDENTITY CARD</h5>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>First Name</span>
+                                <h4>{{ student.profile.first_name|upper }}</h4>
+                                <hr>
+                                <span>Last Name</span>
+                                <h4>{{ student.profile.last_name|upper }}</h4>
+                                <hr>
+                                <span>Programme</span>
+                                <h4 class="text-center">{{ student.programme|upper }}</h4>
+                                <hr>
+                                <span>Index Number</span>
+                                <h4>{{ student.index_number|default_if_none:'----' }}</h4>
+                            </td>
+                            <td class="d-flex justify-content-end">
+                                <img src="{{ student.profile.picture.url }}" class="img-fluid" style="height: 19em" alt="{{ student.profile.get_full_name }} picture">
+                            </td>
+                        </tr>
+                    </table>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <span><img src="{{ student.profile.address.country.flag }}"> {{ student.profile.address.country.name }}</span>
+                        <a href="tel:{{ student.profile.phone_number  }}">Tel:{{ student.profile.phone_number }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 mx-auto">
+{#                <a href="#" class="btn btn-danger btn-lg w-100">Terminate Admission</a>#}
+                <button type="button" class="btn btn-danger btn-lg w-100" data-bs-container="body" data-bs-toggle="popover"
+                        data-bs-placement="top"
+                        data-bs-content="Admission Termination program is under development"
+                        data-bs-original-title="" title="" aria-describedby="popoverTerminateAdmission">
+                    Terminate Admission
+                </button>
             </div>
         </div>
     </div>

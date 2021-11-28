@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404, redirect, reverse, render
-from django.views.generic import RedirectView, View, DetailView
+from django.views.generic import RedirectView, View, DetailView, TemplateView
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Permission, Group
 from django.forms import modelformset_factory
 from django.db import IntegrityError
+from INSTITUTION.utils import get_not_allowed_render_response
+
 
 from accounts.models import User
 from .models import (
@@ -214,27 +216,24 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
                                      })
         try:
             if formset.is_valid():
-                ecr_instances = formset.save(True)
-                # for ecr_instance in ecr_instances:
-                #     ecr_instance.certificate_id = self.certificate_object.id
-                #     ecr_instance.save()
-                # for form2delete in formset.deleted_forms:
-                #     form2delete.delete()
+                ecr_instances = formset.save(False)
+                for ecr_instance in ecr_instances:
+                    ecr_instance.certificate_id = self.certificate_object.id
+                    ecr_instance.save()
+                for form2delete in formset.deleted_forms:
+                    del form2delete
                 admission_form = self.certificate_object.student.admission_form
                 admission_form.status = FormStatusChoice.AT_EDUCATION
                 admission_form.save()
                 return redirect('Student:admission-redirect',
                                 serial_number=admission_form.serial_number)
-        except IntegrityError:
+        except IntegrityError as err:
             non_field_errors = formset.get_form_error()
+            if non_field_errors:
+                return self.get(request, *args, **kwargs)
             context['integrityError'] = f"""
                 There are some duplication or repeated entries in your form,
                 check and try again <br/>
-                <ul>
-                    <li>examination type</li>
-                    <li>examination year</li>
-                    <li>subject</li>
-                </ul>
                 <p>{non_field_errors}</p>
                 """
 
@@ -323,5 +322,15 @@ class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, Detai
         ctx['subtitle'] = 'You have successful completed'
         return ctx
 
+
+class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
+    template_name = 'student/staff/template.html'
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            return super(StaffStudentTemplateView, self).get(request, *args, **kwargs)
+        else:
+            return get_not_allowed_render_response(request)
+    
 
 # TODO CHECK ADMISSION STATUS does not allow edit edited redirect to appropriate admission error page

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.dispatch import receiver
 from django.shortcuts import reverse
-
+from django.utils.translation import gettext_lazy as _
 from department.models import Department
 
 
@@ -20,15 +20,16 @@ class ProgrammeManager(models.Manager):
 class Programme(models.Model):
     name = models.CharField(max_length=200, unique=True)
     department = models.ForeignKey(on_delete=models.CASCADE, to=Department, related_name='department',
-                                   help_text='programmes\'s department')
+                                   help_text=_('programmes\'s department'))
     slug = models.SlugField(unique=True)
+    max_student = models.IntegerField(null=True, help_text=_('The maximum student this programme can take for a particular level'))
     objects = ProgrammeManager()
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ('name', 'id')
+        order_with_respect_to = 'department'
         db_table = 'programme'
 
     def get_absolute_url(self):

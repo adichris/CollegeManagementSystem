@@ -18,6 +18,7 @@ from .views import (
     FormTypeModelListView,
     FormTypeModeDetailView,
     FormTypeModelChangeView,
+    HandleAdmissionExceptions,
 )
 
 
@@ -27,6 +28,7 @@ student_admission_urlpatterns = [
     path('login/<int:formtypeid>/', StudentFormLoginTemplateView.as_view(), name='login'),
     path('printforms/', StudentFormsPrintView.as_view(), name='stu_print_form'),
     path('submitforms/', StudentFormSubmitView.as_view(), name='stu_submit_form'),
+    path('exceptionhandle/', HandleAdmissionExceptions.as_view(), name='handle_exceptions'),
 ]
 
 staff_urlpatterns = [
@@ -35,7 +37,7 @@ staff_urlpatterns = [
     path('add/', AdmissionFormCreateView.as_view(), name='create'),
     path('change/<str:serial_number>/<int:id>/', AdmissionFormChangeView.as_view(), name='change'),
     path('formsdetails/<str:serial_number>/<int:id>/', StudentFormsDetailView.as_view(), name='form_details'),
-    path('acceptform/<str:serial_number>/<int:id>/', StudentFormsAcceptView.as_view(), name='reject_form'),
+    path('acceptform/<str:serial_number>/<int:id>/', StudentFormsAcceptView.as_view(), name='accept_form'),
     path('detail/<str:serial_number>/', AdmissionFormDetailView.as_view(), name='detail'),
     path('generatebatch/', AdmissionCreateBatchFormsView.as_view(), name='create_batch'),
     path('generatebatch/completed/', AdmissionBatchCreatedView.as_view(), name='batch_job_result'),

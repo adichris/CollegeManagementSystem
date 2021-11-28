@@ -1,6 +1,7 @@
 import datetime
 import os
 from django.db import models
+from django.core.validators import FileExtensionValidator
 
 from accounts.models import User
 from admission.models import StudentForms
@@ -17,6 +18,7 @@ class Student(models.Model):
     admission_form = models.OneToOneField(StudentForms, related_name='student_admission_form',
                                           on_delete=models.CASCADE, unique=True)
     index_number = models.CharField(null=True, blank=True, max_length=60)
+    programme = models.ForeignKey(Programme, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.profile)

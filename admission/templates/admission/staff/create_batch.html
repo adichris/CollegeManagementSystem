@@ -24,3 +24,18 @@
         </div>
     </div>
 {% endblock %}
+
+{% block scripts %}
+    {% if wrap2flex %}
+    <script>
+        function flexGrow(htmlElement) {
+            for (let n=0; n<htmlElement.children.length; n++){
+                        htmlElement.children[n].classList.add('flex-grow-1');
+            }
+        }
+        flexGrow(document.getElementById('wrap2flex1'));
+        flexGrow(document.getElementById('wrap2flex2'));
+        flexGrow(document.getElementById('wrap2flex3'));
+    </script>
+    {% endif %}
+{% endblock %}

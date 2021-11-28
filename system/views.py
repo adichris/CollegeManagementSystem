@@ -1,14 +1,15 @@
-from django.shortcuts import reverse, get_object_or_404
+from django.shortcuts import reverse, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView
 from django.contrib.auth.models import Permission,  Group
-from django.contrib.contenttypes.models import ContentType
+
 # Create your views here.
 from INSTITUTION.views import JsonResponseMixin
-from .models import SemesterModel
+from .models import SemesterModel, Level
 from .forms import (
     SemesterCreationForm,
-    GroupCreationForm
+    GroupCreationForm,
+    LevelCreationForm
 )
 
 
@@ -57,16 +58,36 @@ class SemesterAcademicYearView(LoginRequiredMixin, PermissionRequiredMixin, List
     template_name = 'system/semesteracademicyear.html'
     model = SemesterModel
     permission_required = 'system.view_semestermodel'
+    level_form = LevelCreationForm
 
     def get_context_data(self, **kwargs):
         ctx = super(SemesterAcademicYearView, self).get_context_data(**kwargs)
         ctx['title'] = 'Semester and Academic Years'
         ctx['academic_year'] = self.get_academic_year()
+        ctx['levels'] = self.get_levels()
+        ctx['level_Mtitel'] = self.get_course_modal_title()
+        ctx['level_form'] = self.level_form(self.request.POST or None)
+
         return ctx
 
     def get_academic_year(self):
         # return (CURRENT, NEXT) academic_semester
         return '2021 / 2022', '2022 / 2023'
+
+    def get_levels(self):
+        return Level.objects.all()
+
+    def get_course_modal_title(self):
+        return 'Add Level'
+
+    def post(self, request, *args, **kwargs):
+        level_form = self.level_form(request.POST)
+        self.object_list = self.model.objects.all()
+        if level_form.is_valid():
+            level_instance = level_form.save(True)
+        ctx = self.get_context_data()
+        ctx['level_form'] = level_form
+        return render(request, self.template_name, ctx)
 
 
 class PermissionGroupListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
@@ -85,3 +106,8 @@ class PermissionGroupCreate(PermissionRequiredMixin, LoginRequiredMixin, JsonRes
     model = Group
     form_class = GroupCreationForm
     template_name = 'system/'
+
+
+class LevelCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = 'system.add_level'
+    template_name = 'system/level/staff/add.html'

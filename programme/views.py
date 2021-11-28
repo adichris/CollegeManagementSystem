@@ -4,6 +4,7 @@ from django.shortcuts import reverse
 from django.core.exceptions import FieldDoesNotExist
 
 from .forms import Programme, ProgrammeCreationForm
+from course.models import Course
 from .models import Department
 
 
@@ -98,6 +99,8 @@ class ProgrammeDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
         ctx['title'] = '%s Programme' % self.object.name
         ctx['backname'] = self.get_back_name()
         ctx['backurl'] = self.get_back_url()
+        ctx['programme_courses'] = self.get_programme_courses()
+        ctx['students'] = self.get_students()
         return ctx
 
     def get_back_url(self):
@@ -111,6 +114,12 @@ class ProgrammeDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
             return self.request.GET.get('backname') or self.object.department.name
         except FieldDoesNotExist:
             return 'Programmes'
+
+    def get_programme_courses(self):
+        return Course.objects.get_for_programme(self.object.id)
+
+    def get_students(self):
+        return
 
 
 class ProgrammeUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

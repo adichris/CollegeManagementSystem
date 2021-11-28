@@ -156,7 +156,7 @@
                             <tr>
                                 <td colspan="6">
                                     <b>Specific Duty</b><br>
-                                    <p>{{ employment_history.specific_duty|default:'---' }}</p>
+                                    <p>{{ employment_history.specific_duty|safe|default:'---' }}</p>
                                 </td>
                             </tr>
                             <tr>
@@ -171,7 +171,6 @@
                                 <th>Why Leave</th>
                                 <td colspan="5">{{ employment_history.why_leave|default:'---' }}</td>
                             </tr>
-
                         </table>
                     </div>
                 {% else %}
@@ -257,8 +256,6 @@
                         </tr>
                     </table>
                 </div>
-
-
             </div>
 
         </div>

@@ -1,9 +1,11 @@
 from django import forms
-from .models import StudentForms, AcademicYear, FormTypeChoicesModel
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions, StrictButton
-from crispy_forms.layout import Div
+from crispy_forms.layout import Div, Fieldset
+
+from .models import StudentForms, AcademicYear, FormTypeChoicesModel
 from CollegeManagementSystem.validation import validate_alphanumberic_space
+from student.models import StudentProgrammeChoice
 
 
 class AdmissionLoginForm(forms.Form):
@@ -72,9 +74,9 @@ class AdmissionFromBatchCreation(forms.Form):
                 css_class='d-flex justify-content-end'
             )
         )
-        helper[:2].wrap_together(Div, css_class='d-flex flex-column flex-md-row gap-3')
-        helper[1:3].wrap_together(Div, css_class='d-flex flex-column flex-md-row gap-3')
-        helper[3:5].wrap_together(Div, css_class='d-flex flex-column flex-md-row gap-3')
+        helper[:2].wrap_together(Div, css_class='d-flex flex-column flex-md-row gap-3', css_id='wrap2flex1')
+        helper[1:3].wrap_together(Div, css_class='d-flex flex-column flex-md-row gap-3', css_id='wrap2flex2')
+        helper[3:5].wrap_together(Div, css_class='d-flex flex-column flex-md-row gap-3', css_id='wrap2flex3')
         helper.all().update_attributes(css_class='flex-grow-1')
         return helper
 
@@ -131,4 +133,34 @@ class FormTypeChoicesModelCreationForm(forms.ModelForm):
                 css_class='d-flex justify-content-end'
             )
         )
+        return helper
+
+
+class AcceptanceConfirmationForm(forms.ModelForm):
+    Select_programme_for_student = forms.ChoiceField(widget=forms.RadioSelect)
+
+    class Meta:
+        model = StudentProgrammeChoice
+        fields = ('Select_programme_for_student', )
+
+    def __init__(self, *args, **kwargs):
+        super(AcceptanceConfirmationForm, self).__init__(*args, **kwargs)
+        instance = kwargs['instance']
+        self.fields['Select_programme_for_student'].choices = [
+            (instance.first_choice.id, instance.first_choice),
+            (instance.second_choice.id, instance.second_choice),
+            (instance.third_choice.id, instance.third_choice),
+        ]
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout.append(
+            FormActions(
+                StrictButton('Reset', type='reset'),
+                StrictButton('Confirm', type='submit', css_class='btn-primary'),
+                css_class='d-flex justify-content-end'
+            )
+        )
+        helper[0].wrap(Fieldset, 'Programme Choices')
         return helper

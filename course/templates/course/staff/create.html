@@ -1,0 +1,16 @@
+{% extends 'base/admin/create.html' %}
+
+{% block scripts %}
+    <script>
+        let nameCodeElm = document.getElementById('IDnameCode');
+        nameCodeElm.children[0].classList.add('flex-grow-1');
+        {#for (let n=0; n <nameCodeElm.children.length; n++){#}
+        {#    nameCodeElm.children[n].classList.add('flex-grow-1');#}
+        {# } #}
+
+        let descriptionElm = document.getElementById('div_{{ form.description.id_for_label }}');
+        for (let n=0; n<descriptionElm.children.length; n++){
+            descriptionElm.children[n].classList.add('d-block')
+        }
+    </script>
+{% endblock %}

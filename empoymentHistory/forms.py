@@ -33,15 +33,15 @@ class EmploymentHistoryCreationForm(forms.ModelForm):
         helper.form.novalidate = True
         return helper
 
-    def clean_has_history(self):
-        has_hist = self.cleaned_data.get('has_history')
-        has_data = self.cleaned_data.get('company_name') or self.cleaned_data.get('employed_from') or self.cleaned_data.get('why_leave')
-        if has_hist and not has_data:
-            raise forms.ValidationError('You need to provide us details of your employment history')
-        if not has_hist and has_data:
-            raise forms.ValidationError('Clear all entries before you uncheck this*')
-
-        return has_hist
+    # def clean_has_history(self):
+    #     has_hist = self.cleaned_data.get('has_history')
+    #     has_data = self.cleaned_data.get('company_name') or self.cleaned_data.get('employed_from') or self.cleaned_data.get('why_leave')
+    #     if has_hist and not has_data:
+    #         raise forms.ValidationError('You need to provide us details of your employment history')
+    #     if not has_hist and has_data:
+    #         raise forms.ValidationError('Clear all entries before you uncheck this*')
+    #
+    #     return has_hist
 
     def clean_address(self):
         has_hist = self.cleaned_data.get('has_history')

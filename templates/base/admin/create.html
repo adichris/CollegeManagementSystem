@@ -5,9 +5,14 @@
     <div class="container">
         {% if object and object.get_absolute_url or back_url %}
         <div class="row my-3">
-            <div class="col">
+            <div class="col-auto">
                 <a href="{{ object.get_absolute_url|default:back_url }}" onclick="spinBack(this)" class="btn btn-light shadow-sm"><span class="fa fa-chevron-left me-2"></span> back</a>
             </div>
+            {% if topheader %}
+            <div class="col-auto mx-auto">
+                <h4>{{ topheader }}</h4>
+            </div>
+                {% endif %}
         </div>
             <hr>
          {% endif %}

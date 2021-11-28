@@ -1,15 +1,22 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import (
     StudentAdmissionRedirectView,
     StudentProgrammeSelectionView,
     AdmissionCertificateExaminationView,
     StudentPreviousEducationChangeView,
-    StudentAdmissionDetails
+    StudentAdmissionDetails,
+    StaffStudentTemplateView,
 )
 
 app_name = 'Student'
+
+staff_urlpatterns = [
+    path('', StaffStudentTemplateView.as_view(), name='staff_home'),
+]
+
 urlpatterns = [
+    path('staff/', include(staff_urlpatterns)),
     path('admissionredirect/<str:serial_number>', StudentAdmissionRedirectView.as_view(),
          name='admission-redirect'),
     path('programmechoices/', StudentProgrammeSelectionView.as_view(), name='programmes_choices'),

@@ -23,10 +23,15 @@ class StudentProfileCreateView(View):
                         )
 
     def get_context_data(self):
+        try:
+            steps = get_admission_steps(self.request.user.student_profile.admission_form.status)
+        except AttributeError:
+            steps = (1, )
         return {
             "step": 1,
             "subtitle": 'Personal Information',
-            "steps": get_admission_steps(self.request.user.student_profile.admission_form.status),
+            "steps": steps,
+            'serial_number': self.kwargs['serial_number'],
         }
 
     def get_initial(self):
@@ -67,7 +72,7 @@ class StudentProfileCreateView(View):
             StudentForms,
             serial_number=self.kwargs["serial_number"]
         )
-        if not admission_form.status or admission_form.status in (FormStatusChoice.AT_PROFILE or FormStatusChoice.NEW):
+        if not admission_form.status or admission_form.status == FormStatusChoice.NEW:
             admission_form.status = FormStatusChoice.AT_ADDRESS
             admission_form.save()
         return admission_form

@@ -9,7 +9,7 @@
 
     {% elif user.is_non_teaching_staff %}
 
-    {% elif user.is_studentApplying %}
+    {% elif user.is_authenticated %}
         {% include 'base/admission/userMiniMenu.html' %}
     {% else %}
         <a href="{% url 'Home:login' %}" class="btn btn-primary" onclick="dynamicSpinner(this)">Login <span class="fa fa-sign-in-alt"></span></a>

@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     'programme',
     'dashboard',
     'system',
+    'course',
+    'lecture',
+
 ]
 
 MIDDLEWARE = [
@@ -151,8 +154,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # College Name in full and short form or short name
-COLLEGE_FULL_NAME = 'The University Development'
-COLLEGE_SHORT_NAME = 'TUD'
+COLLEGE_FULL_NAME = 'University Of The People'
+COLLEGE_SHORT_NAME = 'UOP'
 
 INSTITUTION_FULL_NAME = COLLEGE_FULL_NAME
 INSTITUTION_SHORT_NAME = COLLEGE_SHORT_NAME

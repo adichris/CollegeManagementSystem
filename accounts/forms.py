@@ -3,8 +3,7 @@ from .models import User
 from django.contrib.auth.password_validation import MinimumLengthValidator
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Button, Fieldset
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.layout import Submit
 
 
 MINIMUM_USER_AGE = 10
@@ -59,26 +58,15 @@ class UserProfileForm(forms.ModelForm):
     def helper(self):
         helper = FormHelper()
         helper.add_input(Submit('save', 'Save Changes'))
-        # helper.layout = Layout(
-        #     Fieldset(
-        #         'Personal Information'
-        #     ),
-        #     FormActions(
-        #         Button('reset', 'Reset'),
-        #         Submit('save', 'Save Changes'),
-        #     )
-        # )
         return helper
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
         a, b = PASSPORT_PICTURE_SIZE
         file_size = a * b
-        if picture.size > file_size :
+        if picture.size > file_size:
             from django.template.defaultfilters import filesizeformat
-            f_sizes = (filesizeformat(file_size), filesizeformat(picture.size))
-            raise forms.ValidationError('Your passport picture picture size should be less than %. You uploaded %s ',
-                                        f_sizes)
+            raise forms.ValidationError(f'Your passport picture picture size should be less than {filesizeformat(file_size)}. You uploaded {filesizeformat(picture.size)} ')
         # from PIL import Image
         # picture.image.resize(PASSPORT_PICTURE_SIZE, Image.ANTIALIAS)
         return picture
@@ -90,7 +78,7 @@ class UserProfileForm(forms.ModelForm):
         student_age = to_year - dob.year
         student_year = dob.year
         if student_year >= to_year or student_age <= MINIMUM_USER_AGE:
-            raise forms.ValidationError('You can not be %s years old. we are in %s' % (student_age, to_year))
+            raise forms.ValidationError('You are too young(%s years old) to apply for admission in this year %s' % (student_age, to_year))
         return dob
 
 

@@ -1,9 +1,13 @@
 import datetime
 from django.db.models import TextChoices
+from django.http.response import Http404
+from django.shortcuts import render
 
 
 def get_admission_steps(admission_status):
     from admission.models import FormStatusChoice
+    if admission_status in (FormStatusChoice.SUBMITTED, FormStatusChoice.ACCEPTED, FormStatusChoice.REJECTED):
+        raise Http404('You can not edit your admission form again!')
     if FormStatusChoice.AT_PROFILE == admission_status:
         return 1,
     elif admission_status == FormStatusChoice.AT_ADDRESS:
@@ -18,6 +22,8 @@ def get_admission_steps(admission_status):
         return range(1, 7)
     elif admission_status == FormStatusChoice.AT_EDUCATION:
         return range(1, 8)
+    elif admission_status == FormStatusChoice.COMPLETED:
+        return range(1, 9)
     return 1,
 
 
@@ -48,3 +54,10 @@ class AcademicYear:
 class SemesterChoice(TextChoices):
     SEMESTER_1 = 'First Semester', 's1'
     SEMESTER_2 = 'Second Semester', 's2'
+
+
+def get_not_allowed_render_response(request, message="Your not allowed to access this page because of your profile"):
+    return render(request, "institution/status_not_allowed.html", {
+        "reason": message,
+        'back_url': request.GET.get('back')
+    })

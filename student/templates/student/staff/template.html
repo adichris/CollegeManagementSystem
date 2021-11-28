@@ -1,0 +1,79 @@
+{% extends 'base/admin/base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <div class="col-auto mx-auto">
+                <h4 class="display-6">STUDENTS</h4>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col">
+                <form method="get" action="" class="shadow-sm">
+                    <div class="input-group">
+                        <input type="search" name="qstudent" id="" class="form-control" placeholder="Search any student by; name, identity, index number, phone number">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/student_male.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Add Student' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/new_students.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='New Admitted Students' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/canvas_Student.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='All Students' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/school.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Student By Department' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/curriculum.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Student By Programme' %}
+            </div>
+
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/google_classroom.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Continuous Students' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/old_student.svg' as stu_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Old Students' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/parliament.svg' as parliament_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=parliament_src label='Student Representative Council (SRC)' %}
+            </div>
+
+        </div>
+
+        <div class="row my-4">
+            <hr>
+        </div>
+        <div class="row my-4">
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/course.svg' as course_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=course_src label='Student By Course' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/Summary_List.svg' as sum_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=sum_src label='Student By Level' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/search_property.svg' as filter_Src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=filter_Src label='Filter Student' %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

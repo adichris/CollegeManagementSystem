@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, ListView, DetailView,  CreateView, UpdateView, View
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.http.response import HttpResponseForbidden, Http404
+from django.http.response import HttpResponseForbidden
 
 from .generate_serial_number import SerialNumberGenerator
 from .models import (
@@ -24,6 +24,7 @@ from .form import (
     StudentFormsChange,
     AdmissionFromBatchCreation,
     FormTypeChoicesModelCreationForm,
+    AcceptanceConfirmationForm
 )
 
 from CollegeManagementSystem.settings import INSTITUTION_FULL_NAME
@@ -58,6 +59,7 @@ class AdmissionFormChangeView(PermissionRequiredMixin, LoginRequiredMixin, Updat
         ctx = super(AdmissionFormChangeView, self).get_context_data(**kwargs)
         ctx['header'] = 'Change Admission Form'
         ctx['title'] = 'Change Admission Form'
+        ctx['back_url'] = self.request.GET.get('back')
         return ctx
 
     def get_object(self, queryset=None):
@@ -171,6 +173,7 @@ class StudentFormsDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
     template_name = 'admission/admin/detail.html'
     permission_denied_message = 'You need permission to view student forms'
     model = StudentForms
+    acceptance_form = AcceptanceConfirmationForm
 
     def get_login_url(self):
         return reverse('Admission:main_template_page')
@@ -187,25 +190,37 @@ class StudentFormsDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
         ctx['programme_choices'] = self.get_programme_choices()
         ctx['previous_education'] = self.get_student_previous_education()
         ctx['can_audit_form'] = self.can_user_audit_forms()
+        ctx['acceptance_form'] = self.acceptance_form(self.request.POST or None, instance=self.get_programme_choices())
         return ctx
 
     def get_student_employment_history(self):
-        return get_object_or_404(
-            EmploymentHistoryModel,
+        return EmploymentHistoryModel.objects.filter(
             employee_id=self.object.student.profile_id
-        )
+        ).first()
 
     def get_student_sponsor(self):
-        return get_object_or_404(
-            StudentSponsor,
+        return StudentSponsor.objects.filter(
             student_id=self.object.student.id
-        )
+        ).first()
 
     def get_programme_choices(self):
-        return get_object_or_404(
-            StudentProgrammeChoice,
+        return StudentProgrammeChoice.objects.filter(
             student_id=self.object.student.id
-        )
+        ).first()
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        acceptance_form = self.acceptance_form(request.POST, instance=self.get_programme_choices())
+        if acceptance_form.is_valid():
+            programme_given = acceptance_form.cleaned_data['Select_programme_for_student']
+            student = self.object.student
+            student.programme_id = programme_given
+            student.save()
+            admission_form = self.object
+            admission_form.status = FormStatusChoice.ACCEPTED
+            admission_form.save()
+            return redirect('Admission:accept_form', serial_number=admission_form.serial_number, id=admission_form.id)
+        return self.get(request, *args, **kwargs)
 
     def get_back_url(self):
         return self.request.GET.get('back') or reverse('Admission:allforms')
@@ -224,18 +239,16 @@ class StudentFormsDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
         try:
             student_id = self.object.student.id
         except models.ObjectDoesNotExist:
-            raise Http404()
+            pass
         else:
-            return get_object_or_404(
-                AdmissionCertificate,
+            return AdmissionCertificate.objects.filter(
                 student_id=student_id
-            )
+            ).first()
 
     def get_student_previous_education(self):
-        return get_object_or_404(
-            StudentPreviousEducation,
+        return StudentPreviousEducation.objects.filter(
             student_id=self.object.student.id
-        )
+        ).first()
 
     def get_all_cert_records(self):
         self.certificate_object = self.get_student_certificate()
@@ -347,8 +360,16 @@ class StudentFormsAcceptView(LoginRequiredMixin, PermissionRequiredMixin, Detail
     def get_context_data(self, **kwargs):
         ctx = super(StudentFormsAcceptView, self).get_context_data(**kwargs)
         ctx['title'] = 'reject admission form'
-        ctx['back_url'] = self.request.GET.get('back')
+        ctx['back_url'] = self.request.GET.get('back') or reverse('Admission:form_details',
+                                                                  kwargs={
+                                                                      'serial_number': self.object.serial_number,
+                                                                      'id': self.object.id
+                                                                  })
+        ctx['student'] = self.get_student()
         return ctx
+
+    def get_student(self):
+        return self.object.student
 
 
 class AdmissionFormDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -376,7 +397,8 @@ class AdmissionCreateBatchFormsView(LoginRequiredMixin, PermissionRequiredMixin,
 
     def get_context_data(self, **kwargs):
         return {
-            'title': 'Admission Batch Creation'
+            'title': 'Admission Batch Creation',
+            'wrap2flex': True
         }
 
     def get(self, request, *args, **kwargs):
@@ -520,6 +542,23 @@ class FormTypeModeDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
         ctx['title'] = '%s Detail' % self.object
         ctx['back_url'] = self.request.GET.get('back') or reverse('Admission:form_type_list')
         return ctx
+
+
+class HandleAdmissionExceptions(LoginRequiredMixin, TemplateView):
+    template_name = 'admission/student/exception.html'
+
+    def get_login_url(self):
+        return reverse('Admission:main_template_page')
+
+    def get_context_data(self, **kwargs):
+        ctx = super(HandleAdmissionExceptions, self).get_context_data(**kwargs)
+        ctx['title'] = 'Admission Exception'
+        ctx['admission_form'] = self.get_admission_form()
+
+        return ctx
+
+    def get_admission_form(self):
+        return get_object_or_404(StudentForms, serial_number=self.request.user.identity)
 
 # TODO create grading algorithm to auto grade student and picked student and auto assigned programme
 # TODO create admission for on purchase. Only generate admission form on purchase for a particular programme

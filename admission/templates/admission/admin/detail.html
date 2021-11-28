@@ -1,5 +1,5 @@
 {% extends 'base/admin/base.html' %}
-
+{% load crispy_forms_tags %}
 {% block container %}
     <div class="container">
         <div class="row my-3 my-xl-4">
@@ -134,42 +134,42 @@
             </div>
             <div class="col-12">
                 <hr>
-                <h6>Student Employment History: <span class="badge bg-primary"><span class="h5">{{ employment_history.has_history|yesno|title }}</span></span></h6>
-                {% if not employment_history.has_history %}
+                <h6>Student Employment History: <span class="badge bg-primary"><span class="h5">{{ employment_history.has_history|yesno|title|default_if_none:'---' }}</span></span></h6>
+                {% if not employment_history.has_history or not employment_history.job_title %}
                     <small>This student has no employment history</small>
                 {% endif %}
                 <div class="table-responsive">
-                    <table class="table {% if not employment_history.has_history %} table-secondary {% endif %}">
+                    <table class="table">
                     <tr>
                         <th>Job</th>
-                        <td>{{ employment_history.job_title|upper }}</td>
+                        <td colspan="3">{{ employment_history.job_title|upper|default_if_none:'---' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Specific Duty</th>
+                        <td colspan="3">{{ employment_history.specific_duty|safe|default_if_none:'---' }}</td>
+                    </tr>
+                    <tr>
                         <th>Company Name</th>
-                        <td>{{ employment_history.company_name|upper }}</td>
-                    </tr>
-                    <tr>
-                        <th colspan="2">Specific Duty</th>
-                        <td colspan="2">{{ employment_history.specific_duty|safe }}</td>
-                    </tr>
-                    <tr>
-                        <th colspan="2">Address</th>
-                        <td colspan="2">{{ employment_history.address|upper }}</td>
+                        <td>{{ employment_history.company_name|upper|default_if_none:'---' }}</td>
+                        <th>Address</th>
+                        <td>{{ employment_history.address|upper|default_if_none:'---'  }}</td>
                     </tr>
                     <tr>
                         <th>State, City</th>
-                        <td>{{ employment_history.state|upper }},
-                        {{ employment_history.city|upper }}</td>
+                        <td>{{ employment_history.state|upper|default_if_none:'---'  }},
+                        {{ employment_history.city|upper|default_if_none:'---' }}</td>
                         <th>Supervisor</th>
-                        <td>{{ employment_history.supervisor|upper }}</td>
+                        <td>{{ employment_history.supervisor|upper|default_if_none:'---'  }}</td>
                     </tr>
                     <tr>
                         <th>Employed From</th>
-                        <td>{{ employment_history.employed_from }}</td>
+                        <td>{{ employment_history.employed_from|default_if_none:'---'  }}</td>
                         <th>Employed To</th>
-                        <td>{{ employment_history.employed_to }}</td>
+                        <td>{{ employment_history.employed_to|default_if_none:'---' }}</td>
                     </tr>
                     <tr>
-                        <th colspan="2">Why leave</th>
-                        <td colspan="2">{{ employment_history.why_leave }}</td>
+                        <th>Why leave</th>
+                        <td colspan="3">{{ employment_history.why_leave|default_if_none:'---' }}</td>
                     </tr>
                 </table>
                 </div>
@@ -186,31 +186,31 @@
                 <table class="table">
                     <tr>
                         <th>Name</th>
-                        <td>{{ sponsor.name|upper }}</td>
+                        <td>{{ sponsor.name|upper|default_if_none:'---' }}</td>
                         <th>Email</th>
-                        <td>{{ sponsor.email|upper }}</td>
+                        <td>{{ sponsor.email|upper|default_if_none:'---' }}</td>
                     </tr>
                     <tr>
                         <th>Phone Number</th>
-                        <td>{{ sponsor.phone_number }}</td>
+                        <td>{{ sponsor.phone_number|default_if_none:'---' }}</td>
                         <th>City</th>
-                        <td>{{ sponsor.city|upper }}</td>
+                        <td>{{ sponsor.city|upper|default_if_none:'---'  }}</td>
                     </tr>
                     <tr>
                         <th>State</th>
-                        <td>{{ sponsor.state|upper }}</td>
+                        <td>{{ sponsor.state|upper|default_if_none:'---'  }}</td>
                         <th>Address</th>
-                        <td>{{ sponsor.address|upper }}</td>
+                        <td>{{ sponsor.address|upper|default_if_none:'---' }}</td>
                     </tr>
                     <tr>
                         <th>Relationship</th>
-                        <td>{{ sponsor.relationship|upper }}</td>
+                        <td>{{ sponsor.relationship|upper|default_if_none:'---' }}</td>
                         <th>Scholarship</th>
-                        <td>{{ sponsor.scholarship|upper }}</td>
+                        <td>{{ sponsor.scholarship|upper|default_if_none:'---' }}</td>
                     </tr>
                     <tr>
-                        <th colspan="2">Government Sponsorship</th>
-                        <td colspan="2">{{ sponsor.on_government_support|yesno|upper }}</td>
+                        <th>Government Sponsorship</th>
+                        <td>{{ sponsor.on_government_support|yesno|upper|default_if_none:'---' }}</td>
                     </tr>
 
                 </table>
@@ -228,15 +228,15 @@
                 <table class="table">
                     <tr>
                         <th colspan="2">First Choice</th>
-                        <td colspan="2">{{ programme_choices.first_choice }}</td>
+                        <td colspan="2">{{ programme_choices.first_choice|default_if_none:'---'  }}</td>
                     </tr>
                     <tr>
                         <th colspan="2">Second Choice</th>
-                        <td colspan="2">{{ programme_choices.second_choice }}</td>
+                        <td colspan="2">{{ programme_choices.second_choice|default_if_none:'---'  }}</td>
                     </tr>
                     <tr>
                         <th colspan="2">Third Choice</th>
-                        <td colspan="2">{{ programme_choices.third_choice }}</td>
+                        <td colspan="2">{{ programme_choices.third_choice|default_if_none:'---' }}</td>
                     </tr>
                 </table>
                 </div>
@@ -313,26 +313,67 @@
                             <td>{{ studentforms.updated_at }}</td>
                         </tr>
                         </table>
-                    {% if can_audit_form and not studentforms.is_locked %}
+                    {% if can_audit_form and not studentforms.is_locked and studentforms.has_submitted %}
                         <div class="d-print-none">
-                            <div class="d-flex flex-column flex-md-row justify-content-between gap-3 my-3">
-                                <div class="flex-grow-1">
-                                    <a href="#" class="btn btn-danger w-100" itemref=""><span class="fa fa-times me-2"></span>REJECT</a>
-                                </div>
-                                <div class=" flex-grow-1">
-                                    <a href="{% url 'Admission:reject_form' serial_number=studentforms.serial_number id=studentforms.id %}?back={{ request.path }}" class="btn btn-success w-100" target="blank" rel="noopener noreferrer"><span class="fa fa-check me-2"></span>CONTINUE ADMISSION</a>
-                                </div>
+                            <div class="d-flex justify-content-between gap-3 my-3">
+                                <button class="btn btn-danger w-50" onclick="openRejectModal()"><span class="fa fa-times me-2"></span>REJECT</button>
+                                <button onclick="openAcceptModal()" class="btn btn-success w-50"><span class="fa fa-check me-2"></span>CONTINUE ADMISSION</button>
                             </div>
                         </div>
                     {% elif studentforms.is_locked %}
-                        <div class="d-print-none d-flex justify-content-center" title="This form is locked for further modification, and editing">
+                        <div class="d-print-none d-flex flex-column justify-content-center gap-3 align-items-center" title="This form is locked for further modification, and editing">
                             <span class="fa fa-lock fa-3x text-warning"></span>
+                            <a href="{% url 'Admission:accept_form' serial_number=studentforms.serial_number id=studentforms.id %}?back={{ request.path }}" onclick="dynamicSpinner(this)">View</a>
+                        </div>
+                    {% elif not studentforms.has_submitted %}
+                        <div class="d-print-none d-flex flex-column justify-content-center gap-3 align-items-center" title="This form is locked for further modification, and editing">
+                            <span class="fa fa-circle-notch fa-3x fa-spin"></span>
+                            <h5>This Student has not submitted the admission forms yet</h5>
                         </div>
                     {% endif %}
+
+
                 </div>
             </div>
         </div>
     </div>
 
     </div>
+    
+    <section>
+        {% include 'base/modelFooterless.html' %}
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        let mdialog = $('#systemmodal');
+        let mtitle = document.getElementById('modalTitle');
+        let mbody = document.getElementById('m_body');
+        let msubtitle = document.getElementById('m_subtitle');
+        function openAcceptModal() {
+            mdialog.modal('toggle');
+            mtitle.innerText = 'Confirm Admission Acceptance';
+            mbody.innerHTML = `{% crispy acceptance_form %}`;
+        }
+
+        function openRejectModal() {
+            mdialog.modal('toggle');
+            mtitle.innerText = 'Confirm Admission Rejection';
+            mbody.innerHTML = `
+                <p>Reject student if the form falls within the following or any other</p>
+                <ul class="list-group list-group-flush">
+                   <li class="list-group-item list-group-item-danger">Student does not meet minimum require</li>
+                   <li class="list-group-item list-group-item-danger">Student form is inappropriate</li>
+                   <li class="list-group-item list-group-item-danger">Late Admission</li>
+                   <li class="list-group-item list-group-item-danger">Any other reason</li>
+                </ul>
+                <hr>
+                <form action="" method="post">
+                    <input type="hidden" name="rejectconfirm" value="1">
+                    <button type="submit" class="btn btn-warning w-100">Confirm Rejection</button>
+                </form>
+            `
+        }
+    </script>
 {% endblock %}
