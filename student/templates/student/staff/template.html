@@ -23,7 +23,8 @@
         <div class="row my-4">
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/student_male.svg' as stu_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Add Student' %}
+                {% url 'Student:staff_register' as register_url %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Add Student' link=register_url %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/new_students.svg' as stu_src %}

@@ -1,0 +1,18 @@
+{% extends 'base/admin/create.html' %}
+
+{% block info %}
+    <div class="row">
+        <div class="col-auto mx-auto">
+            <p class="display-6">Add Employment History</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        let specificDutyElm = document.getElementById('div_{{ form.specific_duty.id_for_label }}');
+        for (let n=0; n<specificDutyElm.children.length; n++){
+            specificDutyElm.children[n].classList.add('d-block');
+        }
+    </script>
+{% endblock %}

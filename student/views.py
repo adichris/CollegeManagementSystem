@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404, redirect, reverse, render
-from django.views.generic import RedirectView, View, DetailView, TemplateView
+from django.views.generic import RedirectView, View, DetailView, TemplateView, CreateView, UpdateView
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Permission, Group
 from django.forms import modelformset_factory
 from django.db import IntegrityError
-from INSTITUTION.utils import get_not_allowed_render_response
+from django.core.exceptions import ObjectDoesNotExist
 
-
+from INSTITUTION.utils import get_not_allowed_render_response, get_next_url
 from accounts.models import User
 from .models import (
     Student,
@@ -21,6 +21,7 @@ from .forms import (
     StudentProgrammeChoice,
     CertExamRecordForm,
     StudentPreviousEducationChangeForm,
+    StudentCreationForm,
 )
 from INSTITUTION.utils import get_admission_steps
 
@@ -166,20 +167,26 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
     template_name = 'student/admission/CertExamRecord.html'
 
     def get_context_data(self):
+        if not self.kwargs.get('index_number'):
+            steps = get_admission_steps(self.request.user.student_profile.admission_form.status)
+        else:
+            steps = None
         return {
-            'title': 'Certificate',
+            'title': 'Certificate Record',
             'subtitle': 'Certificate Records',
             'step': 6,
-            'steps': get_admission_steps(self.request.user.student_profile.admission_form.status),
+            'steps': steps,
             'serial_number': self.request.user.identity,
             'col_css_class': 'col-lg-11',
             'legend': 'Subject Form',
             'show_counter': True,
+            'back_url': self.request.GET.get('back'),
+
         }
     
     def get(self, request, *args, **kwargs):
         content = self.get_context_data()
-        content['formset'] = self.formset_class(
+        content[self.get_form_name()] = self.formset_class(
             queryset=self.get_cert_exam_record_queryset(),
             form_kwargs={
                 'certificate_id': self.certificate_object.id
@@ -187,9 +194,17 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
         )
         return render(
             request=request,
-            template_name=self.template_name,
+            template_name=self.get_template_name(),
             context=content,
         )
+
+    def get_form_name(self):
+        return 'formset'
+
+    def get_template_name(self):
+        if self.kwargs.get('index_number'):
+            return 'student/staff/add_certificate.html'
+        return self.template_name
 
     def get_cert_exam_record_queryset(self):
         return CertExamRecord.objects.filter(
@@ -197,13 +212,23 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
         )
 
     def get_certificate_object(self):
-        instance, created = AdmissionCertificate.objects.get_or_create(
-            student=Student.objects.get(profile=self.request.user),
-        )
+        self.student = self.get_student()
+        if self.student:
+            instance, created = AdmissionCertificate.objects.get_or_create(
+                student=self.student,
+            )
+        else:
+            self.student = get_object_or_404(Student, profile=self.request.user)
+            instance, created = AdmissionCertificate.objects.get_or_create(
+                student=self.student,
+            )
+
         self.certificate_object = instance
         return instance
 
     def get_login_url(self):
+        if self.get_student():
+            return reverse('Home:login')
         return reverse('Admission:main_template_page')
 
     def post(self, request, *args, **kwargs):
@@ -225,6 +250,8 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
                 admission_form = self.certificate_object.student.admission_form
                 admission_form.status = FormStatusChoice.AT_EDUCATION
                 admission_form.save()
+                if self.student:
+                    return redirect(get_next_url(request))
                 return redirect('Student:admission-redirect',
                                 serial_number=admission_form.serial_number)
         except IntegrityError as err:
@@ -237,8 +264,13 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
                 <p>{non_field_errors}</p>
                 """
 
-        context['formset'] = formset
-        return render(request, self.template_name, context)
+        context[self.get_form_name()] = formset
+        return render(request, self.get_template_name(), context)
+
+    def get_student(self):
+        index_number = self.kwargs.get('index_number')
+        if index_number:
+            return get_object_or_404(Student, index_number=index_number)
 
 
 class StudentPreviousEducationChangeView(LoginRequiredMixin, PermissionRequiredMixin, View):
@@ -331,6 +363,127 @@ class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
             return super(StaffStudentTemplateView, self).get(request, *args, **kwargs)
         else:
             return get_not_allowed_render_response(request)
-    
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffStudentTemplateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Students'
+        return ctx
+
+
+class StaffRegisterStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    permission_required = ('student.add_student', 'admission.add_studentform', 'accounts.add_user', 'address.add_address')
+    template_name = 'student/staff/register.html'
+    permission_denied_message = 'You need permission to add students profile, address, admission form'
+
+    def get_student(self):
+        return get_object_or_404(
+            Student,
+            index_number=self.kwargs['index_number'],
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffRegisterStudentDetailView, self).get_context_data(**kwargs)
+        self.student = self.get_student()
+        self.profile = self.get_profile()
+        ctx['title'] = 'Add Student'
+        ctx['back_url'] = self.request.GET.get('back')
+        ctx['index_number'] = self.student.index_number
+        ctx['has_profile'] = bool(self.profile)
+        ctx['profile_slug'] = self.profile.slug
+        ctx['has_address'] = self.has_address()
+        ctx['has_employment_history'] = self.has_employment_history()
+        ctx['has_sponsorship'] = self.has_sponsorship()
+        ctx['has_selected_programme'] = self.has_selected_programme()
+        ctx['has_cert'] = self.has_certificate()
+        ctx['disable_address'] = 'Student profile must be created first in other to add ADDRESS'\
+            if not ctx['has_profile'] else None
+        ctx['disable_employmenthistory'] = 'Student profile must be created first in other to add EMPLOYMENT HISTORY'\
+            if not ctx['has_profile'] else None
+        return ctx
+
+    def get_profile(self):
+        try:
+            return self.student.profile
+        except ObjectDoesNotExist:
+            return False
+
+    def has_address(self):
+        try:
+            return bool(self.student.profile.address)
+        except ObjectDoesNotExist:
+            return False
+
+    def has_employment_history(self):
+        try:
+            return bool(self.profile.employment_history)
+        except ObjectDoesNotExist:
+            return False
+
+    def has_sponsorship(self):
+        try:
+            return bool(self.student.student_sponsored)
+        except ObjectDoesNotExist:
+            return False
+
+    def has_selected_programme(self):
+        try:
+            return bool(self.student.programme_choices)
+        except ObjectDoesNotExist:
+            return False
+
+    def has_certificate(self):
+        try:
+            return self.student.cert_student.certificate_records.exists()
+        except ObjectDoesNotExist:
+            return False
+
+    def has_previous_education(self):
+        try:
+            return self.student.previous_education.exists()
+        except ObjectDoesNotExist:
+            return False
+
+
+class StaffStudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Student
+    template_name = 'student/staff/create.html'
+    form_class = StudentCreationForm
+    permission_denied_message = 'You need permission to add student'
+    permission_required = 'student.add_student'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffStudentCreateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Register Student'
+        ctx['header'] = 'Register Student'
+        ctx['back_url'] = self.request.GET.get('back')
+        return ctx
+
+    def get_success_url(self):
+        return reverse('Student:staff_register_student', kwargs={'index_number':self.object.index_number})
+
+
+class StaffStudentUpdateIndexNumProgrammeUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Student
+    template_name = 'student/staff/create.html'
+    form_class = StudentCreationForm
+    permission_required = 'student.change_student'
+    permission_denied_message = 'You need permission to change student'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffStudentUpdateIndexNumProgrammeUpdateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Student Index number, and Programme'
+        ctx['isto_update'] = True
+        ctx['back_url'] = self.request.GET.get('back')
+        return ctx
+
+    def get_success_url(self):
+        return get_next_url(self.request) or super(StaffStudentUpdateIndexNumProgrammeUpdateView, self).get_success_url()
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            self.model,
+            index_number=self.kwargs['index_number']
+        )
+
 
 # TODO CHECK ADMISSION STATUS does not allow edit edited redirect to appropriate admission error page

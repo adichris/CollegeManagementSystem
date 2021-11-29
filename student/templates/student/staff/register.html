@@ -1,0 +1,66 @@
+{% extends 'base/admin/base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container">
+        {% if back_url %}
+            <div class="row my-2">
+                <div class="col-auto">
+                    <a href="{{ back_url }}" class="btn shadow-sm" onclick="spinBack(this)"><span class="fa fa-chevron-left"></span> back</a>
+                </div>
+            </div>
+        {% endif %}
+        <div class="row my-4">
+            <div class="col-auto mx-auto text-center">
+                <h4>Complete Student Registration</h4>
+                <p>Some forms requires others to be created before, so create them as they are ordered</p>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col-auto mx-auto">
+                <h4>{% filter title %} Fill the following forms {% endfilter %}</h4>
+            </div>
+        </div>
+        <div class="row my-4">
+             <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/student/profile.svg' as profile_src %}
+                 {% url 'Accounts:create_student_profile' index_number=index_number as profile_url %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Profile' img_src=profile_src link=profile_url show_check=has_profile %}
+            </div>
+             <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/student/contacts.svg' as img_src %}
+                 {% url 'Address:staff_student_create' profile_slug=profile_slug as address_url %}
+                {% include 'dashboard/link_thumbnail.html' with label='Address' img_src=img_src show_check=has_address disable_why=disable_address link=address_url %}
+             </div>
+             <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/student/cv.svg' as img_src %}
+                 {% url 'EmploymentHistory:staff_create' profile_slug=profile_slug as employ_hist_url %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Employment History' img_src=img_src show_check=has_employment_history link=employ_hist_url disable_why=disable_employmenthistory %}
+             </div>
+              <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/student/Salary_male.svg' as img_src %}
+                  {% url 'Sponsor:staff_create' index_number=index_number as sponsor_url %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Sponsorship' link=sponsor_url img_src=img_src show_check=has_sponsorship %}
+             </div>
+              <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/student/decision.svg' as img_src %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Programme Choices' img_src=img_src show_check=has_selected_programme %}
+             </div>
+              <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/student/certificate.svg' as img_src %}
+                  {% url 'Student:staff_add_cert' index_number=index_number as cert_url %}
+                 {% include 'dashboard/link_thumbnail.html' with link=cert_url label='Certificate' img_src=img_src show_check=has_cert %}
+             </div>
+              <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/school.svg' as img_src %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Education' img_src=img_src %}
+             </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/student/identification_documents_1.svg' as img_src %}
+                {% url 'Student:staff_change_indexPrg' index_number=index_number as change_indexPrg_url %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Index Number and Programme' img_src=img_src link=change_indexPrg_url show_check=1 %}
+             </div>
+
+        </div>
+    </div>
+{% endblock %}

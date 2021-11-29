@@ -1,6 +1,7 @@
 import datetime
 from django.db.models import TextChoices
 from django.http.response import Http404
+from django.utils.http import is_safe_url
 from django.shortcuts import render
 
 
@@ -61,3 +62,9 @@ def get_not_allowed_render_response(request, message="Your not allowed to access
         "reason": message,
         'back_url': request.GET.get('back')
     })
+
+
+def get_next_url(request):
+    next_url = request.GET.get('next') or request.GET.get('back')
+    if next_url and is_safe_url(next_url, request.get_host()):
+        return next_url

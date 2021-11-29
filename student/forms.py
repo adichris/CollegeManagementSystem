@@ -1,6 +1,5 @@
 from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.bootstrap import FormActions, StrictButton
 
@@ -107,3 +106,20 @@ class StudentPreviousEducationChangeForm(forms.ModelForm):
         super(StudentPreviousEducationChangeForm, self).__init__(*args, **kwargs)
         self.instance.student_id = student_id
 
+
+class StudentCreationForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ('index_number', 'programme')
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout.append(
+            FormActions(
+                StrictButton('Reset', type='reset', css_class='btn-light shadow-sm'),
+                StrictButton('Confirm',  type='submit', css_class='btn-primary shadow-sm', onclick='dynamicSpinner(this)'),
+                css_class='d-flex justify-content-end'
+            )
+        )
+        return helper

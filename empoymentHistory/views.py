@@ -1,8 +1,9 @@
 from django.shortcuts import reverse
-from django.views.generic import UpdateView
+from django.utils.http import is_safe_url
+from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
-from .models import EmploymentHistoryModel
+from .models import EmploymentHistoryModel, User
 from .forms import EmploymentHistoryCreationForm
 from admission.models import StudentForms, FormStatusChoice
 from INSTITUTION.utils import get_admission_steps
@@ -44,3 +45,45 @@ class EmploymentHistoryCreateUpdateView(LoginRequiredMixin, PermissionRequiredMi
 
     def get_success_url(self):
         return reverse('Student:admission-redirect', kwargs={'serial_number': self.request.user.identity})
+
+
+class UserEmploymentHistoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = 'employmenthistory.add_employmenthistorymodel'
+    model = EmploymentHistoryModel
+    permission_denied_message = 'You need permission to add employment hispry'
+    form_class = EmploymentHistoryCreationForm
+    template_name = 'employment_history/staff/create.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(UserEmploymentHistoryCreateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Add Employment History'
+        ctx['header'] = 'Employment History'
+        return ctx
+
+    def get_object(self, queryset=None):
+        try:
+            return self.model.objects.get(employee__slug=self.kwargs['profile_slug'])
+        except self.model.DoesNotExist:
+            pass
+
+    def get_profile(self, queryset=None):
+        try:
+            return User.objects.get(slug=self.kwargs['profile_slug'])
+        except User.DoesNotExist:
+            pass
+
+    def get_form_kwargs(self):
+        kwargs = super(UserEmploymentHistoryCreateView, self).get_form_kwargs()
+        kwargs['instance'] = self.get_object()
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.employee = self.get_profile()
+        return super(UserEmploymentHistoryCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next') or self.request.GET.get('back')
+        if next_url and is_safe_url(next_url, self.request.get_host()):
+            return next_url
+        else:
+            return super(UserEmploymentHistoryCreateView, self).get_success_url()

@@ -48,8 +48,9 @@ class UserManager(BaseUserManager):
 
 
 class User(PermissionsMixin, AbstractBaseUser):
-    first_name = models.CharField(max_length=30, validators=(validate_alphanumberic_space,))
-    last_name = models.CharField(max_length=120, help_text='last name and other names', validators=(validate_alphanumberic_space,))
+    first_name = models.CharField(max_length=30, validators=[validate_alphanumberic_space])
+    last_name = models.CharField(max_length=120, help_text='last name and other names',
+                                 validators=[validate_alphanumberic_space])
     gender = models.CharField(max_length=5, choices=GenderChoices.choices, null=True)
     date_of_birth = models.DateField(null=True)
     email = models.EmailField(unique=True)

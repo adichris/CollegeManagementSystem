@@ -1,8 +1,15 @@
-<div class="card hover_shadow w-100 h-100">
-    <a href="{{ link }}" class="card-link">
-        <div class="card-body text-center">
-            <img src="{{ img_src }}" alt="" style="height: 5em">
-            <h5>{{ label }}</h5>
-        </div>
-    </a>
+<div class="card hover_shadow w-100 h-100" title="{{ disable_why|default:'' }}">
+    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+        {% if show_check %}
+            <span class="fa fa-check-circle text-success fa-2x align-self-end"></span>
+        {% endif %}
+    <div class="text-center">
+        <img src="{{ img_src }}" alt="" style="height: 5em">
+    {% if disable_why %}
+        <h5 title="{{ disable_why }}">{{ label }}</h5>
+    {% else %}
+        <h5><a href="{{ link }}?back={{ request.path }}" class="card-link stretched-link {% if show_check %} link-success {% endif %}">{{ label }}</a></h5>
+    {% endif %}
+    </div>
+    </div>
 </div>

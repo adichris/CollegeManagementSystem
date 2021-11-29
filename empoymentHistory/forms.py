@@ -24,24 +24,15 @@ class EmploymentHistoryCreationForm(forms.ModelForm):
         helper = FormHelper(self)
         helper.use_custom_control = True
         helper.layout.append(
-            FormActions(Reset('reset', 'Reset'), Submit('save', 'Save'),
+            FormActions(Reset('reset', 'Reset', css_class='btn-light shadow-sm'),
+                        Submit('save', 'Save'),
                         css_class='d-flex justify-content-end gap-3 my-3')
         )
-        helper[1:len(self.fields)].wrap_together(
-            EHAccordionGroup,
-        )
+        # helper[1:len(self.fields)].wrap_together(
+        #     EHAccordionGroup,
+        # )
         helper.form.novalidate = True
         return helper
-
-    # def clean_has_history(self):
-    #     has_hist = self.cleaned_data.get('has_history')
-    #     has_data = self.cleaned_data.get('company_name') or self.cleaned_data.get('employed_from') or self.cleaned_data.get('why_leave')
-    #     if has_hist and not has_data:
-    #         raise forms.ValidationError('You need to provide us details of your employment history')
-    #     if not has_hist and has_data:
-    #         raise forms.ValidationError('Clear all entries before you uncheck this*')
-    #
-    #     return has_hist
 
     def clean_address(self):
         has_hist = self.cleaned_data.get('has_history')
@@ -61,6 +52,15 @@ class EmploymentHistoryCreationForm(forms.ModelForm):
 
         return city
 
+    def clean_has_history(self):
+        has_hist = self.cleaned_data.get('has_history')
+        has_data = self.cleaned_data.get('job_title') or self.cleaned_data.get('employed_from')
+        if has_hist and not has_data:
+            raise forms.ValidationError('You need to provide us details of your employment history')
+        if not has_hist and has_data:
+            raise forms.ValidationError('Clear all entries before you uncheck this*')
+        return has_hist
+
     def clean_company_name(self):
         has_hist = self.cleaned_data.get('has_history')
         company_name = self.cleaned_data.get('company_name')
@@ -78,19 +78,19 @@ class EmploymentHistoryCreationForm(forms.ModelForm):
         return employed_from
 
     def clean_employed_to(self):
-        has_hist = self.cleaned_data.get('has_history')
         employed_to = self.cleaned_data.get('employed_to')
+        employed_from = self.cleaned_data.get('employed_from')
 
-        if has_hist and not employed_to:
-            raise forms.ValidationError('This field is required')
-        return employed_to
+        if (employed_to and employed_from) and employed_to < employed_from:
+            raise forms.ValidationError(f'Employed to date({employed_to}) should be greater than Employed from date ({employed_from}) ')
+        return employed_from
 
     def clean_job_title(self):
         has_hist = self.cleaned_data.get('has_history')
         job_title = self.cleaned_data.get('job_title')
 
         if has_hist and not job_title:
-            raise forms.ValidationError('This is required')
+            raise forms.ValidationError('The job title is required')
         return job_title
 
 

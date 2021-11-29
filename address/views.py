@@ -1,10 +1,11 @@
-from django.shortcuts import reverse
-from django.views.generic.edit import UpdateView
+from django.shortcuts import reverse, get_object_or_404
+from django.views.generic.edit import UpdateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from .forms import AddressCreationForm
-from address.models import Address
+from address.models import Address, User
 from admission.models import StudentForms, FormStatusChoice
 from INSTITUTION.utils import get_admission_steps
+from django.utils.http import is_safe_url
 
 
 class StudentAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -42,3 +43,43 @@ class StudentAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, Upda
             profile_id=self.request.user.id
         )
         return instance
+
+
+class UserAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Address
+    form_class = AddressCreationForm
+    permission_required = 'address.add_address'
+    permission_denied_message = 'You need permission to add address'
+    template_name = 'address/staff/create.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(UserAddressCreateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Add Address'
+        ctx['header'] = 'Address'
+        ctx['back_url'] = self.request.GET.get('back')
+        return ctx
+
+    def get_object(self):
+        try:
+            return Address.objects.get(profile__slug=self.kwargs['profile_slug'])
+        except Address.DoesNotExist:
+            pass
+
+    def get_profile(self):
+        return get_object_or_404(User, slug=self.kwargs['profile_slug'])
+
+    def get_form_kwargs(self):
+        kwargs = super(UserAddressCreateView, self).get_form_kwargs()
+        kwargs['instance'] = self.get_object()
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.profile = self.get_profile()
+        return super(UserAddressCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next') or self.request.GET.get('back')
+        if next_url and is_safe_url(next_url, self.request.get_host()):
+            return next_url
+        else:
+            return super(UserAddressCreateView, self).get_success_url()

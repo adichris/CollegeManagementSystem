@@ -7,12 +7,21 @@ from .views import (
     StudentPreviousEducationChangeView,
     StudentAdmissionDetails,
     StaffStudentTemplateView,
+    StaffRegisterStudentDetailView,
+    StaffStudentCreateView,
+    StaffStudentUpdateIndexNumProgrammeUpdateView,
 )
 
 app_name = 'Student'
 
 staff_urlpatterns = [
     path('', StaffStudentTemplateView.as_view(), name='staff_home'),
+    path('add/', StaffStudentCreateView.as_view(), name='staff_register'),
+    path('changeindexnumberandprogramme/<str:index_number>/', StaffStudentUpdateIndexNumProgrammeUpdateView.as_view(),
+         name='staff_change_indexPrg'),
+    path('add/continuous/<str:index_number>/', StaffRegisterStudentDetailView.as_view(), name='staff_register_student'),
+    path('add/certificate/<str:index_number>/', AdmissionCertificateExaminationView.as_view(), name='staff_add_cert'),
+
 ]
 
 urlpatterns = [

@@ -76,7 +76,8 @@
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                         {% static 'icons/lecture.svg' as lecture %}
-                        {% include 'dashboard/link_thumbnail.html' with link='' img_src=lecture label='Lecturers' %}
+                        {% url 'Lecturer:staff_template' as lecturer_url %}
+                        {% include 'dashboard/link_thumbnail.html' with link=lecturer_url img_src=lecture label='Lecturers' %}
                     </div>
                     <div class="col-6 col-md-4 col-lg-3">
                         {% static 'icons/customs_Officer.svg' as custom_officer %}

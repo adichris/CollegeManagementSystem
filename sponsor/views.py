@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404, reverse
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-# Create your views here.
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import StudentSponsor
 from .forms import StudentSponsorCreationForm
 from student.models import Student
 from admission.models import FormStatusChoice
-from INSTITUTION.utils import get_admission_steps
+from INSTITUTION.utils import get_admission_steps, get_next_url
 
 
 class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
@@ -44,3 +44,42 @@ class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, Upda
         return reverse('Student:admission-redirect', kwargs={
             "serial_number": self.request.user.identity
         })
+
+
+class StaffSponsorCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    permission_required = ('sponsor.add_studentsponsor', 'sponsor.change_studentsponsor')
+    model = StudentSponsor
+    form_class = StudentSponsorCreationForm
+    template_name = 'sponsor/staff/create.html'
+    permission_denied_message = 'You need permission to add or change sponsor information'
+
+    def get_object(self, queryset=None):
+        try:
+            return self.get_student().student_sponsored
+        except ObjectDoesNotExist:
+            pass
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffSponsorCreateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Change Sponsor' if self.get_object() else 'Add Sponsor'
+        ctx['header'] = 'Sponsorship'
+        ctx['back_url'] = self.request.GET.get('back')
+        return ctx
+
+    def get_student(self):
+        return get_object_or_404(
+            Student,
+            index_number=self.kwargs['index_number']
+        )
+
+    def form_valid(self, form):
+        form.instance.student = self.get_student()
+        return super(StaffSponsorCreateView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(StaffSponsorCreateView, self).get_form_kwargs()
+        kwargs['instance'] = self.get_object()
+        return kwargs
+
+    def get_success_url(self):
+        return get_next_url(self.request) or super(StaffSponsorCreateView, self).get_success_url()

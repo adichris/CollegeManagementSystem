@@ -6,7 +6,7 @@ from ckeditor.fields import RichTextField
 class EmploymentHistoryModel(models.Model):
     has_history = models.BooleanField(verbose_name='Do you have employment history', null=True,
                                       help_text='If you have no employment history uncheck this *.' )
-    employee = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
+    employee = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name='employment_history')
     company_name = models.CharField(max_length=120, null=True, blank=True)
     address = models.CharField(max_length=120, null=True, blank=True)
     state = models.CharField(max_length=120, null=True, blank=True)

@@ -1,7 +1,6 @@
 import datetime
 import os
 from django.db import models
-from django.core.validators import FileExtensionValidator
 
 from accounts.models import User
 from admission.models import StudentForms
@@ -13,11 +12,11 @@ class Student(models.Model):
     profile = models.OneToOneField(User,
                                    on_delete=models.CASCADE,
                                    unique=True, related_name='student_profile',
-                                   related_query_name='student',
+                                   related_query_name='student', null=True
                                    )
     admission_form = models.OneToOneField(StudentForms, related_name='student_admission_form',
-                                          on_delete=models.CASCADE, unique=True)
-    index_number = models.CharField(null=True, blank=True, max_length=60)
+                                          on_delete=models.CASCADE, unique=True, null=True)
+    index_number = models.CharField(null=True, blank=True, max_length=60, unique=True)
     programme = models.ForeignKey(Programme, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -73,14 +72,13 @@ EXAMINATION_YEAR_END = datetime.date.today().year
 
 
 class WaecGradeChoices(models.TextChoices):
-    A = 'A', 'A'
-    B = 'B', 'B'
+    A1 = 'A1', 'A1'
     B2 = 'B2', 'B2'
-    C = 'C', 'C'
-    C2 = 'C2', 'C2'
     C3 = 'C3', 'C3'
     C4 = 'C4', 'C4'
-    D = 'D', 'D'
+    C5 = 'C5', 'C5'
+    C6 = 'C6', 'C6'
+    D7 = 'D7', 'D7'
     E8 = 'E8', 'E8'
     F9 = 'F9', 'F9'
 
@@ -100,7 +98,6 @@ class CertExamRecord(models.Model):
     certificate = models.ForeignKey(AdmissionCertificate,
                                     on_delete=models.CASCADE,
                                     related_name='certificate_records',
-                                    related_query_name='certificate_records',
                                     )
     subject = models.CharField(max_length=120)
     index_number = models.CharField(max_length=20, help_text='Examination number')

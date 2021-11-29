@@ -1,19 +1,52 @@
-{% extends 'base/base.html' %}
-
+{% extends 'base/admin/base.html' %}
+{% load static %}
 
 {% block container %}
     <div class="container">
-        <div class="row my-4">
+        <div class="row">
             <div class="col-auto mx-auto">
                 <h4 class="display-6">LECTURES</h4>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-6 col-lg-4">
-                {% include 'dashbaord/' %}
+        <div class="row my-4">
+            <div class="col">
+                <form method="get" action="" class="shadow-sm">
+                    <div class="input-group">
+                        <input type="search" name="qstudent" id="" class="form-control" placeholder="Search any lecturer by; name, identity, phone number">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
             </div>
         </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/add_user_male.svg' as training_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=training_src label='Add Lecturer' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/training.svg' as training_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=training_src label='All Lecturers' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/school.svg' as department_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=department_src label='Lecturers By Department' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/classroom.svg' as pro_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=pro_src label='Lecturers By Programme' %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecture.svg' as hod_src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=hod_src label='Head Of Departments' %}
+            </div>
+
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/view.svg' as filter_Src %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=filter_Src label='Filter Lecturers' %}
+            </div>
+
+        </div>
     </div>
-{% endblock container %}
-    
+{% endblock %}

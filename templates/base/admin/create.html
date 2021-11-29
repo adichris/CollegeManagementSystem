@@ -14,12 +14,15 @@
             </div>
                 {% endif %}
         </div>
-            <hr>
          {% endif %}
+    {% block info %}
+    {% endblock %}
         <div class="row my-3">
             <div class="{% block col %} col-md-auto {% endblock col %} mx-auto my-3 shadow-sm rounded p-2">
                 <h5>{{ header }}</h5>
-                {% crispy form %}
+                {% block form_render %}
+                    {% crispy form %}
+                {% endblock %}
             </div>
         </div>
     </div>

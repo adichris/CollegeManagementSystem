@@ -1,0 +1,82 @@
+{% extends 'base/admin/create.html' %}
+{% load crispy_forms_tags %}
+
+{% block col %}
+    {{ col_css_class }}
+{% endblock %}
+
+{% block info %}
+    <div class="row">
+        <div class="col-auto mx-auto">
+            <h4>{{ subtitle }}</h4>
+        </div>
+    </div>
+{% endblock %}
+
+{% block form_render %}
+    {% if integrityError %}
+        <div class="alert alert-danger">
+            {{ integrityError|safe }}
+        </div>
+    {% endif %}
+    <h5>Fill in student certificate record</h5>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <ul  id="form_content">
+            {% for form in formset %}
+                <li class=""><span>{{ legend }} {% if show_counter %}{{ forloop.counter }}{% endif %}</span> <br>
+                    <div class="d-flex table-responsive justify-content-center align-items-baseline gap-3 shadow-sm p-2 my-4">
+                        {{ form|crispy }}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% if integrityError %}
+        <div class="alert alert-danger">
+            {{ integrityError|safe }}
+        </div>
+    {% endif %}
+        <hr>
+        <div class="d-flex justify-content-evenly">
+            <button type="button" class="btn btn-info btn-lg" onclick="appendSubjectForm(this)"><span class="fa fa-plus me-2"></span> ADD ANOTHER SUBJECT</button>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-end gap-3 my-4">
+            <button type="reset" class="btn btn-light">Reset</button>
+            <button type="submit" class="btn btn-primary" onclick="dynamicSpinner(this)">Save</button>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-evenly">
+        <div class="alert alert-info my-3">
+            <span>To remove a {{ legend|lower }}, click on delete or tick/check the delete label.</span><br>
+            <span>The system will auto delete {{ legend|lower }} with the delete checked.</span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        let frmContentElm = document.getElementById('form_content');
+        let frmCounter = document.getElementById('id_form-TOTAL_FORMS');
+        function appendSubjectForm(htmlElement) {
+            if (frmContentElm.childElementCount < 15){
+                let emptyForm = `
+                                    <li><span> {{ legend }} ${frmContentElm.childElementCount +1 }</span>
+                                        <div class="d-flex table-responsive justify-content-center align-items-baseline gap-3 shadow-sm p-2 my-4">
+                                            {{ formset.empty_form|crispy }}
+                                        </div>
+                                    </li>
+                                `;
+                let counterValue = frmCounter.value;
+                counterValue = parseInt(counterValue) +1 ;
+                frmContentElm.insertAdjacentHTML('beforeend', emptyForm);
+                frmCounter.value = `${counterValue}`;
+            }
+            if (frmContentElm.childElementCount >= 15){
+                htmlElement.setAttribute('disabled', true);
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base/admin/create.html' %}
+
+{% block col %}
+    col-md-8 col-lg-6
+{% endblock %}
+
+{% block info %}
+    <div class="row my-3">
+        <div class="col-auto mx-auto text-center">
+            {% if isto_update %}
+                <h4>{{ title }}</h4>
+            {% else %}
+            <p>If this student is new, go to the <a href="{% url 'Admission:main_template_page' %}">standard admission page</a></p>
+            <p>This page is design to <b>register/add a continuous student</b> to the system</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
