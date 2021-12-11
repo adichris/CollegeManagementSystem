@@ -21,6 +21,18 @@
                 <h4>{% filter title %} Fill the following forms {% endfilter %}</h4>
             </div>
         </div>
+        {% if is_active %}
+            <div class="row my-4">
+                <div class="col-md-8 col-lg-6 mx-auto">
+                    <div class="alert alert-success text-center shadow-sm">
+                        <h4>The student is now an active user</h4>
+                        {% if not has_password %}
+                            <p>Refer the student, <b>{{ name }}</b> to <b>{{ department }}</b> for account authorization</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         <div class="row my-4">
              <div class="col-md-6 col-lg-4 my-2">
                  {% static 'icons/student/profile.svg' as profile_src %}
@@ -44,7 +56,8 @@
              </div>
               <div class="col-md-6 col-lg-4 my-2">
                  {% static 'icons/student/decision.svg' as img_src %}
-                 {% include 'dashboard/link_thumbnail.html' with label='Programme Choices' img_src=img_src show_check=has_selected_programme %}
+                  {% url 'Student:staff_add_programmes_choices' index_number=index_number as programme_choices_link %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Programme Choices' img_src=img_src show_check=has_selected_programme link=programme_choices_link %}
              </div>
               <div class="col-md-6 col-lg-4 my-2">
                  {% static 'icons/student/certificate.svg' as img_src %}
@@ -53,14 +66,43 @@
              </div>
               <div class="col-md-6 col-lg-4 my-2">
                  {% static 'icons/school.svg' as img_src %}
-                 {% include 'dashboard/link_thumbnail.html' with label='Education' img_src=img_src %}
+                  {% url 'Student:staff_add_previouseducation' index_number=index_number as education_url %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Education' img_src=img_src link=education_url show_check=has_education %}
              </div>
             <div class="col-md-6 col-lg-4 my-2">
                  {% static 'icons/student/identification_documents_1.svg' as img_src %}
                 {% url 'Student:staff_change_indexPrg' index_number=index_number as change_indexPrg_url %}
                  {% include 'dashboard/link_thumbnail.html' with label='Index Number and Programme' img_src=img_src link=change_indexPrg_url show_check=1 %}
              </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                 {% static 'icons/regular_file.svg' as img_src %}
+                {% url 'Student:staff_add_admissionform' index_number=index_number as admission_form_link %}
+                 {% include 'dashboard/link_thumbnail.html' with label='Admission Form' link=admission_form_link img_src=img_src show_check=has_admission_form %}
+             </div>
+        </div>
+
+    <div class="row my-4">
+        <div class="col-md-8 col-lg-6 mx-auto">
+            {% if  is_active %}
+                <div class="d-flex justify-content-evenly">
+                    <a href="{% url 'Student:staff_register' %}?back={% url 'Student:staff_home' %}" class="btn btn-outline-primary" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add another student</a>
+                    <a href="{% url 'Dashboard:admin' %}" class="btn btn-outline-primary" onclick="dynamicSpinner(this)"><span class="fa fa-th-large"></span> Back to Dashboard</a>
+                    <a href="{{ student_detail4staff }}" class="btn btn-outline-primary" onclick="dynamicSpinner(this)"><span class="fa fa-id-card"></span> View Student</a>
+                </div>
+            {% else %}
+               <div class="alert alert-light shadow-sm">
+                    <p>Student is not active yet</p>
+                   <ul class="">
+                       <p class="alert p-2 m-1 alert-light">Complete the following</p>
+                       <li class="alert p-2 m-1 {% if has_profile %} alert-success {% else %} alert-danger {% endif %}">Profile</li>
+                       <li class="alert p-2 m-1 {% if has_address %} alert-success {% else %} alert-danger {% endif %}">Address</li>
+                       <li class="alert p-2 m-1 {% if has_admission_form %} alert-success {% else %} alert-danger {% endif %}">Admission Form</li>
+                       <li class="alert p-2 m-1 {% if has_cert %} alert-success {% else %} alert-danger {% endif %}">Certificate</li>
+                   </ul>
+                </div>
+            {% endif %}
 
         </div>
+    </div>
     </div>
 {% endblock %}

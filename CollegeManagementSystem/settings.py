@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'system',
     'course',
     'lecture',
-
+    'INSTITUTION',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.LoginSessionMiddleWare.LogInOutMiddleware'
 ]
 
 ROOT_URLCONF = 'CollegeManagementSystem.urls'

@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.shortcuts import reverse
 from django.utils.translation import gettext_lazy as _
 from department.models import Department
+from django.utils.timezone import now as today_time
 
 
 class ProgrammeManager(models.Manager):
@@ -22,7 +23,8 @@ class Programme(models.Model):
     department = models.ForeignKey(on_delete=models.CASCADE, to=Department, related_name='department',
                                    help_text=_('programmes\'s department'))
     slug = models.SlugField(unique=True)
-    max_student = models.IntegerField(null=True, help_text=_('The maximum student this programme can take for a particular level'))
+    max_student = models.IntegerField(null=True,
+                                      help_text=_('The maximum student this programme can take for a particular level'))
     objects = ProgrammeManager()
 
     def __str__(self):
@@ -31,6 +33,9 @@ class Programme(models.Model):
     class Meta:
         order_with_respect_to = 'department'
         db_table = 'programme'
+        permissions = [
+            ('list_programme', _('can view programme list'))
+        ]
 
     def get_absolute_url(self):
         return reverse(
@@ -47,6 +52,9 @@ class Programme(models.Model):
                 'slug': self.slug,
             }
         )
+
+    def count_new_student(self):
+        return self.student_set.filter(date_admitted__year=today_time().year).count()
 
     def get_absolute_delete_url(self):
         return reverse(

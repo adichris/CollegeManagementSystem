@@ -1,20 +1,25 @@
 from django.shortcuts import get_object_or_404, redirect, reverse, render
-from django.views.generic import RedirectView, View, DetailView, TemplateView, CreateView, UpdateView
+from django.views.generic import RedirectView, View, DetailView, TemplateView, CreateView, UpdateView, ListView
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Permission, Group
 from django.forms import modelformset_factory
 from django.db import IntegrityError
+from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import now as today_time
 
-from INSTITUTION.utils import get_not_allowed_render_response, get_next_url
+from INSTITUTION.utils import get_not_allowed_render_response, get_next_url, get_back_url, get_admission_steps, \
+    AcademicYear
 from accounts.models import User
+from programme.models import Programme
+from department.models import Department
 from .models import (
     Student,
     CertExamRecord,
     AdmissionCertificate,
     StudentPreviousEducation,
-    )
+)
 from admission.models import StudentForms, FormStatusChoice
 from .forms import (
     ProgrammeSelectionChangeForm,
@@ -23,7 +28,7 @@ from .forms import (
     StudentPreviousEducationChangeForm,
     StudentCreationForm,
 )
-from INSTITUTION.utils import get_admission_steps
+from django.conf import settings as APP_SETTINGS
 
 
 class StudentAdmissionRedirectView(RedirectView):
@@ -90,7 +95,7 @@ class StudentAdmissionRedirectView(RedirectView):
                           'add_studentpreviouseducation',
                           'change_studentpreviouseducation',
                           )
-            ),
+        ),
                                               )
         self.request.user.groups.add(student_admission_grp)
 
@@ -99,28 +104,58 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
     permission_required = ('programme.view_programme', 'student.view_student')
     model = Student
     form_class = ProgrammeSelectionChangeForm
-    template_name = 'student/admission/create.html'
     permission_denied_message = 'You need permission to view programmes'
 
+    @property
+    def template_name(self):
+        if self.is_student:
+            return 'student/staff/create.html'
+        return 'student/admission/create.html'
+
+    @property
+    def is_student(self):
+        return self.kwargs.get('index_number')
+
     def get_login_url(self):
+        if self.is_student:
+            return reverse('Home:login')
         return reverse('Admission:main_template_page')
 
-    def get_context_data(self, **kwargs):
-        return {
+    def get_context_data(self,):
+        kwargs = {
             'title': 'Programmes Choices',
-            'step': 5,
-            'steps': get_admission_steps(self.request.user.student_profile.admission_form.status),
-            'serial_number': self.request.user.identity,
-            'subtitle': '3 programme of choice'
+            'subtitle': '3 programme of choice',
+            'back_url': get_back_url(self.request)
         }
+        if self.kwargs.get('index_number'):
+            kwargs['reuse'] = True
+            kwargs['subtitle'] = 'Should be one of the student current programme'
+            kwargs['subtitle2'] = f'({self.get_student().programme})'
+            kwargs['header'] = 'What where the student programme selection'
+            return kwargs
+        kwargs['step'] = 5
+        kwargs['steps'] = get_admission_steps(self.request.user.student_profile.admission_form.status),
+        kwargs['serial_number'] = self.request.user.identity
+
+        return kwargs
 
     def get_object(self):
-        student_choice_model = StudentProgrammeChoice.objects.filter(student__profile=self.request.user)
-        return student_choice_model.first()
+        index_number = self.kwargs.get('index_number')
+        if index_number:
+            try:
+                return StudentProgrammeChoice.objects.get(
+                    student__index_number=index_number
+                )
+            except StudentProgrammeChoice.DoesNotExist:
+                return
+        else:
+            student_choice_model = StudentProgrammeChoice.objects.filter(student__profile=self.request.user)
+            return student_choice_model.first()
 
     def get(self, request, *args, **kwargs):
         form_instance = self.form_class(
-            instance=self.get_object()
+            instance=self.get_object(),
+            initial=self.get_initial()
         )
         ctx = self.get_context_data()
         ctx['form'] = form_instance
@@ -128,10 +163,10 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
 
     def post(self, request, *args, **kwargs):
         programmes_choices_instance = self.get_object()
-        form_instance = self.form_class(data=request.POST, instance=programmes_choices_instance)
+        form_instance = self.form_class(data=request.POST, instance=programmes_choices_instance, initial=self.get_initial())
         ctx = self.get_context_data()
         if form_instance.is_valid():
-            student_instance = Student.objects.get(profile_id=self.request.user.id)
+            student_instance = self.get_student()
             if programmes_choices_instance:
                 instance = form_instance.save(True)
             else:
@@ -139,29 +174,49 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
                 programmes_choices_instance.student_id = student_instance.id
                 programmes_choices_instance.save()
             admission_form = student_instance.admission_form
-            admission_form.status = FormStatusChoice.AT_CERTIFICATION
-            admission_form.save()
+            if admission_form:
+                admission_form.status = FormStatusChoice.AT_CERTIFICATION
+                admission_form.save()
+            if self.is_student:
+                return redirect(
+                    'Student:staff_register_student',
+                    index_number=self.kwargs['index_number']
+                )
             return redirect(
                 'Student:admission-redirect', serial_number=admission_form.serial_number
             )
         ctx['form'] = form_instance
         return render(self.request, self.template_name, context=ctx)
 
+    def get_student(self):
+        if self.is_student:
+            return Student.objects.get(index_number=self.kwargs['index_number'])
+        return Student.objects.get(profile_id=self.request.user.id)
+
+    def get_initial(self):
+        if self.is_student and not self.get_object():
+            student = self.get_student()
+            return {
+                'first_choice': student.programme,
+                'second_choice': student.programme,
+                'third_choice': student.programme,
+            }
+
 
 class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequiredMixin, View):
     model = CertExamRecord
     formset_class = modelformset_factory(
-        model=model, 
-        form=CertExamRecordForm, 
+        model=model,
+        form=CertExamRecordForm,
         max_num=15,
-        validate_max=True, 
+        validate_max=True,
         extra=1,
         min_num=6,
         validate_min=True,
         absolute_max=15,
         can_delete=True,
         can_delete_extra=True,
-        )
+    )
     permission_required = ('student.add_certexamrecord', 'student.change_certexamrecord')
     permission_denied_message = 'You need permission to add and change student admission certificate exam records'
     template_name = 'student/admission/CertExamRecord.html'
@@ -180,10 +235,10 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
             'col_css_class': 'col-lg-11',
             'legend': 'Subject Form',
             'show_counter': True,
-            'back_url': self.request.GET.get('back'),
+            'back_url': get_back_url(self.request),
 
         }
-    
+
     def get(self, request, *args, **kwargs):
         content = self.get_context_data()
         content[self.get_form_name()] = self.formset_class(
@@ -248,9 +303,10 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
                 for form2delete in formset.deleted_forms:
                     del form2delete
                 admission_form = self.certificate_object.student.admission_form
-                admission_form.status = FormStatusChoice.AT_EDUCATION
-                admission_form.save()
-                if self.student:
+                if admission_form:
+                    admission_form.status = FormStatusChoice.AT_EDUCATION
+                    admission_form.save()
+                if self.kwargs.get('index_number'):
                     return redirect(get_next_url(request))
                 return redirect('Student:admission-redirect',
                                 serial_number=admission_form.serial_number)
@@ -270,7 +326,12 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
     def get_student(self):
         index_number = self.kwargs.get('index_number')
         if index_number:
-            return get_object_or_404(Student, index_number=index_number)
+            try:
+                return Student.objects.get(
+                    index_number=index_number
+                )
+            except Student.DoesNotExist:
+                raise Http404('The operation not success student does not exist')
 
 
 class StudentPreviousEducationChangeView(LoginRequiredMixin, PermissionRequiredMixin, View):
@@ -357,7 +418,7 @@ class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, Detai
 
 class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
     template_name = 'student/staff/template.html'
-    
+
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
             return super(StaffStudentTemplateView, self).get(request, *args, **kwargs)
@@ -371,34 +432,49 @@ class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
 
 
 class StaffRegisterStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
-    permission_required = ('student.add_student', 'admission.add_studentform', 'accounts.add_user', 'address.add_address')
+    permission_required = (
+    'student.add_student', 'admission.add_studentform', 'accounts.add_user', 'address.add_address')
     template_name = 'student/staff/register.html'
     permission_denied_message = 'You need permission to add students profile, address, admission form'
 
     def get_student(self):
-        return get_object_or_404(
-            Student,
-            index_number=self.kwargs['index_number'],
-        )
+        try:
+            return Student.objects.get(
+                index_number=self.kwargs['index_number']
+            )
+        except Student.DoesNotExist:
+            raise Http404('The page your looking for does bot exist.')
 
     def get_context_data(self, **kwargs):
         ctx = super(StaffRegisterStudentDetailView, self).get_context_data(**kwargs)
         self.student = self.get_student()
         self.profile = self.get_profile()
         ctx['title'] = 'Add Student'
-        ctx['back_url'] = self.request.GET.get('back')
+        ctx['back_url'] = get_back_url(self.request)
         ctx['index_number'] = self.student.index_number
         ctx['has_profile'] = bool(self.profile)
-        ctx['profile_slug'] = self.profile.slug
-        ctx['has_address'] = self.has_address()
-        ctx['has_employment_history'] = self.has_employment_history()
+        ctx['student_detail4staff'] = self.student.get_absolute_detailview4staff
+        if self.profile:
+            ctx['profile_slug'] = self.profile.slug
+            ctx['name'] = self.profile.get_full_name()
+            ctx['has_password'] = self.profile.password
+            ctx['has_address'] = self.has_address()
+            ctx['has_employment_history'] = self.has_employment_history()
+        ctx['department'] = self.student.programme.department
         ctx['has_sponsorship'] = self.has_sponsorship()
+        ctx['has_education'] = self.has_previous_education()
+        ctx['has_admission_form'] = self.has_admission_form()
         ctx['has_selected_programme'] = self.has_selected_programme()
         ctx['has_cert'] = self.has_certificate()
-        ctx['disable_address'] = 'Student profile must be created first in other to add ADDRESS'\
+        ctx['disable_address'] = 'Student profile must be created first in other to add ADDRESS' \
             if not ctx['has_profile'] else None
-        ctx['disable_employmenthistory'] = 'Student profile must be created first in other to add EMPLOYMENT HISTORY'\
+        ctx['disable_employmenthistory'] = 'Student profile must be created first in other to add EMPLOYMENT HISTORY' \
             if not ctx['has_profile'] else None
+
+        if ctx['has_profile'] and ctx['has_address'] and ctx['has_admission_form'] and ctx['has_cert'] and not self.student.is_active:
+            self.student.is_active = True
+            self.student.save()
+        ctx['is_active'] = self.student.is_active
         return ctx
 
     def get_profile(self):
@@ -406,6 +482,9 @@ class StaffRegisterStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin
             return self.student.profile
         except ObjectDoesNotExist:
             return False
+
+    def is_student_editable(self):
+        pass
 
     def has_address(self):
         try:
@@ -443,6 +522,12 @@ class StaffRegisterStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin
         except ObjectDoesNotExist:
             return False
 
+    def has_admission_form(self):
+        try:
+            return self.student.admission_form
+        except ObjectDoesNotExist:
+            return False
+
 
 class StaffStudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Student
@@ -455,11 +540,11 @@ class StaffStudentCreateView(LoginRequiredMixin, PermissionRequiredMixin, Create
         ctx = super(StaffStudentCreateView, self).get_context_data(**kwargs)
         ctx['title'] = 'Register Student'
         ctx['header'] = 'Register Student'
-        ctx['back_url'] = self.request.GET.get('back')
+        ctx['back_url'] = get_back_url(self.request)
         return ctx
 
     def get_success_url(self):
-        return reverse('Student:staff_register_student', kwargs={'index_number':self.object.index_number})
+        return reverse('Student:staff_register_student', kwargs={'index_number': self.object.index_number})
 
 
 class StaffStudentUpdateIndexNumProgrammeUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -473,17 +558,344 @@ class StaffStudentUpdateIndexNumProgrammeUpdateView(LoginRequiredMixin, Permissi
         ctx = super(StaffStudentUpdateIndexNumProgrammeUpdateView, self).get_context_data(**kwargs)
         ctx['title'] = 'Student Index number, and Programme'
         ctx['isto_update'] = True
-        ctx['back_url'] = self.request.GET.get('back')
+        ctx['back_url'] = get_back_url(self.request)
         return ctx
 
     def get_success_url(self):
-        return get_next_url(self.request) or super(StaffStudentUpdateIndexNumProgrammeUpdateView, self).get_success_url()
+        return get_next_url(self.request) or super(StaffStudentUpdateIndexNumProgrammeUpdateView,
+                                                   self).get_success_url()
 
     def get_object(self, queryset=None):
-        return get_object_or_404(
-            self.model,
-            index_number=self.kwargs['index_number']
+        try:
+            return self.model.objects.get(
+                index_number=self.kwargs['index_number']
+            )
+        except self.model.DoesNotExist:
+            raise Http404('The student your looking for does not exist')
+
+
+class StaffSelectStudentProgramme(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'programme.list_programme'
+    permission_denied_message = 'You need permission to view programme list'
+    model = Programme
+    template_name = 'student/staff/programme_list.html'
+    programme_search_varname = 'qprogramme'
+    student_search_varname = 'qstudent'
+
+    def get_queryset(self):
+        q_programme = self.get_programme_search()
+        kwargs = {}
+        if self.is2_all_student:
+            kwargs['student__isnull'] = False
+        else:
+            kwargs['student__date_admitted__year'] = today_time().year
+
+        if q_programme:
+            kwargs['name__icontains'] = q_programme
+        return self.model.objects.filter(**kwargs)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super(StaffSelectStudentProgramme, self).get_context_data(object_list=object_list, **kwargs)
+        if self.is2_all_student:
+            ctx['title'] = 'All Student \nby Programmes'
+        else:
+            ctx['title'] = 'New Admitted Student \nby Programmes'
+        ctx['header'] = ctx['title']
+        ctx['in_tab'] = self.get_in_tab()
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['p_variable_name'] = self.programme_search_varname
+        ctx['s_variable_name'] = self.student_search_varname
+        ctx['p_searched'] = self.get_programme_search()
+        ctx['s_action'] = self.get_search_student_action()
+        ctx['is2_all_student'] = self.is2_all_student
+        return ctx
+
+    def get_in_tab(self):
+        in_tab = self.request.GET.get('intab') == 't'
+        pre_value = self.request.session.get('openintab')
+        if in_tab and pre_value:
+            self.request.session['openintab'] = False
+            return False
+        elif in_tab and not pre_value:
+            self.request.session['openintab'] = True
+            return True
+        else:
+            return pre_value
+
+    def get_search_student_action(self):
+        if self.is2_all_student:
+            return reverse('Student:staff_all')
+        return reverse('Student:staff_newly_admitted_search')
+
+    @property
+    def is2_all_student(self):
+        return self.request.GET.get('allstudents') == '1'
+
+    def get_programme_search(self):
+        return self.request.GET.get(self.programme_search_varname)
+
+    def get_student_search(self):
+        return self.request.GET.get(self.student_search_varname)
+
+
+class NewlyAdmittedStudentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Student
+    permission_required = 'student.view_students'
+    permission_denied_message = 'You need permission to view newly admitted students list'
+    template_name = 'student/staff/newlystudentlist.html'
+    query_variable = 'qstudent'
+
+    def get_context_data(self, object_list=None, **kwargs):
+        ctx = super(NewlyAdmittedStudentListView, self).get_context_data(object_list=object_list, **kwargs)
+        ctx['title'] = 'Newly Admitted Student'
+        ctx['header'] = 'New Admitted Student'
+        if self.kwargs.get('programme_slug'):
+            ctx['programme'] = self.get_programme()
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['student_searched'] = self.get_student_query()
+        ctx['student_total'] = self.student_total
+        ctx['qvariable'] = self.query_variable
+        return ctx
+
+    def get_student_query(self):
+        return self.request.GET.get(self.query_variable)
+
+    def get_programme(self):
+        try:
+            return Programme.objects.get(slug=self.kwargs['programme_slug'])
+        except (Programme.DoesNotExist, KeyError):
+            pass
+
+    def get_queryset(self):
+        kwargs = {}
+        programme__slug = self.kwargs.get('programme_slug')
+        if programme__slug:
+            kwargs['programme__slug'] = programme__slug
+        self.student_total = self.model.objects.filter(**kwargs).count()
+        return self.model.objects.get_newly_admitted(query=self.get_student_query(),
+                                                     **kwargs)
+
+
+class StaffAllStudentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Student
+    permission_required = 'student.list_student'
+    template_name = 'student/staff/all.html'
+    permission_denied_message = 'You need permission to view student list'
+    sortby_kwargs = {
+        'profile': 'Name',
+        'index_number': 'Index Number',
+        'programme': 'Programme',
+        'level': 'Level',
+        'date_admitted': 'Year Admitted',
+        'date_completed': 'Completed',
+    }
+    sortby_var = 'qsort'
+    row_limit_name = 'qlimit'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        title = 'All Students'
+        ctx = super(StaffAllStudentListView, self).get_context_data(object_list=object_list, **kwargs)
+        if self.kwargs.get('department_slug'):
+            title += ' in \n' + str(self.get_department())
+        elif self.kwargs.get('programme_slug'):
+            title += ' in \n' + str(self.get_programme())
+
+        ctx['title'] = title
+        ctx['header'] = ctx['title']
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['sort_vars'] = self.sortby_kwargs
+        ctx['sortname'] = self.sortby_var
+        ctx['current_sort'] = self.get_sort_value()
+        ctx['tt_active'] = self.get_only_active()
+        ctx['tt_old'] = self.get_active_and_old()
+        ctx['student_total'] = ctx['tt_active'] + ctx['tt_old']
+        ctx['s_searched'] = self.get_search_query()
+        ctx['qty_found'] = self.queryset_counts
+        ctx['limit_row'] = self.get_paginate_by_query() or self.paginate_by
+        ctx['row_limit_name'] = self.row_limit_name
+        return ctx
+
+    def get_active_and_old(self):
+        return self.model.objects.get_active_and_old(**self.get_department_programme_kwargs()).count()
+
+    def get_only_active(self):
+        return self.model.objects.get_only_active(**self.get_department_programme_kwargs()).count()
+
+    @property
+    def paginate_by(self):
+        return self.get_paginate_by_query() or 300
+
+    def get_programme(self):
+        programme_slug = self.kwargs.get('programme_slug')
+        if programme_slug:
+            try:
+                return Programme.objects.get(
+                    slug=programme_slug
+                )
+            except Programme.DoesNotExist:
+                pass
+
+    def get_department(self):
+        department_slug = self.kwargs.get('department_slug')
+        if department_slug:
+            try:
+                return Department.objects.get(
+                    slug=department_slug
+                )
+            except Department.DoesNotExist:
+                pass
+
+    def get_department_programme_kwargs(self):
+        return {
+                'department_slug': self.kwargs.get('department_slug'),
+                'programme_slug': self.kwargs.get('programme_slug'),
+            }
+
+    def get_queryset(self):
+        sort_by = self.get_sort_value()
+        kwargs = self.get_department_programme_kwargs()
+        if sort_by:
+            return self.model.objects.get_all_sort(by=sort_by, query=self.get_search_query(), **kwargs)
+        queryset = self.model.objects.all(query=self.get_search_query(), **kwargs)
+        self.queryset_counts = queryset.count()
+        return queryset
+
+    def get_sort_value(self):
+        key = self.request.GET.get(self.sortby_var)
+        if self.sortby_kwargs.get(key):
+            return key
+
+    def get_search_query(self):
+        return self.request.GET.get('qstudent')
+
+    def get_paginate_by_query(self):
+        return self.request.GET.get('qlimit')
+
+
+class StudentGroupByDepartment(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    model = Department
+    permission_required = 'department.list_department'
+    permission_denied_message = 'You need permission to view department list'
+    template_name = 'student/staff/selectdepartment.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super(StudentGroupByDepartment, self).get_context_data(object_list=object_list, **kwargs)
+        ctx['title'] = 'Select Department'
+        ctx['total'] = self.total_department
+        ctx['qdepartment'] = self.get_search_query()
+        ctx['back_url'] = get_back_url(self.request)
+        return ctx
+
+    def get_queryset(self):
+        return self.model.objects.having_students(name=self.get_search_query())
+
+    def get_search_query(self):
+        return self.request.GET.get('qdepartment') or ''
+
+    @property
+    def total_department(self):
+        return self.model.objects.having_students().count()
+
+
+class StaffAddPreviousEducation(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    # A view for staff to add student previous education usual secondary school to student
+    model = StudentPreviousEducation
+    template_name = 'student/staff/create.html'
+    form_class = StudentPreviousEducationChangeForm
+    permission_required = 'student.add_studentpreviouseducation'
+    permission_denied_message = 'You need permission to add previous education for student'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffAddPreviousEducation, self).get_context_data(**kwargs)
+        ctx['title'] = 'Student Previous Education'
+        ctx['reuse'] = True
+        ctx['header'] = 'School information'
+        return ctx
+
+    def get_student(self):
+        try:
+            return Student.objects.get(
+                index_number=self.kwargs['index_number']
+            )
+        except Student.DoesNotExist:
+            raise Http404('The student you want to operate on does not exist in the system')
+
+    def get_form_kwargs(self):
+        kwargs = super(StaffAddPreviousEducation, self).get_form_kwargs()
+        kwargs['student_id'] = self.get_student().id
+        kwargs['instance'] = self.get_object()
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('Student:staff_register_student', kwargs={
+            'index_number': self.get_student().index_number
+        })
+
+    def get_object(self, queryset=None):
+        obj = self.get_student().get_previous_school()
+        if obj:
+            return obj
+        else:
+            return super(StaffAddPreviousEducation, self).get_object(queryset)
+
+
+class StaffAddStudentForms(LoginRequiredMixin, PermissionRequiredMixin, View):
+    # A view for staff to add student admission form to student
+    model = StudentForms
+    template_name = 'student/staff/create.html'
+    permission_required = 'admission.add_studentforms'
+    permission_denied_message = 'You need permission to add admission form for student'
+    from admission.form import StudentFormsChange
+    form_class = StudentFormsChange
+
+    def get_student(self):
+        try:
+            return Student.objects.get(index_number=self.kwargs['index_number'])
+        except Student.DoesNotExist:
+            return Http404('The page your looking for can not be found')
+
+    def get_initial(self):
+        student_profile = self.get_student().profile
+        initial = {'is_current': False, 'candidate_name': student_profile.get_full_name(),
+                   'candidate_phone_number': student_profile.phone_number,
+                   'sales_agent': self.request.user.get_full_name(),
+                   'sales_point_location': student_profile.address.current_region,
+                   'sales_point': APP_SETTINGS.INSTITUTION_FULL_NAME,
+                   'academic_year': AcademicYear.extract_academic_year(student_profile.student.date_admitted.year)}
+        return initial
+
+    def get_object(self):
+        try:
+            return self.get_student().admission_form
+        except ObjectDoesNotExist:
+            return
+
+    def get_context_data(self, **kwargs):
+        ctx = {'reuse': True, 'title': 'Student Admission Form', 'header': 'Admission Form Details'}
+        return ctx
+
+    def get_success_url(self):
+        return reverse('Student:staff_register_student', kwargs={'index_number': self.kwargs['index_number']})
+
+    def get(self, request, *args, **kwargs):
+        ctx = self.get_context_data()
+        ctx['form'] = self.form_class(initial=self.get_initial(), instance=self.get_object())
+        return render(request, self.template_name, ctx)
+
+    def post(self, request, *args, **kwargs):
+        ctx = self.get_context_data()
+        form_class = self.form_class(data=self.request.POST, initial=self.get_initial(), instance=self.get_object())
+        if form_class.is_valid():
+            student = self.get_student()
+            admission_instance = form_class.save(False)
+            admission_instance.status = FormStatusChoice.ACCEPTED
+            admission_instance.save()
+            student.admission_form = admission_instance
+            student.save()
+            return redirect(self.get_success_url())
+        ctx['form'] = form_class
+        return render(
+            request,
+            self.template_name,
+            ctx
         )
-
-
-# TODO CHECK ADMISSION STATUS does not allow edit edited redirect to appropriate admission error page

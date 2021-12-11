@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, reverse
 from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 
 from .models import StudentSponsor
 from .forms import StudentSponsorCreationForm
@@ -67,10 +68,12 @@ class StaffSponsorCreateView(LoginRequiredMixin, PermissionRequiredMixin, Create
         return ctx
 
     def get_student(self):
-        return get_object_or_404(
-            Student,
-            index_number=self.kwargs['index_number']
-        )
+        try:
+            return Student.objects.get(
+                    index_number=self.kwargs['index_number']
+            )
+        except Student.DoesNotExist:
+            return Http404('The student you want to add sponsorship information does not exist')
 
     def form_valid(self, form):
         form.instance.student = self.get_student()

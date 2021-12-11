@@ -1,0 +1,76 @@
+{% extends 'base/admin/base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto text-center">
+                <h4>{{ header|default:title }}</h4>
+                <p>Only showing department with students</p>
+            </div>
+        </div>
+
+        <div class="row my-4 shadow-sm rounded p-2">
+            <div class="col">
+                <span>{{ total }} departments</span>
+            </div>
+            <div class="col">
+                <form action="" method="get">
+
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <span class="fa fa-search"></span>
+                        </span>
+                        <input type="search" name="qdepartment" id="qdepartment" value="{{ qdepartment|default:'' }}" class="form-control">
+                        <button type="submit" class="input-group-btn">Search</button>
+                    </div>
+                </form>
+            </div>
+            {% if qdepartment %}
+            <div class="col-12">
+                <p></p>
+                "<b>{{ qdepartment }}</b>" <span> search {{ department_list.count }} departments</span>
+                <hr>
+            </div>
+            {% endif %}
+
+        </div>
+        {% if department_list %}
+            <div class="row my-4">
+                {% static 'icons/school.svg' as department_img %}
+                {% for department in department_list %}
+                    <div class="col-md-4 col-lg-3 my-3">
+
+                        <div class="card hover_shadow text-center">
+                            <div class="card-img-top">
+                                {% if department.picture %}
+                                    <img src="{{ department.picture.url }}" alt="" class="img-fluid" style="height: 10em">
+                                {% else %}
+                                    <img src="{{ department_img }}" alt="" class="img-fluid" style="height: 10em">
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <a class="card-link stretched-link" href="{% url 'Student:staff_department_all' department_slug=department.slug %}?back={{ request.path }}">{{ department }}</a>
+                                <br>
+                                <b>Total Students</b>
+                                <span>{{ department.students.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+            <div class="row my-4">
+                <div class="col-auto mx-auto text-center">
+                    <span class="fa fa-box-open fa-4x"></span>
+                    <p>No department found!</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

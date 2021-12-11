@@ -1,0 +1,85 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto">
+                <h4 class="display-6 text-center">{{ header }}</h4>
+            </div>
+        </div>
+
+        <div class="my-3">
+            <div class="col d-flex justify-content-between p-2 shadow-sm align-items-end">
+                <div class="d-flex flex-row hover_shadow">
+                    <b class="border p-2">Student Total</b>
+                    <span class="border p-2">{{ student_total }}</span>
+                </div>
+                {% if student_searched %}
+                    <span class="p-2 hover_shadow">"<b>{{ student_searched }}</b>" matches {{ student_list.count }} student</span>
+                {% endif %}
+                <form action="{{ request.path }}" method="get">
+                    <label for="qstudent">Search Student</label>
+                    <div class="input-group hover_shadow">
+                        <input type="search" name="{{ qvariable }}" id="qstudent" class="form-control" value="{{ student_searched|default:'' }}" placeholder="Student name, identity, index_number">
+                        <button type="submit" class="btn btn-outline-secondary">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if student_list %}
+            <div class="row my-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>#</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Index Number</th>
+                            <th>Previous School</th>
+                            <th>Programme</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for student in student_list %}
+                            <tr class="hover_shadow">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ student.profile.identity }}</td>
+                                <td>{{ student.profile.get_full_name }}</td>
+                                <td>{{ student.index_number|default_if_none:'---' }}</td>
+                                <td>{{ student.get_previous_school }}</td>
+                                <td>{{ student.programme }}</td>
+                                <td><a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-primary">View student</a></td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+        {% elif student_searched %}
+            <div class="row my-4 bg-light">
+                <hr>
+                <div class="col-auto mx-auto">
+                    <div class="alert alert-info text-center">
+                        <span class="fa fa-search"></span>
+                        <p>"<b>{{ student_searched }}</b>" matches no newly admitted student {% if programme %} in <b>{{ programme }}</b> {% endif %} to display</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="row my-4">
+                <hr>
+                <div class="col-auto mx-auto">
+                    <div class="alert alert-info text-center">
+                        <span class="fa fa-exclamation-circle"></span>
+                        <p>No newly admitted student {% if programme %} in <b>{{ programme }}</b> {% endif %} to display</p>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+{% endblock %}

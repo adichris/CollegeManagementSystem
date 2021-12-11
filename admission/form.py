@@ -42,7 +42,7 @@ class StudentFormsChange(forms.ModelForm):
         helper.layout.append(
             FormActions(
                 StrictButton('Reset', type='reset'),
-                StrictButton('Save', type='submit', css_class='btn-primary'),
+                StrictButton('Save', type='submit', css_class='btn-primary', onclick='dynamicSpinner(this)'),
                 css_class='d-flex justify-content-end'
             )
         )

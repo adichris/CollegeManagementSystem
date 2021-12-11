@@ -2,7 +2,7 @@
 {% url 'Home:admin' as admin_page %}
 {% url 'Home:landing_page' as landing_page %}
 {% with admin=request.user  %}
-    <div class="nav-item dropdown">
+    <div class="nav-item bord-width-nav dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="{% if admin.picture  %}{{ admin.picture.url }}{% else %}{% static 'favicon.png' %} {% endif %}" alt="" height="46" width="46" srcset="">
             <span class="ms-1">{{ admin.get_short_name|title }}</span>

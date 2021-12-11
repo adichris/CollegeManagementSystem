@@ -25,6 +25,9 @@ class DepartmentManager(models.Manager):
         else:
             return self.all()
 
+    def having_students(self, name=''):
+        return self.filter(department__student__isnull=False, name__icontains=name)
+
 
 class Department(models.Model):
     faculty = models.ForeignKey(
@@ -58,6 +61,9 @@ class Department(models.Model):
         db_table = 'department'
         verbose_name_plural = 'Departments'
         verbose_name = 'department'
+        permissions = [
+            ('list_department', 'can view departments list')
+        ]
 
     def __str__(self):
         return self.name
@@ -84,6 +90,10 @@ class Department(models.Model):
     def programmes(self):
         from programme.models import Programme
         return Programme.objects.filter(department_id=self.id)
+
+    def students(self):
+        from student.models import Student
+        return Student.objects.filter(programme__department=self)
 
 
 models.signals.pre_save.connect(auto_slug_faculty, sender=Department)

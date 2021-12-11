@@ -63,17 +63,26 @@ class User(PermissionsMixin, AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now=True) 
     identity = models.CharField(unique=True, null=True, max_length=30)
-
+    session_key = models.CharField(max_length=100, unique=True, null=True)
     REQUIRED_FIELDS = ['first_name', 'last_name', 'email', 'phone_number']
     USERNAME_FIELD = 'identity'
     EMAIL_FIELD = 'email'
     objects = UserManager()
+
+    # browser information
+    computer_name = models.CharField(max_length=250, null=True, blank=True)
+    username = models.CharField(max_length=250, null=True, blank=True)
+    http_sec_ch_ua = models.CharField(max_length=250, null=True, blank=True)
+    os = models.CharField(max_length=200, null=True, blank=True)
     
     class Meta:
         """Meta definition for User."""
         verbose_name = 'User'
         verbose_name_plural = 'Users'
         ordering = ("first_name", "last_name", "email")
+        permissions = [
+            ('add_lecturerprofile', 'Add Lecturer Profile')
+        ]
 
     def __str__(self):
         """Unicode representation of User."""
@@ -105,6 +114,18 @@ class User(PermissionsMixin, AbstractBaseUser):
     #     if self.is_superuser:
     #         return True
     #     return super(User, self).has_perm(perm, obj)
+
+    def get_category(self):
+        if self.student:
+            return 'Student'
+        elif self.is_admin and self.is_superuser:
+            return 'Administrator and Superuser'
+        elif self.is_admin:
+            return 'Administrator'
+        elif self.is_superuser:
+            return 'Superuser'
+        elif self.is_staff:
+            return 'Staff'
 
 
 @receiver(models.signals.pre_save, sender=User)

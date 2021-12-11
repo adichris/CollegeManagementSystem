@@ -3,7 +3,7 @@ from .models import User
 from django.contrib.auth.password_validation import MinimumLengthValidator
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Reset
 
 
 MINIMUM_USER_AGE = 10
@@ -57,7 +57,8 @@ class UserProfileForm(forms.ModelForm):
     @property
     def helper(self):
         helper = FormHelper()
-        helper.add_input(Submit('save', 'Save Changes'))
+        helper.add_input(Reset('reset', 'Reset', css_class='btn-secondary shadow-sm'))
+        helper.add_input(Submit('save', 'Save Profile'))
         return helper
 
     def clean_picture(self):

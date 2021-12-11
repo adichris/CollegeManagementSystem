@@ -1,0 +1,103 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-auto mx-auto">
+                <h4 class="text-primary text-center">{{ header|title|linebreaksbr }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-between align-items-center">
+                {% if back_url %}
+                    {% include 'institution/utils/back_snippet.html' %}
+                {% endif %}
+                <a href="{{ request.path }}?intab=t" class="d-flex align-items-center gap-2 text-decoration-none hover_shadow rounded p-2"><span class="fa fa-toggle-{% if in_tab %}on{% else %}off{% endif %} fa-2x"></span> <span>Open student in new tab</span></a>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col">
+                <form action="{{ s_action }}" method="get">
+                    <label class="form-label" for="qstudent">Search Student</label>
+                    <div class="input-group hover_shadow">
+                        <input type="search" id="qstudent" name="{{ s_variable_name }}" class="form-control" placeholder="Admission form serial number, student name">
+                        <button type="submit" class="btn btn-outline-secondary">Search</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col">
+                <form method="get">
+                    <label for="qprogramme" class="form-label">Search Programme</label>
+                    <div class="input-group hover_shadow">
+                        <input type="search" name="{{ p_variable_name }}" id="qprogramme" class="form-control" placeholder="programme name" value="{{ p_searched|default:'' }}">
+                        <button type="submit" class="btn btn-outline-secondary">Search</button>
+                    </div>
+                </form>
+            </div>
+            {% if p_searched %}
+                <div class="col-12 mt-2">
+                    "<b>{{ p_searched }}</b>" <span>matches {{ programme_list.count }}</span>
+                    <hr>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if programme_list %}
+            <div class="row my-4">
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>#</th>
+                            <th>Programme</th>
+                            <th>Number of Student</th>
+                            <th>Department</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for programme in programme_list %}
+                            <tr class="hover_shadow">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ programme.name }}</td>
+                                <td>{{ programme.count_new_student|default_if_none:'---' }}</td>
+                                <td>{{ programme.department }}</td>
+                                {% if is2_all_student %}
+                                    {% if in_tab %}
+                                        <td><a href="{% url 'Student:staff_programme_all' programme_slug=programme.slug %}?back={{ request.path }}" target="blank" class="btn btn-outline-primary">View students</a></td>
+                                    {% else %}
+                                        <td><a href="{% url 'Student:staff_programme_all' programme_slug=programme.slug %}?back={{ request.path }}" class="btn btn-outline-primary" onclick="dynamicSpinner(this)">View students</a></td>
+                                    {% endif %}
+                                {% else %}
+                                    {% if in_tab %}
+                                        <td><a href="{% url 'Student:staff_newly_admitted' programme_slug=programme.slug %}?back={{ request.path }}" target="blank" class="btn btn-outline-primary">View students</a></td>
+                                    {% else %}
+                                        <td><a href="{% url 'Student:staff_newly_admitted' programme_slug=programme.slug %}?back={{ request.path }}" class="btn btn-outline-primary" onclick="dynamicSpinner(this)">View students</a></td>
+                                    {% endif %}
+                                {% endif %}
+                            </tr>
+
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+        {% elif p_searched %}
+            <div class="row my-4">
+                <div class="col-auto mx-auto">
+                    <div class="alert alert-info shadow-sm text-center">
+                        <span class="fa fa-search"></span>
+                        <p>"<b>{{ p_searched }}</b>" matches no programme in the database.</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-auto col-md-6 mx-auto">
+                    <div class="alert alert-info text-center">
+                        <span class="fa fa-exclamation-circle"></span>
+                        <h6>No newly registered students to display</h6>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

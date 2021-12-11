@@ -4,6 +4,7 @@ from django.shortcuts import reverse
 from INSTITUTION.utils import AcademicYear
 from programme.models import Programme
 from django.utils.translation import gettext_lazy as  _
+from django.dispatch import receiver
 
 
 class SemesterModel(models.Model):
@@ -44,11 +45,29 @@ class System(models.Model):
     current_academic_year = models.CharField(max_length=10, choices=academic_year.choices(), default=academic_year.default())
 
 
+class LevelManager(models.Manager):
+    def get_4first_year(self):
+        level = self.filter(index=1)
+        if level.exists():
+            return level
+        return self.first()
+
+
 class Level(models.Model):
     name = models.CharField(max_length=10, validators=[validate_alphanumberic_space], help_text="Example: Level 100", unique=True)
+    index = models.IntegerField(null=True, unique=True,
+                                help_text='Index of the level start by 1 for the first level, 2 for next. etc')
+    objects = LevelManager()
 
     def __str__(self):
         return self.name
+
+
+@receiver(models.signals.post_save, sender=Level)
+def auto_index_level(instance, created, **kwargs):
+    if created and not instance.index:
+        instance.index = Level.objects.count() + 1
+        instance.save()
 
 
 class StudentLevelTotal(models.Model):

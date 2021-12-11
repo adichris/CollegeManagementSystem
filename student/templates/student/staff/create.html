@@ -7,11 +7,17 @@
 {% block info %}
     <div class="row my-3">
         <div class="col-auto mx-auto text-center">
-            {% if isto_update %}
+            {% if reuse %}
                 <h4>{{ title }}</h4>
+                <p>{{ subtitle }}</p>
+                <p class="m-0">{{ subtitle2 }}</p>
             {% else %}
-            <p>If this student is new, go to the <a href="{% url 'Admission:main_template_page' %}">standard admission page</a></p>
-            <p>This page is design to <b>register/add a continuous student</b> to the system</p>
+                {% if isto_update %}
+                    <h4>{{ title }}</h4>
+                {% else %}
+                <p>If this student is new, go to the <a href="{% url 'Admission:main_template_page' %}">standard admission page</a></p>
+                <p>This page is design to <b>register/add a continuous student</b> to the system</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

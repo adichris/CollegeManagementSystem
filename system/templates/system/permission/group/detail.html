@@ -1,0 +1,102 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+
+    <div class="container">
+        <div class="row my-4">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto text-center">
+                <h4 class="display-6">{{ group }}</h4>
+                <h5>Permission Group</h5>
+            </div>
+        </div>
+
+    {% if permission_list %}
+        <div class="row my-4">
+            <div class="col">
+                <div class="table-responsive">
+                    <p>Members in this group have the follow permissions</p>
+                    <table class="table">
+                        <tr>
+                            <th>#</th>
+                            <th>Permission Code Name</th>
+                            <th>Permission Name</th>
+                            <th>Permission Content Type</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for permission in permission_list %}
+                            <tr class="hover_shadow">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ permission.codename }}</td>
+                                <td>{{ permission.name }}</td>
+                                <td>{{ permission.content_type }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'System:permission_detail' permission_pk=permission.pk %}?back={{ request.path }}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">View</a>
+                                        <a href="" class="btn btn-outline-danger" onclick="dynamicSpinner(this)">Remove</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row my-4">
+            <div class="col">
+                <div class="alert alert-warning text-center">
+                    <h5>These permission group has no permission</h5>
+                    <a href="" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Permission</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if member_list %}
+        <div class="row my-4">
+            <div class="col">
+                <div class="table-responsive">
+                    <p>Members in this group have the follow permissions</p>
+                    <table class="table">
+                        <tr>
+                            <th>#</th>
+                            <th>Member Name</th>
+                            <th>Member Identity</th>
+                            <th>Member Type</th>
+                            <th>Action</th>
+                        </tr>
+                        {% for member in member_list %}
+                            <tr class="hover_shadow">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ member }}</td>
+                                <td>{{ member.identity }}</td>
+                                <td>{{ member.get_category }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">View</a>
+                                        <a href="" class="btn btn-outline-danger" onclick="dynamicSpinner(this)">Remove</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row my-4">
+            <div class="col">
+                <div class="alert alert-warning text-center">
+                    <h5>There no members in this group</h5>
+                    <a href="" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Members</a>
+
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+
+{% endblock %}

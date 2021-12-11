@@ -9,7 +9,7 @@ class JsonResponseMixin:
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        if self.request.accept('text/html'):
+        if self.request.accepts('text/html'):
             return response
         else:
             return JsonResponse(self.get_success_data())

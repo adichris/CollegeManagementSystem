@@ -22,10 +22,15 @@ class UserModelAdmin(UserAdmin):
         ("Personal Information", {"fields":('first_name', 'last_name','email', 'date_of_birth', 'gender', 'phone_number'), 'classes':'wide'}),
         ("Picture", {"fields": ('picture', ), 'classes':'wide'}),
         ("Permission", {'fields': ('is_admin', 'is_superuser')}),
-         ("Active Status", {"fields": ("is_active", 'is_online', ), "classes": "wide"}),
-         ("Groups and Authorization", {"fields": ("groups", ), "classes": "wide"}),
+        ("Active Status", {"fields": ("is_active", 'is_online', ), "classes": "wide"}),
+        ("User Browser Information",
+         {"fields": ("session_key", 'last_login', 'os', 'username', 'computer_name', 'http_sec_ch_ua'),
+          "classes": "wide"}
+         ),
+        ("Groups and Authorization",
+         {"fields": ("groups", ), "classes": "wide"}),
     ]
 
-    readonly_fields = ('is_online', )
+    readonly_fields = ('is_online', 'session_key', 'last_login', 'os', 'username', 'computer_name', 'http_sec_ch_ua')
     ordering = ("first_name", "last_name", "email")
     filter_horizontal = ()

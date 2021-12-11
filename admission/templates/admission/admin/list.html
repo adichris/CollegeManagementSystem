@@ -16,6 +16,8 @@
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="filterdropMenuBtn">
                           <li><h6 class="dropdown-header">Filter Admission Form</h6></li>
+                          <li><h6 class="dropdown-item-text"></h6></li>
+                          <li><h6 class="dropdown-item-text"></h6></li>
                             {% for status in form_status.choices %}
                                 <li><a class="dropdown-item" href="?studentforms={{ query_text }}&fQuery={{ status|first }}&{{ page_obj.number }}">{% if status|first == fQuery %}<span class="fa fa-check"></span> {% endif %} {{ status|last }}</a></li>
                             {% endfor %}
@@ -43,8 +45,8 @@
             <article>
             <div class="row">
                 <div style="max-height: 95vh !important; overflow-y: auto;" class="table-responsive">
-                    <table class="table table-hover table-bordered shadow-sm">
-                        <tr class="sticky-md-top bg-white50 transparent-bg">
+                    <table class="table table-bordered">
+                        <tr class="sticky-top bg-white50 transparent-bg">
                             <td>#</td>
                             <th>Type</th>
                             <th>Serial Number</th>
@@ -56,7 +58,7 @@
                             <th>Action</th>
                         </tr>
                         {% for studentform in page_obj %}
-                            <tr>
+                            <tr class="hover_shadow">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ studentform.form_type }}</td>
                                 <td>{{ studentform.serial_number }}</td>
@@ -71,10 +73,10 @@
                                 <td>{{ studentform.updated_at }}</td>
                                 <td>
                                     {% if studentform.student %}
-                                        <a href="{{ studentform.get_absolute_student_form_url }}?back={{ request.path }}&backname={{ title }}" class="btn btn-outline-primary btn-sm" onclick="dynamicSpinner(this)">student</a>
-                                        <a href="{{ studentform.get_absolute_url }}" class="btn btn-outline-primary btn-sm" title="view form">form</a>
+                                        <a href="{{ studentform.get_absolute_student_form_url }}?back={{ request.path }}&backname={{ title }}" class="btn btn-outline-primary my-1" onclick="dynamicSpinner(this)">student</a>
+                                        <a href="{{ studentform.get_absolute_url }}" class="btn btn-outline-primary my-1" title="view form">form</a>
                                     {% else %}
-                                        <a href="{{ studentform.get_absolute_url }}" class="btn btn-outline-primary btn-sm" title="view form">form</a>
+                                        <a href="{{ studentform.get_absolute_url }}" class="btn btn-outline-primary my-1" title="view form">form</a>
                                     {% endif %}
                                 </td>
                             </tr>

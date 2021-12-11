@@ -11,9 +11,9 @@
 
         <div class="row my-4">
             <div class="col">
-                <form method="get" action="" class="shadow-sm">
+                <form method="get" action="{% url 'Lecturer:staff_all' %}" class="shadow-sm">
                     <div class="input-group">
-                        <input type="search" name="qstudent" id="" class="form-control" placeholder="Search any lecturer by; name, identity, phone number">
+                        <input type="search" name="qlecturer" id="" class="form-control" placeholder="Search any lecturer by; name, identity, phone number">
                         <button class="btn btn-primary" type="submit">Search</button>
                     </div>
                 </form>
@@ -23,11 +23,13 @@
         <div class="row my-4">
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/lecturer/add_user_male.svg' as training_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=training_src label='Add Lecturer' %}
+                {% url 'Lecturer:staff_add' as staff_add_link %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=training_src label='Add Lecturer' link=staff_add_link %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/lecturer/training.svg' as training_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=training_src label='All Lecturers' %}
+                {% url 'Lecturer:staff_all' as all_link %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=training_src label='All Lecturers' link=all_link %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/lecturer/school.svg' as department_src %}
@@ -46,7 +48,7 @@
                 {% static 'icons/lecturer/view.svg' as filter_Src %}
                 {% include 'dashboard/link_thumbnail.html' with img_src=filter_Src label='Filter Lecturers' %}
             </div>
-
         </div>
+
     </div>
 {% endblock %}

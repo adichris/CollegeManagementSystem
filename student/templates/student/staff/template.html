@@ -28,19 +28,23 @@
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/new_students.svg' as stu_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='New Admitted Students' %}
+                {% url 'Student:staff_select_student_programme' as stu_programme %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src link=stu_programme label='New Admitted Students' %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/canvas_Student.svg' as stu_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='All Students' %}
+                {% url 'Student:staff_all' as all_student %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='All Students' link=all_student %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/school.svg' as stu_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Student By Department' %}
+                {% url 'Student:department_group' as by_department_url %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Student By Department' link=by_department_url %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/curriculum.svg' as stu_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Student By Programme' %}
+                {% url 'Student:staff_select_student_programme' as by_programme %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=stu_src label='Student By Programme' link=by_programme link_para_n='allstudents' link_para_v='1' %}
             </div>
 
             <div class="col-md-6 col-lg-4 my-2">

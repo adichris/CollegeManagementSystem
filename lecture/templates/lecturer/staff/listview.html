@@ -1,0 +1,70 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto">
+                <h4 class="display-6">ALL LECTURES</h4>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col">
+                <form method="get" action="" class="shadow-sm">
+                    <div class="input-group">
+                        <input type="search" name="qlecturer" id="" value="{{ query|default:'' }}" class="form-control" placeholder="Search any lecturer by; name, identity, phone number">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if lecturer_list %}
+            <div class="row my-4">
+                <div class="table-responsive">
+                    <table class="table">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Identity</th>
+                            <th>Department</th>
+                            <th>Courses Taught</th>
+                            {% if can_view %}
+                                <th>Action</th>
+                            {% endif %}
+                        </tr>
+                        {% for lecturer in lecturer_list %}
+                            <tr class="hover_shadow">
+                                <th>{{ forloop.counter }}</th>
+                                <td>{{ lecturer.profile.get_full_name }}</td>
+                                <td>{{ lecturer.identity }}</td>
+                                <td>{{ lecturer.department }}</td>
+                                <td>{{ lecturer.courses.count }}</td>
+                                {% if can_view %}
+                                    <td><a href="{{ lecturer.get_absolute_url }}" class="btn btn-outline-secondary btn-sm">View</a></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-md-8 col-lg-6 mx-auto">
+                    <div class="alert alert-info text-center">
+                        <span class="fa fa-exclamation-circle"></span>
+                        <p>No lecturers registered in to the system yet</p>
+                        {% if can_edit %}
+                            <a href="{% url 'Lecturer:staff_add' %}" class="btn-link"><span class="fa fa-plus-circle"></span> Register Lecturer</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

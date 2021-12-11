@@ -1,10 +1,74 @@
 import datetime
 import os
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now as today_time
+from datetime import timedelta
 
 from accounts.models import User
 from admission.models import StudentForms
 from programme.models import Programme
+from system.models import Level
+
+
+class StudentManager(models.Manager):
+    def get_newly_admitted(self, query=None, **kwargs):
+        if query:
+            q_query = models.Q(profile__email__icontains=query) | \
+                      models.Q(profile__first_name__icontains=query) | \
+                      models.Q(profile__last_name__icontains=query) | \
+                      models.Q(admission_form__serial_number__startswith=query) | \
+                      models.Q(index_number__startswith=query)
+            return self.filter(
+                q_query,
+                date_admitted__year=today_time().year,
+                **kwargs
+            )
+        return self.filter(**kwargs)
+
+    def get_all_sort(self, by, query=None):
+        return self.all(query=query).order_by(by)
+
+    def all(self, query=None, programme_slug=None, department_slug=None):
+        return self.get_only_active(query=query, programme_slug=programme_slug, department_slug=department_slug)
+
+    def get_programme_department_slugs_kwargs(self, programme_slug=None, department_slug=None):
+        kwargs = {}
+        if department_slug:
+            kwargs['programme__department__slug'] = department_slug
+        if programme_slug:
+            kwargs['programme__slug'] = programme_slug
+        return kwargs
+
+    def get_only_active(self, query=None, programme_slug=None, department_slug=None):
+        kwargs = self.get_programme_department_slugs_kwargs(
+            programme_slug=programme_slug,
+            department_slug=department_slug
+        )
+        if query:
+            query_objs = models.Q(index_number__icontains=query) | \
+                         models.Q(profile__email__icontains=query) | \
+                         models.Q(profile__first_name__icontains=query) | \
+                         models.Q(profile__last_name__icontains=query) | \
+                         models.Q(profile__identity__icontains=query)
+            return self.filter(
+                query_objs,
+                is_active=True,
+                **kwargs
+            )
+        return self.filter(
+            is_active=True,
+            **kwargs
+        )
+
+    def get_active_and_old(self, programme_slug=None, department_slug=None):
+        kwargs = self.get_programme_department_slugs_kwargs(programme_slug=programme_slug,
+                                                            department_slug=department_slug)
+        return self.filter(
+            is_active=True,
+            date_completed__lt=today_time().date(),
+            **kwargs
+        )
 
 
 class Student(models.Model):
@@ -16,16 +80,38 @@ class Student(models.Model):
                                    )
     admission_form = models.OneToOneField(StudentForms, related_name='student_admission_form',
                                           on_delete=models.CASCADE, unique=True, null=True)
-    index_number = models.CharField(null=True, blank=True, max_length=60, unique=True)
+    index_number = models.CharField(null=True, max_length=60, unique=True)
+    level = models.ForeignKey(Level, on_delete=models.CASCADE, null=True)
     programme = models.ForeignKey(Programme, on_delete=models.CASCADE, null=True)
+    date_admitted = models.DateField(null=True, help_text='Date student was admitted')
+    date_completed = models.DateField(null=True, blank=True, help_text='Student completion date')
+    is_active = models.BooleanField(default=False, help_text='Is this student current or active')
+    objects = StudentManager()
+
+    @property
+    def is_old(self):
+        return self.date_completed < today_time().date()
+
+    @property
+    def full_name(self):
+        return self.profile.get_full_name()
 
     def __str__(self):
         return str(self.profile)
+
+    def get_previous_school(self):
+        return self.previous_education.first() or '---'
 
     class Meta:
         verbose_name = 'Student'
         verbose_name_plural = 'Students'
         ordering = ('id', 'profile')
+        permissions = [
+            ('list_student', _('can view student list'))
+        ]
+
+    def get_absolute_detailview4staff(self):
+        return
 
 
 class StudentProgrammeChoice(models.Model):
@@ -39,7 +125,7 @@ class StudentProgrammeChoice(models.Model):
         unique_together = ('first_choice', 'second_choice', 'student')
 
     def __str__(self):
-        return str(self.student.admission_form.serial_number)
+        return str(self.first_choice)
 
 
 def upload_certificate_copy_to(instance, filename):
@@ -52,7 +138,8 @@ class AdmissionCertificate(models.Model):
     certificate_picture = models.FileField(
         null=True,
         upload_to=upload_certificate_copy_to,
-        help_text='Include all the necessary(WASSCE, NOV/DEC, HND, SRN, Diploma Cert, etc) certificate in one pdf file'
+        help_text=_(
+            'Include all the necessary(WASSCE, NOV/DEC, HND, SRN, Diploma Cert, etc) certificate in one pdf file')
     )
 
     class Meta:
@@ -100,9 +187,9 @@ class CertExamRecord(models.Model):
                                     related_name='certificate_records',
                                     )
     subject = models.CharField(max_length=120)
-    index_number = models.CharField(max_length=20, help_text='Examination number')
+    index_number = models.CharField(max_length=20, help_text=_('Examination number'))
     examination_year = models.IntegerField(choices=examination_year_tuple())
-    school = models.CharField(max_length=200, help_text='School Name', null=True, blank=True)
+    school = models.CharField(max_length=200, help_text=_('School Name'), null=True, blank=True)
     grade = models.CharField(max_length=3, choices=WaecGradeChoices.choices)
     # TODO change grade to select field
     examination_type = models.CharField(max_length=120,
@@ -122,14 +209,14 @@ class CertExamRecord(models.Model):
 class StudentPreviousEducation(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='previous_education',
                                 related_query_name='previous_education')
-    school = models.CharField(max_length=200, help_text='Previous school name')
-    region = models.CharField(max_length=200, help_text='Region the school is located')
+    school = models.CharField(max_length=200, help_text=_('Previous school name'))
+    region = models.CharField(max_length=200, help_text=_('Region the school is located'))
     from_year = models.IntegerField(choices=examination_year_tuple())
     to_year = models.IntegerField(choices=examination_year_tuple())
 
     class Meta:
         db_table = 'studentpreviouseducation'
-        verbose_name_plural = 'Student Previous Education'
+        verbose_name_plural = _('Student Previous Education')
         unique_together = (
             'student', 'school', 'to_year'
         )

@@ -1,9 +1,14 @@
+from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404, reverse
 from django.views.generic import View, CreateView
+from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth import login
+
+from lecture.models import Lecturer
 from .forms import (
-    UserProfileForm
+    UserProfileForm,
+    
 )
 from student.models import Student
 from .models import User
@@ -119,4 +124,57 @@ class ContinuouStudentProfileCreateView(LoginRequiredMixin, PermissionRequiredMi
         return render(request, self.template_name, ctx)
 
     def get_student(self):
-        return get_object_or_404(Student, index_number=self.kwargs['index_number'])
+        try:
+            return Student.objects.get(
+               index_number=self.kwargs['index_number']
+            )
+        except Student.DoesNotExist:
+            raise Http404('The student your operating on does not exists')
+
+
+class LecturerProfileCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    model = User
+    form_class = UserProfileForm
+    template_name = 'accounts/lecturer/create.html'
+    permission_required = 'accounts.add_lecturerprofile'
+
+    def get_context_data(self, **kwargs):
+        return {
+            'title': 'Add Lecture Profile',
+        }
+    def get(self, request, *args, **kwargs):
+        ctx = self.get_context_data()
+        ctx['form'] = self.form_class(instance=self.get_profile_instance())
+        return render(request, self.template_name, ctx)
+    
+    def post(self, request, *args, **kwargs):
+        form_class = self.form_class(request.POST, files=request.FILES, instance=self.get_profile_instance())
+        if form_class.is_valid():
+            profile_instance = form_class.save(False)
+            lecturer = self.get_lecturer()
+            profile_instance.identity = lecturer.identity
+            profile_instance.save()
+            if not lecturer.profile:
+                lecturer.profile = profile_instance
+                lecturer.save()
+            return redirect('Lecturer:staff_add_template', identity=lecturer.identity)
+        ctx = self.get_context_data()
+        ctx['form'] = form_class
+        return render(request, self.template_name, ctx)
+    
+    def get_lecturer(self):
+        try:
+            self.lecturer = Lecturer.objects.get(
+                identity = self.kwargs['identity']
+            )
+            return self.lecturer
+        except Lecturer.DoesNotExist:
+            raise Http404('The lecturer does not exist in the system')
+
+    def get_profile_instance(self):
+        try:
+            return User.objects.get(
+                identity=self.kwargs['identity']
+            )    
+        except User.DoesNotExist:
+            return

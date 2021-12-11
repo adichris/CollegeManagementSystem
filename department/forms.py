@@ -58,3 +58,24 @@ class DepartmentChangeForm(forms.ModelForm):
             )
         )
         return helper
+
+
+class DepartmentAssigmentForm(forms.Form):
+    department = forms.ModelChoiceField(queryset=Department.objects)
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout.append(
+            FormActions(
+                StrictButton(
+                    'Reset', type='reset', css_class='btn btn-light'
+                ),
+                StrictButton(
+                    'Save', type='submit', css_class='btn btn-primary', onclick='dynamicSpinner(this)'
+                ),
+                css_class='d-flex justify-content-end'
+            )
+        )
+        return helper
+

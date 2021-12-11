@@ -1,8 +1,10 @@
+from django.forms import ValidationError
 import datetime
 from django.db.models import TextChoices
 from django.http.response import Http404
 from django.utils.http import is_safe_url
 from django.shortcuts import render
+import os
 
 
 def get_admission_steps(admission_status):
@@ -37,19 +39,27 @@ class AcademicYear:
 
     @classmethod
     def default(cls):
-        return cls.TO_YEAR - 1, cls.TO_YEAR
+        return cls.formulate_academic_year(cls.TO_YEAR)
 
     @classmethod
     def choices(cls):
         if cls.FROM_YEAR > cls.TO_YEAR:
             raise ValueError('FROM_YEAR > TO_YEAR')
         return (
-            (f'{x - 1}/{x}', f'{x - 1}/{x}') for x in range(cls.TO_YEAR, cls.FROM_YEAR, -1)
+            (cls.formulate_academic_year(x), cls.formulate_academic_year(x)) for x in range(cls.TO_YEAR, cls.FROM_YEAR, -1)
         )
 
     @classmethod
-    def default(cls):
-        return cls.TO_YEAR-1, cls.TO_YEAR
+    def formulate_academic_year(cls, year):
+        """
+        :param year: the current year
+        :return:  last_year/this_year
+        """
+        return f'{year - 1}/{year}'
+
+    @classmethod
+    def extract_academic_year(cls, date_admitted):
+        return cls.formulate_academic_year(date_admitted)
 
 
 class SemesterChoice(TextChoices):
@@ -64,7 +74,33 @@ def get_not_allowed_render_response(request, message="Your not allowed to access
     })
 
 
+def get_back_url(request):
+    back_url = request.GET.get('back')
+    if back_url and is_safe_url(back_url, request.get_host()):
+        return back_url
+    return request.session.get('back_url')
+
+
 def get_next_url(request):
-    next_url = request.GET.get('next') or request.GET.get('back')
+    next_url = request.GET.get('next')
     if next_url and is_safe_url(next_url, request.get_host()):
         return next_url
+    return get_back_url(request)
+
+
+MINIMUM_USER_AGE = 10
+PASSPORT_PICTURE_SIZE = (600, 600)
+
+
+def file_size_validator(file, maximum=PASSPORT_PICTURE_SIZE):
+    picture = file
+    a, b = maximum
+    file_size = a * b
+    if picture.size > file_size:
+        from django.template.defaultfilters import filesizeformat
+        raise ValidationError(f'The file size should be less than {filesizeformat(file_size)}. You uploaded {filesizeformat(picture.size)} ')
+
+
+def pdf_ext_validator(filename):
+    if not os.path.splitext(filename)[1] == '.pdf':
+        raise ValidationError('The file format is not supported. Must be .PDF format')

@@ -1,0 +1,56 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto">
+                <h4>{{ title|title }}</h4>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 mx-auto">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="text-center">{{ permission.name }}</h4>
+                        <table class="table">
+                            <tr>
+                                <td>Name</td>
+                                <td>{{ permission.name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Code Name</td>
+                                <td>{{ permission.codename }}</td>
+                            </tr>
+                            <tr>
+                                <td>Content Type</td>
+                                <td>
+                                    {{ permission.content_type }}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <p class="hover_shadow p-1 rounded">Groups having this permission:</p>
+                <ul class="list-group shadow">
+                    {% for group in groups %}
+                        <li href="{% url 'System:permission_group_detail' pk=group.pk %}?back={{ request.path }}" class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'System:permission_group_detail' pk=group.pk %}" class="link-primary">{{ group }}</a>
+                                <a href="" title="remove from group" class="link-danger"><span class="fa fa-minus-circle"></span></a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

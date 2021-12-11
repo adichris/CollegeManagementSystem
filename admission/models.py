@@ -6,10 +6,6 @@ from django.shortcuts import reverse
 
 
 from INSTITUTION.utils import AcademicYear
-# class FormTypeChoiceManager(models.Manager):
-#     def get_most_used(self):
-#         return self.aggregate(models.Max())
-#
 
 
 class FormTypeManager(models.Manager):

@@ -9,7 +9,7 @@
         </div>
 
         <div class="row my-4">
-            <div class="col p-2 shadow-sm d-flex justify-content-center gap-3">
+            <div class="col p-2 shadow-sm d-flex flex-column flex-md-row justify-content-center gap-3">
                {% if can_audit %}
                     <a href="{% url 'Admission:create' %}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Admission Form </a>
                     <a href="#" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)"><span class="fa fa-cog"></span> Manage Forms </a>

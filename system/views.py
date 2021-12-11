@@ -1,10 +1,11 @@
 from django.shortcuts import reverse, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.models import Permission,  Group
 
 # Create your views here.
 from INSTITUTION.views import JsonResponseMixin
+from INSTITUTION.utils import get_back_url
 from .models import SemesterModel, Level
 from .forms import (
     SemesterCreationForm,
@@ -105,9 +106,64 @@ class PermissionGroupCreate(PermissionRequiredMixin, LoginRequiredMixin, JsonRes
     permission_required = 'auth.add_group'
     model = Group
     form_class = GroupCreationForm
-    template_name = 'system/'
+    template_name = 'system/staff/create.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PermissionGroupCreate, self).get_context_data(**kwargs)
+        ctx['title'] = 'Add Permission Group'
+        ctx['header'] = 'Group Details'
+        ctx['back_url'] = get_back_url(self.request)
+
+        return ctx
+
+    def get_success_url(self):
+        return reverse('System:permission_group_detail', kwargs={
+            'pk': self.object.pk
+        })
+
+
+class PermissionGroupDetails(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Group
+    permission_required = 'auth.view_group'
+    permission_denied_message = 'You need authentication permission to view this permission group'
+    template_name = 'system/permission/group/detail.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PermissionGroupDetails, self).get_context_data(**kwargs)
+        ctx['title'] = str(self.object) + ' Detail'
+        ctx['permission_list'] = self.get_group_permissions()
+        ctx['member_list'] = self.get_group_members()
+        ctx['back_url'] = get_back_url(self.request) or reverse('System:permission_group')
+        return ctx
+
+    def get_group_permissions(self):
+        return self.object.permissions.all()
+
+    def get_group_members(self):
+        return self.object.user_set.all()
+
+
+class PermissionDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    permission_required = 'auth.view_permission'
+    model = Permission
+    template_name = 'system/permission/detail.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(PermissionDetail, self).get_context_data(**kwargs)
+        ctx['title'] = '%s Permission Detail' % self.object
+        ctx['groups'] = self.get_groups()
+        return ctx
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(
+                pk=self.kwargs['permission_pk']
+        )
+
+    def get_groups(self):
+        return self.object.group_set.all()
 
 
 class LevelCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'system.add_level'
     template_name = 'system/level/staff/add.html'
+

@@ -32,6 +32,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         {% crispy form  form_helper %}
+                        {% csrf_token %}
                     </div>
                     <div class="d-flex justify-content-between">
                         <a href="{% url 'Home:landing_page' %}" onclick="spinBack(this)"  class="align-self-start btn"><span class="fa fa-chevron-left"></span> {{ institution_short }}</a>

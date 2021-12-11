@@ -1,0 +1,159 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto">
+                <h3 class="text-center text-primary">{{ header|title|linebreaksbr }}</h3>
+            </div>
+        </div>
+
+        <div class="row my-4 d-flex align-items-end">
+            <div class="col-md-8 col-lg-5 mx-auto">
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-end ">
+                    <div class="d-flex flex-row rounded hover_shadow">
+                        <span class="p-2 border">Continuous Student</span>
+                        <span class="p-2 border">{{ tt_active }}</span>
+                    </div>
+                    <div class="d-flex flex-row rounded hover_shadow">
+                        <span class="p-2 border">Old Student</span>
+                        <span class="p-2 border">{{ tt_old }}</span>
+                    </div>
+                    <div class="d-flex flex-row rounded hover_shadow">
+                        <span class="p-2 border">Total Student</span>
+                        <span class="p-2 border"><b>{{ student_total }}</b></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-auto col-lg-7 mx-auto">
+                <div class="d-flex flex-column flex-md-row gap-3 align-items-start align-items-md-end">
+                    <form action="" class="w-100" method="get">
+                        <label class="form-label" for="qlimit">Rows Per Page</label>
+                        <div class="input-group hover_shadow">
+                            <input type="number" name="{{ row_limit_name }}" value="{{ limit_row|default_if_none:0 }}" id="qlimit" class="form-control">
+                            <button type="submit" class="btn btn-outline-secondary">Apply</button>
+                        </div>
+                    </form>
+                    <form action="" class="w-100" method="get">
+                        <label for="qsort" class="form-label">Sort by</label>
+                        <div class="input-group hover_shadow">
+                            <select name="{{ sortname }}"  id="qsort" class="form-select">
+                                {% for item in sort_vars.items %}
+                                    <option {% if item|first == current_sort %} selected {% endif %} value="{{ item|first }}">{{ item|last }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-outline-secondary">Sort</button>
+                        </div>
+                    </form>
+                    <form action="" class="w-100" method="get" >
+                        <label for="qstudent" class="form-label">Search Student</label>
+                        <div class="input-group hover_shadow">
+                            <input type="search" name="qstudent" id="qstudent" value="{{ s_searched|default_if_none:'' }}" placeholder="student name, index number, " class="form-control">
+                            <button type="submit" class="btn btn-outline-secondary">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        {% if s_searched %}
+            <div class="row mt-4">
+                <div class="col">
+                    <span>{{ qty_found }} result for </span><b>{{ s_searched }}</b>
+                    <hr>
+                </div>
+            </div>
+        {% endif %}
+        {% if student_list %}
+            {% regroup page_obj.object_list by level as student_list_level_group %}
+            {% for student_level_group in student_list_level_group %}
+                <div class="row">
+                    <div class="col">
+                        <h5>{{ student_level_group.grouper|default_if_none:'No Level Associated' }}</h5>
+                    </div>
+                </div>
+                <div class="row my-1 mb-4">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Index Number</th>
+                                <th>Programme</th>
+                                <th>Level</th>
+                                <th>Year Admitted</th>
+                                <th>Completed Year</th>
+                                <th>Action</th>
+                            </tr>
+                            {% for student in student_level_group.list %}
+                                <tr class="hover_shadow">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ student.full_name|default_if_none:'---' }}</td>
+                                    <td>{{ student.index_number|default_if_none:'---' }}</td>
+                                    <td>{{ student.programme|default_if_none:'---' }}</td>
+                                    <td>{{ student.level|default_if_none:'---' }}</td>
+                                    <td>{{ student.date_admitted.year|default_if_none:'---' }}</td>
+                                    <td>{{ student.date_completed.year|default_if_none:'---' }}</td>
+                                    <td><a href="" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">view</a></td>
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+                    </div>
+
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col">
+                    <div class="pagination flex-wrap">
+                    {% if page_obj.has_previous %}
+                        <span class="page-item">
+                                <a href="?{{ row_limit_name }}={{ limit_row }}&page=1" class="page-link">&laquo; first</a>
+                        </span>
+                        <span class="page-item">
+                            <a class="page-link" href="?{{ row_limit_name }}={{ limit_row }}&page={{ page_obj.previous_page_number }}">previous</a>
+                        </span>
+                    {% endif %}
+
+                    <span class="page-item active" aria-current="true" title="current page" data-bs-toggle="tooltip" data-bs-placement="top">
+                        <span class="page-link" aria-disabled="true" tabindex="-1">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </span>
+                    {% if page_obj.has_next %}
+                        <span class="page-item">
+                                <a class="page-link" href="?{{ row_limit_name }}={{ limit_row }}&page={{ page_obj.next_page_number }}">next</a>
+                        </span>
+                        <span class="page-item">
+                                <a class="page-link" href="?{{ row_limit_name }}={{ limit_row }}&page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        </span>
+                    {% endif %}
+                </div>
+                </div>
+            </div>
+
+
+        {% elif s_searched %}
+            <div class="row my-4">
+                <div class="col-auto mx-auto">
+                    <div class="alert alert-light text-center shadow-sm">
+                        <b class="h4">"{{ s_searched }}"</b><br>
+                        <span>Your search matches no student information</span>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-auto mx-auto">
+                    <div class="alert alert-info text-center shadow-sm">
+                        <span class="fa fa-exclamation-circle fa-2x"></span>
+                        <h4>No student to display here</h4>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

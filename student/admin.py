@@ -41,5 +41,16 @@ class StudentProgrammeChoiceModelAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentModelAdmin(admin.ModelAdmin):
-    list_display = ('profile', 'admission_form')
-    readonly_fields = list_display
+    list_display = ('profile', 'admission_form', 'index_number', 'programme', 'date_admitted', 'is_active')
+    readonly_fields = ('profile', 'admission_form', 'index_number', 'programme', 'date_admitted', )
+    list_filter = ('is_active', )
+
+    search_fields = ('index_number', )
+
+    fieldsets = [
+        ('Profile', {'fields': ('profile',)}),
+        ('Admission Form', {'fields': ('admission_form',)}),
+        ('Programme', {'fields': ('programme',)}),
+        ('Date to Complete', {'fields': ('date_admitted', 'date_completed')}),
+        ('Status', {'fields': ('is_active', )}),
+    ]

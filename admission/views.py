@@ -2,6 +2,9 @@ from django.views.generic import TemplateView, ListView, DetailView,  CreateView
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http.response import HttpResponseForbidden
+from django.utils.timezone import now as today_time
+from system.models import Level
+
 
 from .generate_serial_number import SerialNumberGenerator
 from .models import (
@@ -215,6 +218,8 @@ class StudentFormsDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
             programme_given = acceptance_form.cleaned_data['Select_programme_for_student']
             student = self.object.student
             student.programme_id = programme_given
+            student.date_admitted = today_time().date()
+            student.level = Level.objects.get_4first_year()
             student.save()
             admission_form = self.object
             admission_form.status = FormStatusChoice.ACCEPTED

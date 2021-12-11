@@ -8,7 +8,7 @@
 {% url 'Dashboard:admin' as admin_dashboard %}
 
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white50 transparent-bg sticky-md-top" aria-label="Navigation bar">
+<nav class="navbar navbar-expand-lg sticky-lg-top navbar-light bg-white50 transparent-bg" aria-label="Navigation bar">
     <div class="container justify-content-between justify-content-md-center">
         <a class="navbar-brand {% if request.path == home %} active {% endif %}" href="{{ home }}">{% institutionFullName %}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,12 +17,12 @@
 
         <div class="collapse navbar-collapse" id="topNavbar">
             <ul class="navbar-nav me-auto mb-2 mb-md-0 mx-auto justify-content-center align-items-start align-items-md-center ">
-                <li class="nav-item">
-                    <a class="nav-link text-nowrap {% if request.path == admin_dashboard %} active {% endif %}" aria-current="page" href="{{ admin_dashboard }}">Dashboard</a>
+                <li class="nav-item bord-width-nav">
+                    <a class="nav-link text-nowrap {% if request.path == admin_dashboard %} active-primary {% endif %}" aria-current="page" href="{{ admin_dashboard }}">Dashboard</a>
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if request.path == faculties or departments == request.path or programmes == request.path %} active {% endif %}" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Faculty</a>
+                <li class="nav-item bord-width-nav dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path == faculties or departments == request.path or programmes == request.path %} active-primary {% endif %}" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Faculty</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownAcademics">
                         <li><a class="dropdown-item" href="{{ faculties }}">Faculty</a></li>
                         <li><a class="dropdown-item" href="{{ departments }}">Department</a></li>
@@ -31,10 +31,10 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if request.path == admission_administration %} active {% endif %}" href="#" id="dropdownAdmission " data-bs-toggle="dropdown" aria-expanded="false">Admissions</a>
+                <li class="nav-item bord-width-nav dropdown">
+                    <a class="nav-link dropdown-toggle {% if request.path == admission_administration %} active-primary {% endif %}" href="#" id="dropdownAdmission " data-bs-toggle="dropdown" aria-expanded="false">Admissions</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownAdmission">
-                        <li><a class="dropdown-item {% if request.path == admission_administration %} active {% endif %}" href="{{ admission_administration }}">Admission</a></li>
+                        <li><a class="dropdown-item {% if request.path == admission_administration %} active-primary {% endif %}" href="{{ admission_administration }}">Admission</a></li>
                         <li><a class="dropdown-item" href="#">Admission Forms</a></li>
                         <li><a class="dropdown-item" href="#">Applications</a></li>
                         <li class="dropdown-divider"></li>
@@ -47,7 +47,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li class="nav-item bord-width-nav dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownNewsEvents" data-bs-toggle="dropdown" aria-expanded="false">Staff</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownNewsEvents">
                         <li><a class="dropdown-item" href="#">Teaching Staff</a></li>
@@ -57,7 +57,7 @@
                         <li><a class="dropdown-item" href="#" title="Head of Departments">HODs</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item bord-width-nav dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownResearch" data-bs-toggle="dropdown" aria-expanded="false">Research</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownResearch">
                         <li><a class="dropdown-item" href="#">University Library</a></li>
@@ -65,7 +65,7 @@
                         <li><a class="dropdown-item" href="#">Become a Member</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item bord-width-nav dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownStaff" data-bs-toggle="dropdown" aria-expanded="false">Staff</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownStaff">
                         <li><a class="dropdown-item" href="#">Staff Profile</a></li>
@@ -75,7 +75,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li class="nav-item bord-width-nav dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">Student</a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
                         <li><a class="dropdown-item" href="#">SRC</a></li>

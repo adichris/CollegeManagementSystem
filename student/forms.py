@@ -89,7 +89,7 @@ class StudentPreviousEducationChangeForm(forms.ModelForm):
         helper.layout.append(
             FormActions(
                 StrictButton('Reset', type='reset', css_class='btn btn-light'),
-                StrictButton('Save', type='submit', css_class='btn btn-primary'),
+                StrictButton('Save', type='submit', css_class='btn btn-primary', onclick='dynamicSpinner(this)'),
                 css_class='d-flex justify-content-end',
             )
         )
@@ -110,7 +110,15 @@ class StudentPreviousEducationChangeForm(forms.ModelForm):
 class StudentCreationForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ('index_number', 'programme')
+        fields = ('index_number', 'level', 'date_admitted', 'date_completed', 'programme')
+        labels = {
+            'date_completed': 'Completion Date',
+            'date_admitted': 'Date Admitted',
+        }
+        widgets = {
+            'date_completed': forms.DateInput(attrs={'type': 'date'}),
+            'date_admitted': forms.DateInput(attrs={'type': 'date'}),
+        }
 
     @property
     def helper(self):

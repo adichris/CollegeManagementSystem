@@ -31,3 +31,40 @@
 .width-fit-content {
     width: fit-content !important
 }
+
+.bord-width-nav:hover {
+       border-bottom: 1px solid #0D6EFD;
+       border-radius: 1px;
+       height: calc(initial - 1px) !important;
+    }
+
+.bord-width-nav:active {
+       border-bottom: 2px solid #0D6EFD;
+       border-radius: 1px;
+       height: calc(initial - 1px) !important;
+    }
+
+.active-primary {
+    color: #0D6EFD !important;
+}
+
+
+@media (max-width:768px) {
+    .bord-width-nav {
+        background-color: #ececec;
+        width: 100%;
+        padding: 0.5em;
+        border-radius: 3px;
+        margin-bottom: 0.2em;
+        margin-top: 0.5em;
+    }
+
+}
+
+.nav-item a.nav-link {
+    color: #111415;
+}
+
+.active-primary:past{
+    background-color: lightgreen;
+}

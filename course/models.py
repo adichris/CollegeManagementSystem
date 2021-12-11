@@ -6,6 +6,7 @@ from accounts.models import User
 from programme.models import Programme
 from CollegeManagementSystem.validation import validate_alphanumberic_space
 from ckeditor.fields import RichTextField
+from lecture.models import Lecturer
 
 
 class CourseManager(models.Manager):
@@ -24,6 +25,8 @@ class Course(models.Model):
     credit_hours = models.IntegerField()
     description = RichTextField(null=True, blank=True)
     updated_at = models.DateTimeField(help_text='Last modified', auto_now_add=True)
+    lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, null=True, blank=True,
+                                 related_name='course_lecturer')
     objects = CourseManager()
 
     def __str__(self):
