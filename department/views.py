@@ -96,6 +96,8 @@ class DepartmentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVi
         ctx['back_url'] = self.get_back_url()
         ctx['back_name'] = self.get_back_name()
         ctx['programmes_page'] = self.programmes_paginator()
+        ctx['lecturers'] = self.get_lecturers()
+        ctx['can_add_lecturer'] = self.can_add_lecturer()
         return ctx
 
     def get_department_programmes(self):
@@ -111,7 +113,13 @@ class DepartmentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVi
         return self.request.GET.get('back')
 
     def get_back_name(self):
-        return self.request.GET.get('backname')
+        return self.request.GET.get('backname') or 'back'
+
+    def get_lecturers(self):
+        return self.object.best_lecturers
+
+    def can_add_lecturer(self):
+        return self.request.user.has_perm('add_lecturer')
 
 
 class DepartmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):

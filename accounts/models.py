@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import user_logged_in, user_logged_out
 from CollegeManagementSystem.validation import validate_alphanumberic_space
-
+from django.contrib.sessions.models import Session
 
 class GenderChoices(models.TextChoices):
     MALE = ("m", "♂️ Male")
@@ -141,6 +141,16 @@ def auto_show_user_online(sender, user, **kwargs):
 
 
 @receiver(user_logged_out, sender=User)
-def auto_show_user_online(sender, user=None, **kwargs):
+def auto_show_user_offline(sender, user=None, **kwargs):
     user.is_online = False
     user.save()
+
+
+@receiver(models.signals.post_save, sender=User)
+def auto_logout_user(sender, instance, **kwargs):
+    if not instance.is_online:
+        try:
+            session = Session.objects.get(session_key=instance.session_key)
+            session.delete()
+        except Session.DoesNotExist:
+            pass

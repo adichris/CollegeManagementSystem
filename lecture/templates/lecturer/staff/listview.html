@@ -7,15 +7,16 @@
                 {% include 'institution/utils/back_snippet.html' %}
             {% endif %}
             <div class="col-auto mx-auto">
-                <h4 class="display-6">ALL LECTURES</h4>
+                <h4 class="display-6 text-center">{{ title|upper }}</h4>
             </div>
         </div>
 
         <div class="row my-4">
             <div class="col">
                 <form method="get" action="" class="shadow-sm">
+                    <input type="hidden" name="back" value="{{ back_url }}">
                     <div class="input-group">
-                        <input type="search" name="qlecturer" id="" value="{{ query|default:'' }}" class="form-control" placeholder="Search any lecturer by; name, identity, phone number">
+                        <input type="search" name="qlecturer" id="" value="{{ query|default:'' }}" class="form-control" placeholder="Search any lecturer by; name, email, identity">
                         <button class="btn btn-primary" type="submit">Search</button>
                     </div>
                 </form>
@@ -55,9 +56,9 @@
         {% else %}
             <div class="row my-4">
                 <div class="col-md-8 col-lg-6 mx-auto">
-                    <div class="alert alert-info text-center">
+                    <div class="alert alert-info text-center shadow-sm">
                         <span class="fa fa-exclamation-circle"></span>
-                        <p>No lecturers registered in to the system yet</p>
+                        <p>No  registered lecturer, available in to the system yet</p>
                         {% if can_edit %}
                             <a href="{% url 'Lecturer:staff_add' %}" class="btn-link"><span class="fa fa-plus-circle"></span> Register Lecturer</a>
                         {% endif %}

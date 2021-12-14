@@ -1,16 +1,12 @@
 {% extends 'base/admin/create.html' %}
-
+{% load static %}
 {% block header %}
     <style>
         .top-row {
-        {% if department.picture %}
-            background-image: url("{{ department.picture.url }}");
-        {% elif department.faculty %}
-            background-image: url("{{ department.faculty.picture.url }}");
-        {% endif %}
+            background-image: url("{% if department.picture %}{{ department.picture.url }}{% elif department.faculty.picture %}{{ department.faculty.picture.url }}{% endif %}");
             background-position: center;
             background-size: cover;
-        height: 45vh;
+            height: 60vh;
         }
     </style>
 {% endblock %}
@@ -27,6 +23,11 @@
                 {% else %}
                     <a href="{% url 'Department:list' %}" class="btn btn-light" onclick="spinBack(this)"><span class="fa fa-chevron-left me-2"></span>Department</a>
                 {% endif %}
+            </div>
+            <div class="col-auto me-auto">
+                <a href="#programmes_page" class="btn btn-outline-secondary">Programmes</a>
+                <a href="#lecturers" class="btn btn-outline-secondary">Lecturers</a>
+                <a href="{% url 'Student:staff_department_all' department_slug=department.slug  %}?back={{ request.path }}" class="btn btn-outline-secondary">Students</a>
             </div>
         </div>
     </div>
@@ -80,26 +81,28 @@
 
         <div class="row my-3">
             <div class="col-auto mx-auto">
-                <h4>Programmes</h4>
+                <h4 class="display-6">Programmes</h4>
             </div>
         </div>
 
+    </div>
+    <div class="container-fluid">
         {% if programmes_page %}
-            <div class="row my-4">
+            <div class="row my-4 bg-light p-2" id="programmes_page">
                 {% for programme in programmes_page %}
                     <div class="col-md-6 col-lg-4 my-3">
-                        <div class="card">
+                        <div class="card hover_shadow">
                             <div class="card-body">
                                 <h6 class="text-center">{{ programme.name }}</h6>
                             </div>
                             <div class="list-group list-group-flush">
                                 <p class="list-group-item">
                                     <small>Student</small> <br>
-                                    <span class="h6 ml-2">----</span>
+                                    <span class="h5 ml-2">{{ programme.students.count }}</span>
                                 </p>
                                 <p class="list-group-item">
                                     <small>Courses</small> <br>
-                                    <span class="h6 ml-2">----</span>
+                                    <span class="h5 ml-2">{{ programme.course_programme.count }}</span>
                                 </p>
                                 <div class="list-group-item d-flex justify-content-end">
                                     <a class="btn btn-secondary" href="{{ programme.get_absolute_url }}" onclick="dynamicSpinner(this)">View</a>
@@ -110,9 +113,9 @@
                 {% endfor %}
 
                 <div class="col-md-6 col-lg-4 my-3">
-                    <div class="card h-100 ">
+                    <div class="card h-100 hover_shadow">
                         <div class="card-body d-flex align-items-center justify-content-center">
-                            <a href="{% url 'Department:Programme:create' %}?departmentslug={{ department.slug }}#id_name" class="btn btn-link" onclick="rotateElement(this)">
+                            <a href="{% url 'Department:Programme:create' %}?departmentslug={{ department.slug }}#id_name" class="btn btn-link stretched-link" onclick="rotateElement(this)">
                                 <span class="fa fa-plus fa-2x"></span>
                                 <br>
                                 Add another programme</a>
@@ -122,7 +125,7 @@
 
             </div>
 
-            <div class="row col my-3">
+            <div class="row col my-3 p-3">
                 <ul class="pagination">
                     {% if programmes_page.has_previous %}
                         <li class="page-item">
@@ -149,10 +152,51 @@
                 </ul>
             </div>
         {% else %}
-            <div class="row my-4">
+            <div class="row my-4  p-3">
                 <div class="col-auto mx-auto text-center">
                     <p>These department has no  programme yet!</p>
                     <a href="{% url 'Department:Programme:create' %}?departmentslug={{ department.slug }}#id_name" class="btn btn-link" onclick="rotateElement(this)"><span class="fa fa-plus"></span> programme to this department</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="container-fluid my-4 bg-light-gold" style="background: #edb40024;">
+        <div class="row p-3">
+            <div class="col-auto mx-auto">
+                <h4 class="display-6 text-center bg-white50 rounded p-2 transparent-bg" id="lecturers">Lecturers</h4>
+            </div>
+        </div>
+        {% if lecturers %}
+            <div class="row my-4">
+                {% for lecturer in lecturers %}
+                    <div class="col-6 col-md-4 col-lg-3 my-3">
+                        <div class="card hover_shadow h-100">
+                            <div class="card-img-top">
+                                <img src="{{ lecturer.profile.picture.url }}" alt="lecturer profile picture" class="img-fluid">
+                            </div>
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <h5 class="text-center">{{ lecturer.profile.get_full_name }}</h5>
+                                <a class="text-center d-block" href="mailto:{{ lecturer.profile.email }}">{{ lecturer.profile.email }}</a>
+                            </div>
+                            <div class="card-footer bg-white  text-center">
+                                <a href="{{ lecturer.get_absolute_url }}" class="btn btn-link">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
+        {% if can_add_lecturer %}
+            <div class="row my-4 p-3">
+                <div class="col-md-4 mx-auto">
+                    <div class="card hover_shadow h-100">
+                        <div class="card-body text-center d-flex align-items-center justify-content-center">
+                            <a href="{% url 'Lecturer:staff_add' %}?back={{ request.path }}" class="btn btn-primary w-100 stretched-link"><span class="fa fa-plus-circle"></span> Add Lecturer</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endif %}

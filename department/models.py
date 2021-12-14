@@ -95,5 +95,12 @@ class Department(models.Model):
         from student.models import Student
         return Student.objects.filter(programme__department=self)
 
+    def best_lecturers(self):
+        """
+        the  best five with high rank or authority
+        :return:
+        """
+        return self.lecturer_set.filter(is_active=True)[:5]
+
 
 models.signals.pre_save.connect(auto_slug_faculty, sender=Department)

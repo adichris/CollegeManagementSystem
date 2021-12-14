@@ -3,8 +3,10 @@ from django.shortcuts import redirect, render
 from django.views.generic import TemplateView, ListView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http.response import Http404
-from INSTITUTION.utils import get_back_url, get_next_url
+from django.core.exceptions import ObjectDoesNotExist
 
+from INSTITUTION.utils import get_back_url, get_next_url
+from CollegeManagementSystem.validation import is_safe_query
 from .models import Lecturer
 
 from .forms import (
@@ -79,7 +81,10 @@ class AddLecturerTemplateView(LoginRequiredMixin, PermissionRequiredMixin, Templ
         return self.lecturer
     
     def has_employment_history(self):
-        return self.lecturer.profile.employment_history
+        try:
+            return self.lecturer.profile.employment_history
+        except ObjectDoesNotExist:
+            return
     
     def has_application(self):
         return bool(self.lecturer.application_letter or self.lecturer.cv)
@@ -157,11 +162,17 @@ class LecturerListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = 'lecturer/staff/listview.html'
 
     def get_query(self):
-        return self.request.GET.get('qlecturer')
+        query = self.request.GET.get('qlecturer')
+        if is_safe_query(query):
+            return query
 
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super(LecturerListView, self).get_context_data(object_list=object_list, **kwargs)
-        ctx['title'] = 'All Lecturers'
+        department = self.get_department()
+        if department:
+            ctx['title'] = department.replace('-', ' ') + ' lecturers'
+        else:
+            ctx['title'] = 'All Lecturers'
         ctx['query'] = self.get_query()
         ctx['can_edit'] = self.can_edit()
         ctx['can_view'] = self.can_edit()
@@ -174,3 +185,11 @@ class LecturerListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def can_view(self):
         return self.request.user.has_perm('lecture.view_lecturer')
 
+    def get_queryset(self):
+        department = self.get_department()
+        if department:
+            return self.model.objects.search(query=self.get_query(),  department__slug=department)
+        return self.model.objects.search(query=self.get_query())
+
+    def get_department(self):
+        return self.kwargs.get('department_slug')

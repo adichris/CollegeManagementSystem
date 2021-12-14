@@ -79,8 +79,8 @@
                 </div>
                 <div class="row my-1 mb-4">
                     <div class="table-responsive">
-                        <table class="table">
-                            <tr>
+                        <table class="table table-bordered">
+                            <tr class="table-secondary">
                                 <th>#</th>
                                 <th>Name</th>
                                 <th>Index Number</th>
@@ -99,7 +99,7 @@
                                     <td>{{ student.level|default_if_none:'---' }}</td>
                                     <td>{{ student.date_admitted.year|default_if_none:'---' }}</td>
                                     <td>{{ student.date_completed.year|default_if_none:'---' }}</td>
-                                    <td><a href="" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">view</a></td>
+                                    <td><a href="{% url 'Student:staff_student_detail' profile__identity=student.profile.identity pk=student.pk %}?back={{ request.path }}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">view</a></td>
                                 </tr>
                             {% endfor %}
 

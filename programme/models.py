@@ -56,6 +56,10 @@ class Programme(models.Model):
     def count_new_student(self):
         return self.student_set.filter(date_admitted__year=today_time().year).count()
 
+    @property
+    def students(self):
+        return self.student_set.filter(is_active=True)
+
     def get_absolute_delete_url(self):
         return reverse(
             'Department:Programme:delete',

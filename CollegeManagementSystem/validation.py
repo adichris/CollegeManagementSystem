@@ -11,3 +11,5 @@ def validate_alphanumberic_space(value):
             params={'value': value}
         )
 
+
+def is_safe_query(query): return re.match(r'[\w\s\d]+', str(query))

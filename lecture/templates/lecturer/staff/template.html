@@ -33,7 +33,8 @@
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/lecturer/school.svg' as department_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=department_src label='Lecturers By Department' %}
+                {% url 'Department:list' as department_lst %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=department_src label='Lecturers By Department' link=department_lst %}
             </div>
             <div class="col-md-6 col-lg-4 my-2">
                 {% static 'icons/lecturer/classroom.svg' as pro_src %}

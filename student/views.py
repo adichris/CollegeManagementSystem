@@ -899,3 +899,23 @@ class StaffAddStudentForms(LoginRequiredMixin, PermissionRequiredMixin, View):
             self.template_name,
             ctx
         )
+
+
+class StaffStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Student
+    template_name = 'student/staff/detail.html'
+    permission_required = 'student.view_student'
+    permission_denied_message = 'You need permission to view student'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(StaffStudentDetailView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Student Details'
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['date_format'] = 'jS E, Y'
+        return ctx
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(
+            profile__identity=self.kwargs['profile__identity'],
+            pk=self.kwargs['pk']
+        )

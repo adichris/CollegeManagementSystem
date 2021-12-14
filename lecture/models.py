@@ -10,6 +10,18 @@ class LecturerManager(models.Manager):
     def all(self):
         return self.filter(is_active=True)
 
+    def search(self, query, **kwargs):
+        if not query:
+            return self.filter(is_active=True, **kwargs)
+
+        return self.filter(
+            models.Q(identity__icontains=query) | \
+            models.Q(course_lecturer__created_by__first_name__icontains=query) | \
+            models.Q(profile__last_name__icontains=query) | \
+            models.Q(profile__email__icontains=query),
+            **kwargs
+        )
+
 
 def upload_application_letter(instance, filename):
     lecturer_dir = str(instance.identity or instance.profile.email)
@@ -30,7 +42,7 @@ class Lecturer(models.Model):
     application_letter = models.FileField(null=True, help_text='Application/Résumé letter in pdf format',
                                           upload_to=upload_application_letter)
     cv = models.FileField(null=True, help_text='Lecturers application Curriculum Vitae (CV) in pdf format',
-                          verbose_name='Curriculum Vitae (CV)',
+                          verbose_name='Curriculum Vitae (CV)', upload_to=upload_cv
                           )
     objects = LecturerManager()
 

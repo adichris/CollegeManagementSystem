@@ -1,0 +1,132 @@
+{% extends 'base/admin/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto">
+                <h4 class="text-center display-6">{{ title }}</h4>
+                {% if student.index_number %}
+                    <p class="text-center" title="index number">Index Number: {{ student.index_number }}</p>
+                {% else %}
+                    <p class="text-center" title="identity">Identity: {{ student.profile.identity }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col">
+                <div class="d-flex flex-column flex-md-row justify-content-end gap-3">
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        {% if student.admission_form %}
+                            <a href="{% url 'Admission:form_details' serial_number=student.admission_form.serial_number id=student.admission_form_id %}?back={{ request.path }}" class="btn btn-outline-primary rounded-pill">Admission Form</a>
+                        {% else %}
+                            <button title="student has no admission form!" class="btn btn-outline-secondary rounded-pill" disabled>Admission Form</button>
+                        {% endif %}
+                        {% if student.profile.password %}
+                            <button class="btn btn-outline-primary rounded-pill">Reset Password</button>
+                        {% else %}
+                            <button class="btn btn-outline-primary rounded-pill">Set Password</button>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex flex-row gap-3 justify-content-center align-items-center">
+                        {% if student.profile.is_online %}
+                            <button class="btn btn-outline-success rounded-pill d-flex align-items-center justify-content-between gap-3"><span>Online</span><span class="fa fa-circle fa-2x"></span></button>
+                        {% else %}
+                            <button class="btn btn-outline-danger rounded-pill d-flex align-items-center justify-content-between gap-3"><span class="fa fa-circle fa-2x"></span><span>Offline</span> </button>
+                        {% endif %}
+                        {% if student.is_active %}
+                            <button class="btn btn-outline-success rounded-pill d-flex align-items-center justify-content-between gap-3"><span>Active</span> <span class="fa fa-circle fa-2x"></span></button>
+                        {% else %}
+                            <button class="btn btn-outline-danger rounded-pill d-flex align-items-center justify-content-between gap-3"> <span class="fa fa-circle fa-2x"></span> <span>Not-Active</span></button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-12">
+                <div class="d-flex flex-column flex-md-row gap-3">
+                    <div class="card flex-grow-1 h-100 shadow-sm">
+                        <div class="table-responsive">
+                            <h5 class="p-2 text-primary">Profile</h5>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>Identity</td>
+                                    <th>{{ student.profile.identity }}</th>
+                                </tr>
+                                 <tr>
+                                    <td>Username</td>
+                                    <th>{{ student.profile.username }}</th>
+                                </tr>
+
+                                <tr>
+                                    <td>First Name</td>
+                                    <th>{{ student.profile.first_name }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Last Name</td>
+                                    <th>{{ student.profile.last_name }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Gender</td>
+                                    <th>{{ student.profile.get_gender_display }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Date of Birth</td>
+                                    <th title="{{ student.profile.date_of_birth }}">{{ student.profile.date_of_birth|date:date_format }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Phone Number</td>
+                                    <th>{{ student.profile.phone_number }}</th>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card flex-grow-1 h-100 shadow-sm">
+                        <div class="table-responsive">
+                            <h5 class="p-2 text-primary">School Information</h5>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>Index Number</td>
+                                    <th>{{ student.index_number }}</th>
+                                </tr>
+                                 <tr>
+                                    <td>Level</td>
+                                    <th>{{ student.level }}</th>
+                                </tr>
+
+                                <tr>
+                                    <td>Programme</td>
+                                    <th>{{ student.programme }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Department</td>
+                                    <th>{{ student.programme.department }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Position</td>
+                                    <th>{{ student.position_title }}</th>
+                                </tr>
+                                <tr>
+                                    <td>Date Admitted</td>
+                                    <th title="{{ student.date_admitted }}">{{ student.date_admitted|date:date_format }}</th>
+                                </tr>
+                                 <tr>
+                                    <td>Completion Date</td>
+                                    <th title="{{ student.date_completed }}">{{ student.date_completed|date:date_format }}</th>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

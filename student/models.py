@@ -3,7 +3,7 @@ import os
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now as today_time
-from datetime import timedelta
+from django.shortcuts import reverse
 
 from accounts.models import User
 from admission.models import StudentForms
@@ -65,7 +65,7 @@ class StudentManager(models.Manager):
         kwargs = self.get_programme_department_slugs_kwargs(programme_slug=programme_slug,
                                                             department_slug=department_slug)
         return self.filter(
-            is_active=True,
+            profile__is_active=True,
             date_completed__lt=today_time().date(),
             **kwargs
         )
@@ -111,7 +111,14 @@ class Student(models.Model):
         ]
 
     def get_absolute_detailview4staff(self):
-        return
+        return reverse('Student:staff_student_detail', kwargs={
+            'profile__identity': self.profile.identity,
+            'pk': self.pk,
+        })
+
+    @property
+    def position_title(self):
+        return 'Student'
 
 
 class StudentProgrammeChoice(models.Model):

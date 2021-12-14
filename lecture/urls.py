@@ -18,6 +18,7 @@ staff_urlpatterns = [
     path('applicationform/<str:identity>/', LecturerApplicationCreateView.as_view(), name='staff_app_change'),
     path('assigndepartment/<str:identity>/', LecturerDepartmentAssignment.as_view(), name='staff_assign_department'),
     path('all/', LecturerListView.as_view(), name='staff_all'),
+    path('all/<slug:department_slug>/', LecturerListView.as_view(), name='staff_department_all'),
 ]
 
 urlpatterns = [

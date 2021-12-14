@@ -16,6 +16,7 @@ from .views import (
     StudentGroupByDepartment,
     StaffAddPreviousEducation,
     StaffAddStudentForms,
+    StaffStudentDetailView,
 )
 
 app_name = 'Student'
@@ -37,6 +38,7 @@ staff_urlpatterns = [
     path('programmechoices/<str:index_number>/', StudentProgrammeSelectionView.as_view(), name='staff_add_programmes_choices'),
     path('addpreviuoseducation/<str:index_number>/', StaffAddPreviousEducation.as_view(), name='staff_add_previouseducation'),
     path('addadmissionform/<str:index_number>/', StaffAddStudentForms.as_view(), name='staff_add_admissionform'),
+    path('detail/<int:pk>/<str:profile__identity>/', StaffStudentDetailView.as_view(), name='staff_student_detail'),
 ]
 
 urlpatterns = [
