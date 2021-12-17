@@ -2,8 +2,10 @@ from django import forms
 from .models import User
 from django.contrib.auth.password_validation import MinimumLengthValidator
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.forms import SetPasswordForm as AuthSetPasswordForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Reset
+from crispy_forms.bootstrap import StrictButton, FormActions
 
 
 MINIMUM_USER_AGE = 10
@@ -93,3 +95,19 @@ class UserChangeForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'gender', 'email', 'date_of_birth', 'phone_number',
                   'password', 'is_active', 'is_admin', 'identity', 'picture')
+
+
+class SetPasswordForm(AuthSetPasswordForm):
+    def __init__(self, instance, *args, **kwargs):
+        super(SetPasswordForm, self).__init__(user=instance, *args, **kwargs)
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout.append(
+            FormActions(
+                Reset('reset', 'Reset', css_class='btn-outline-secondary shadow-sm'),
+                StrictButton('Save Password', type='submit', css_class='btn-primary',  css_id='submitBtn')
+            )
+        )
+        return helper

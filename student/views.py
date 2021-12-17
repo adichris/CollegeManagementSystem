@@ -904,7 +904,7 @@ class StaffAddStudentForms(LoginRequiredMixin, PermissionRequiredMixin, View):
 class StaffStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Student
     template_name = 'student/staff/detail.html'
-    permission_required = 'student.view_student'
+    permission_required = 'student.staff_view_student'
     permission_denied_message = 'You need permission to view student'
 
     def get_context_data(self, **kwargs):
@@ -912,7 +912,18 @@ class StaffStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
         ctx['title'] = 'Student Details'
         ctx['back_url'] = get_back_url(self.request)
         ctx['date_format'] = 'jS E, Y'
+        ctx['m_form'] = self.get_password_reset_form()
         return ctx
+
+    def get_password_reset_form(self):
+        if not self.object.profile.password and self.request.user.has_perm('accounts.set_password4other'):
+            from accounts.forms import SetPasswordForm
+            form = SetPasswordForm(self.request.POST or None)
+            form.helper.form_action = reverse('Accounts:staff_set_password', kwargs={
+                'identity': self.object.profile.identity
+            })
+            return form
+        pass
 
     def get_object(self, queryset=None):
         return self.model.objects.get(

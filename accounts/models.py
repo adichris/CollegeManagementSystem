@@ -81,7 +81,8 @@ class User(PermissionsMixin, AbstractBaseUser):
         verbose_name_plural = 'Users'
         ordering = ("first_name", "last_name", "email")
         permissions = [
-            ('add_lecturerprofile', 'Add Lecturer Profile')
+            ('add_lecturerprofile', 'Add Lecturer Profile'),
+            ('set_password4other', 'Set password for other user'),
         ]
 
     def __str__(self):

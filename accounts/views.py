@@ -1,6 +1,5 @@
-from django.http.response import HttpResponse
 from django.shortcuts import redirect, render, get_object_or_404, reverse
-from django.views.generic import View, CreateView
+from django.views.generic import View, UpdateView
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth import login
@@ -8,11 +7,12 @@ from django.contrib.auth import login
 from lecture.models import Lecturer
 from .forms import (
     UserProfileForm,
-    
+    SetPasswordForm
 )
 from student.models import Student
 from .models import User
 from INSTITUTION.utils import get_admission_steps
+from INSTITUTION.views import JsonResponseMixin
 
 
 class StudentProfileCreateView(View):
@@ -178,3 +178,25 @@ class LecturerProfileCreateView(LoginRequiredMixin, PermissionRequiredMixin, Vie
             )    
         except User.DoesNotExist:
             return
+
+
+class SetPassword4other(LoginRequiredMixin, PermissionRequiredMixin, JsonResponseMixin, UpdateView):
+    permission_required = 'accounts.set_password4other'
+    permission_denied_message = 'you need permission to set password for other user'
+    form_class = SetPasswordForm
+    model = User
+    template_name = 'accounts/staff/create_continuous.html'
+
+    def get_object(self, queryset=None):
+        try:
+            return User.objects.get(identity=self.kwargs['identity'])
+        except User.DoesNotExist:
+            raise Http404('User can not be found!')
+
+    def get_success_data(self):
+        response = super(SetPassword4other, self).get_success_data()
+        response['has_password'] = True
+        return response
+
+    def get_success_url(self):
+        return self.request.path

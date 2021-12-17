@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-<div id="systemmodal" class="modal fade" tabindex="-1"  role="dialog" aria-labelledby="systemmodal" aria-hidden="true">
+<div id="systemmodal" class="modal fade" tabindex="-1" data-bs-keyboard="false" data-bs-backdrop="static"  role="dialog" aria-labelledby="systemmodal" aria-hidden="true" style="display: none;">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -22,7 +22,12 @@
 <script src="{% static 'Jquery/jquery-3.4.1.min.js' %}"></script>
 
 <script>
+    const systemModel = $('#systemmodal');
     function closeModal() {
-        $('#systemmodal').modal('hide')
+        systemModel.modal('hide');
     }
+    function toggleModal() {
+        systemModel.modal('toggle');
+    }
+
 </script>

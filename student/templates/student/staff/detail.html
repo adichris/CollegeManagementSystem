@@ -1,5 +1,4 @@
 {% extends 'base/admin/base.html' %}
-
 {% block container %}
     <div class="container">
         <div class="row my-4">
@@ -25,10 +24,8 @@
                         {% else %}
                             <button title="student has no admission form!" class="btn btn-outline-secondary rounded-pill" disabled>Admission Form</button>
                         {% endif %}
-                        {% if student.profile.password %}
-                            <button class="btn btn-outline-primary rounded-pill">Reset Password</button>
-                        {% else %}
-                            <button class="btn btn-outline-primary rounded-pill">Set Password</button>
+                        {% if m_form %}
+                            <button class="btn btn-outline-primary rounded-pill" onclick="toggleModal()">Set Password</button>
                         {% endif %}
                     </div>
 
@@ -129,4 +126,49 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+
+{% block header %}
+    {% if m_form %}
+        {% include 'base/modelFooterless.html' with m_form=m_form modal_title='Set Student Password' %}
+    {% endif %}
+    <script>
+    $(document).ready(function (){
+        let setPasswordFormElm = $(document.forms[0]);
+        const  submitBtn = document.getElementById('submitBtn');
+        const mBody = document.getElementById('m_body');
+        setPasswordFormElm.submit(function (events){
+            events.preventDefault();
+            dynamicSpinner(submitBtn);
+
+            $.ajax({
+                action:"{% url 'Accounts:staff_set_password' identity=student.profile.identity %}",
+                method:document.forms[0].method,
+                data:setPasswordFormElm.serialize(),
+                url:"{% url 'Accounts:staff_set_password' identity=student.profile.identity %}",
+                success:function (response){
+                    stopRotation(submitBtn);
+                    if (response['success']) {
+                        mBody.innerHTML = `
+                <div class="alert alert-success text-center">
+                    <span class="fa fa-lock fa-3x"></span>
+                    <h5>Password Set Successfully</h5>
+                    <p>The student can now <b>log in</b> with the newly set password</p>
+                </div>
+                <button class="btn btn-primary align-self-center" onclick="closeModal()">Done</button>
+`
+                    }
+                },
+                error:function (response){
+                    stopRotation(submitBtn);
+                    const data = JSON.parse(response.responseText)
+                    setPasswordFormElm.replaceWith(data['form_html']);
+                },
+            })
+        })
+    })
+
+
+    </script>
 {% endblock %}

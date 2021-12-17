@@ -107,7 +107,8 @@ class Student(models.Model):
         verbose_name_plural = 'Students'
         ordering = ('id', 'profile')
         permissions = [
-            ('list_student', _('can view student list'))
+            ('list_student', _('can view student list')),
+            ('staff_view_student', _('can view student detail as staff')),
         ]
 
     def get_absolute_detailview4staff(self):
