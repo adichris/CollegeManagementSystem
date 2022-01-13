@@ -9,6 +9,7 @@ from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now as today_time
 
+from Home.templatetags.institution_extra import get_institution_fullname_name
 from INSTITUTION.utils import get_not_allowed_render_response, get_next_url, get_back_url, get_admission_steps, \
     AcademicYear
 from accounts.models import User
@@ -72,9 +73,10 @@ class StudentAdmissionRedirectView(RedirectView):
                 return reverse('Student:admission_previous_education')
 
             elif admission_form.status in (FormStatusChoice.SUBMITTED,
-                                           FormStatusChoice.COMPLETED):
+                                           FormStatusChoice.COMPLETED,
+                                           FormStatusChoice.ACCEPTED,
+                                           ):
                 return reverse('Student:admission_detail')
-            pass
 
         else:
             pass
@@ -273,13 +275,16 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
                 student=self.student,
             )
         else:
-            self.student = get_object_or_404(Student, profile=self.request.user)
-            instance, created = AdmissionCertificate.objects.get_or_create(
-                student=self.student,
-            )
-
-        self.certificate_object = instance
-        return instance
+            try:
+                self.student = Student.objects.get(profile=self.request.user)
+            except Student.DoesNotExist:
+                raise Http404('Please reload the page')
+            else:
+                instance, created = AdmissionCertificate.objects.get_or_create(
+                    student=self.student
+                )
+                self.certificate_object = instance
+                return instance
 
     def get_login_url(self):
         if self.get_student():
@@ -319,7 +324,9 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
                 check and try again <br/>
                 <p>{non_field_errors}</p>
                 """
-
+        if formset.errors:
+            context['has_errors'] = formset.total_error_count()
+            context['err_msg'] = 'Correct the ' + str(context['has_errors']) + ' field(s) marked in <b style="color:red">red</b>'
         context[self.get_form_name()] = formset
         return render(request, self.get_template_name(), context)
 
@@ -413,7 +420,30 @@ class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, Detai
         ctx = super(StudentAdmissionDetails, self).get_context_data(**kwargs)
         ctx['title'] = self.request.user
         ctx['subtitle'] = 'You have successful completed'
+        ctx['status_accepted'] = self.status_accepted()
+        ctx['notice'] = 'You have been given admission to <b>%s</b>' % get_institution_fullname_name()
+        if not self.request.user.password:
+            m_form = self.get_password_form()(self.request.user, data=self.request.POST or None)
+            # form buttons
+            from crispy_forms.helper import FormHelper
+            from crispy_forms.bootstrap import StrictButton, FormActions
+            helper = FormHelper(m_form)
+            helper.layout.append(
+                FormActions(
+                    StrictButton('Save Password', css_class='btn-primary', onlclick='dynamicSpinner()', type='submit'),
+                    StrictButton('Reset', css_class='btn-light', type='reset'),
+                )
+            )
+            m_form.helper = helper
+            ctx['m_form'] = m_form
         return ctx
+
+    def get_password_form(self):
+        from django.contrib.auth.forms import SetPasswordForm
+        return SetPasswordForm
+
+    def status_accepted(self):
+        return self.object.admission_form.status == FormStatusChoice.ACCEPTED
 
 
 class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
@@ -930,3 +960,4 @@ class StaffStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
             profile__identity=self.kwargs['profile__identity'],
             pk=self.kwargs['pk']
         )
+

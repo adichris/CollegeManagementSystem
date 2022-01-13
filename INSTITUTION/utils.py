@@ -2,7 +2,6 @@ from django.forms import ValidationError
 import datetime
 from django.db.models import TextChoices
 from django.http.response import Http404
-from django.utils.http import is_safe_url
 from django.shortcuts import render
 import os
 
@@ -76,14 +75,14 @@ def get_not_allowed_render_response(request, message="Your not allowed to access
 
 def get_back_url(request):
     back_url = request.GET.get('back')
-    if back_url and is_safe_url(back_url, request.get_host()):
+    if back_url:
         return back_url
     return request.session.get('back_url')
 
 
 def get_next_url(request):
     next_url = request.GET.get('next')
-    if next_url and is_safe_url(next_url, request.get_host()):
+    if next_url:
         return next_url
     return get_back_url(request)
 

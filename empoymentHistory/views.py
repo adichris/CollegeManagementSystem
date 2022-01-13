@@ -1,12 +1,11 @@
 from django.shortcuts import reverse
-from django.utils.http import is_safe_url
 from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 from .models import EmploymentHistoryModel, User
 from .forms import EmploymentHistoryCreationForm
 from admission.models import StudentForms, FormStatusChoice
-from INSTITUTION.utils import get_admission_steps
+from INSTITUTION.utils import get_admission_steps, get_next_url, get_back_url
 
 
 class EmploymentHistoryCreateUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -82,8 +81,8 @@ class UserEmploymentHistoryCreateView(LoginRequiredMixin, PermissionRequiredMixi
         return super(UserEmploymentHistoryCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        next_url = self.request.GET.get('next') or self.request.GET.get('back')
-        if next_url and is_safe_url(next_url, self.request.get_host()):
+        next_url = get_next_url(self.request) or get_back_url(self.request)
+        if next_url:
             return next_url
         else:
             return super(UserEmploymentHistoryCreateView, self).get_success_url()

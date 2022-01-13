@@ -303,7 +303,10 @@ class StudentFormsPrintView(TemplateView, LoginRequiredMixin):
         return self.student.cert_student.certificate_records.all()
 
     def get_employment_history(self):
-        return self.request.user.employmenthistorymodel
+        try:
+            employment_his = EmploymentHistoryModel.objects.get(employee=self.request.user)
+        except employment_his.DoesNotExist:
+            pass
 
     def get_sponsor(self):
         return self.student.student_sponsored

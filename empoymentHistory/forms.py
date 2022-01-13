@@ -54,9 +54,9 @@ class EmploymentHistoryCreationForm(forms.ModelForm):
 
     def clean_has_history(self):
         has_hist = self.cleaned_data.get('has_history')
-        has_data = self.cleaned_data.get('job_title') or self.cleaned_data.get('employed_from')
-        if has_hist and not has_data:
-            raise forms.ValidationError('You need to provide us details of your employment history')
+        has_data = bool(self.cleaned_data.get('job_title')) or bool(self.cleaned_data.get('employed_from'))
+        # if has_hist and not has_data:
+        #     raise forms.ValidationError('You need to provide us details of your employment history')
         if not has_hist and has_data:
             raise forms.ValidationError('Clear all entries before you uncheck this*')
         return has_hist

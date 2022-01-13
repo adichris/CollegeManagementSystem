@@ -4,8 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from .forms import AddressCreationForm
 from address.models import Address, User
 from admission.models import StudentForms, FormStatusChoice
-from INSTITUTION.utils import get_admission_steps
-from django.utils.http import is_safe_url
+from INSTITUTION.utils import get_admission_steps, get_next_url, get_back_url
 
 
 class StudentAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -78,8 +77,7 @@ class UserAddressCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateV
         return super(UserAddressCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        next_url = self.request.GET.get('next') or self.request.GET.get('back')
-        if next_url and is_safe_url(next_url, self.request.get_host()):
-            return next_url
+        next_url = get_next_url(self.request)
+        if next_url: return next_url
         else:
             return super(UserAddressCreateView, self).get_success_url()

@@ -6,7 +6,8 @@ from .views import (
     PermissionGroupListView,
     PermissionGroupCreate,
     PermissionGroupDetails,
-    PermissionDetail
+    PermissionDetail,
+    AddPermissionTemplateView,
 )
 
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path('permissiongroup/add/', PermissionGroupCreate.as_view(), name='permission_group_add'),
     path('permissiongroup/<int:pk>/', PermissionGroupDetails.as_view(), name='permission_group_detail'),
     path('permissiondetail/<int:permission_pk>/', PermissionDetail.as_view(), name='permission_detail'),
+    path('addpermission2group/<str:group_name>/<int:group_pk>/', AddPermissionTemplateView.as_view(), name='add_permission2group'),
 ]

@@ -45,7 +45,7 @@
                                 <td>{{ lecturer.department }}</td>
                                 <td>{{ lecturer.courses.count }}</td>
                                 {% if can_view %}
-                                    <td><a href="{{ lecturer.get_absolute_url }}" class="btn btn-outline-secondary btn-sm">View</a></td>
+                                    <td><a class="btn btn-outline-secondary btn-sm">View</a></td>
                                 {% endif %}
                             </tr>
                         {% endfor %}

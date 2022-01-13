@@ -1,13 +1,20 @@
 {% extends 'base/admission/admission_base.html' %}
+{% load crispy_forms_tags %}
 
 {% block container %}
     <div class="container">
         <div class="row my-4">
             <div class="col-md-10 col-lg-8 h-100 mx-auto">
-                <span class="d-block">{{ student.profile.get_short_name }}!,</span>
-                <span class="d-block">You have successful completed filling your admission forms,</span>
-                <span class="d-block">Submit to mark it as final for further processing.</span>
-                <span class="d-block text-warning my-2"> <span class="fa fa-exclamation-circle me-2"></span> Note that after submission you will not be allowed to make modification to the admission form.</span>
+                {% if status_accepted %}
+                    <h4 class="alert alert-success text-center">
+                        {{ notice|safe }}
+                    </h4>
+                {% else %}
+                    <span class="d-block">{{ student.profile.get_short_name }}!,</span>
+                    <span class="d-block">You have successful completed filling your admission forms,</span>
+                    <span class="d-block">Submit to mark it as final for further processing.</span>
+                    <span class="d-block text-warning my-2"> <span class="fa fa-exclamation-circle me-2"></span> Note that after submission you will not be allowed to make modification to the admission form.</span>
+                {% endif %}
                 <hr>
                 <div class="card-group">
                    <div class="card">
@@ -26,6 +33,17 @@
                             </a>
                             <hr>
                             <div class="d-flex justify-content-center flex-column">
+                                {% if status_accepted %}
+                                    <div class="card shadow-sm">
+                                        <div class="card-body alert-success">
+                                            <p>{{ notice|safe }}</p>
+                                        </div>
+                                        <div class="card-body d-flex flex-column justify-content-between flex-md-row gap-3">
+                                            <a href="#" class="btn btn-outline-primary shadow-sm flex-grow-1"><span class="fa fa-user-graduate me-2"></span>Student Page</a>
+                                            <a href="#" class="btn btn-outline-primary shadow-sm flex-grow-1" onclick="toggleModal()"><span class="fa fa-user-lock me-2"></span>New Password</a>
+                                        </div>
+                                    </div>
+                                {% else %}
                                 <ul class="list-group list-group-flush">
                                     {% if student.admission_form.can_edit %}
                                     <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Profile
@@ -46,6 +64,7 @@
                                         <li class="list-group-item"><span class="fa fa-check-circle text-success"></span> Education </li>
                                     {% endif %}
                                 </ul>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="card-footer bg-white">
@@ -63,4 +82,11 @@
 
 {#        TODO I am thinking of showing admission form detail here too. #}
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'base/modelFooterless.html' with modal_title='Set Your Password' %}
+
+    <script>
+    </script>
 {% endblock %}

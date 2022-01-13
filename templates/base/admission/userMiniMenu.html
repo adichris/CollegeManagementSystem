@@ -9,7 +9,9 @@
               <li><a class="dropdown-item" href="#">Dean of Students</a></li>
               <li><a class="dropdown-item" href="#">Your university</a></li>
               <li class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{% url 'Student:admission-redirect' serial_number=request.user.identity %}">Admission Form</a></li>
+              {% if user.is_authenticated %}
+                  <li><a class="dropdown-item" href="{% url 'Student:admission-redirect' serial_number=user.identity %}">Admission Form</a></li>
+              {% endif %}
               <li><a class="dropdown-item" href="#">Check Admission Status</a></li>
               <li><a class="dropdown-item" href="#">2021 / 2022 Admission Requirement</a></li>
               <li class="dropdown-divider"></li>

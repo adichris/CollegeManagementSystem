@@ -1,7 +1,8 @@
 from django.shortcuts import reverse, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import CreateView, ListView, UpdateView, DetailView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView
 from django.contrib.auth.models import Permission,  Group
+from django.http import Http404
 
 # Create your views here.
 from INSTITUTION.views import JsonResponseMixin
@@ -167,3 +168,24 @@ class LevelCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'system.add_level'
     template_name = 'system/level/staff/add.html'
 
+
+class AddPermissionTemplateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    template_name = 'system/permission/add.html'
+    permission_model = Permission
+    permission_required = 'auth.add_permission'
+    permission_denied_message = 'You need permission to change permission-group permission'
+
+    def get_permissions_group(self):
+        try:
+            return Group.objects.get(pk=self.kwargs['group_pk'], name=self.kwargs['group_name'])
+        except Group.DoesNotExist:
+            raise Http404('The Page your looking for does not exist')
+
+    def get_context_data(self, **kwargs):
+        group = self.get_permissions_group()
+        ctx = super(AddPermissionTemplateView, self).get_context_data(**kwargs)
+        ctx['title'] = 'Alter "%s" Permissions' % group
+        ctx['groups'] = group
+        ctx['current_permissions'] = group.permissions.all()
+
+        return ctx

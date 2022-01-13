@@ -10,6 +10,11 @@
 {% endblock %}
 
 {% block form_render %}
+    {% if has_errors %}
+        <div class="alert alert-warning">
+            <span>{{ err_msg|safe }}</span>
+        </div>
+    {% endif %}
     {% if integrityError %}
         <div class="alert alert-danger">
             {{ integrityError|safe }}

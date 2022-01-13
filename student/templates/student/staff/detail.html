@@ -91,32 +91,32 @@
                             <table class="table table-striped">
                                 <tr>
                                     <td>Index Number</td>
-                                    <th>{{ student.index_number }}</th>
+                                    <th>{{ student.index_number|default_if_none:'N/A' }}</th>
                                 </tr>
                                  <tr>
                                     <td>Level</td>
-                                    <th>{{ student.level }}</th>
+                                    <th>{{ student.level|default_if_none:'N/A' }}</th>
                                 </tr>
 
                                 <tr>
                                     <td>Programme</td>
-                                    <th>{{ student.programme }}</th>
+                                    <th>{{ student.programme|default_if_none:'N/A' }}</th>
                                 </tr>
                                 <tr>
                                     <td>Department</td>
-                                    <th>{{ student.programme.department }}</th>
+                                    <th>{{ student.programme.department|default_if_none:'N/A' }}</th>
                                 </tr>
                                 <tr>
                                     <td>Position</td>
-                                    <th>{{ student.position_title }}</th>
+                                    <th>{{ student.position_title|default:'N/A' }}</th>
                                 </tr>
                                 <tr>
                                     <td>Date Admitted</td>
-                                    <th title="{{ student.date_admitted }}">{{ student.date_admitted|date:date_format }}</th>
+                                    <th title="{{ student.date_admitted }}">{{ student.date_admitted|date:date_format|default:'N/A' }}</th>
                                 </tr>
                                  <tr>
                                     <td>Completion Date</td>
-                                    <th title="{{ student.date_completed }}">{{ student.date_completed|date:date_format }}</th>
+                                    <th title="{{ student.date_completed }}">{{ student.date_completed|date:date_format|default:'N/A' }}</th>
                                 </tr>
 
                             </table>

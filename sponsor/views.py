@@ -19,10 +19,15 @@ class StudentSponsorCreateView(PermissionRequiredMixin, LoginRequiredMixin, Upda
     permission_denied_message = 'You need permission to add or change sponsor information'
 
     def get_object(self, queryset=None):
-        instance, created = self.model.objects.get_or_create(
-            student_id=get_object_or_404(Student, profile_id=self.request.user.id).id
-        )
-        return instance
+        try:
+            student = Student.objects.get(profile_id=self.request.user.id)
+        except Student.DoesNotExist:
+            raise Http404('Please go back to the previous')
+        else:
+            instance, created = self.model.objects.get_or_create(
+                student_id=student.id
+            )
+            return instance
 
     def form_valid(self, form):
         returns = super(StudentSponsorCreateView, self).form_valid(form)
