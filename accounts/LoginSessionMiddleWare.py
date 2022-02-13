@@ -21,7 +21,7 @@ class LogInOutMiddleware:
 
             user.session_key = request.session.session_key
             user.computer_name = request.META.get('COMPUTERNAME')
-            user.username = request.META.get('USERNAME')
+            user.computer_username = request.META.get('USERNAME')
             user.http_sec_ch_ua = request.META.get('HTTP_SEC_CH_UA')
             user.os = request.META.get('OS')
             user.save()

@@ -1,0 +1,38 @@
+{% extends 'student/self/accounts/template.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+    <p class="lead text-center">Report</p>
+    <p class="text-center p-0 m-0">any issues that need to be address</p>
+    <div class="row">
+        <div class="col border p-3 rounded">
+            <p>Report an Issue to us</p>
+            <img style="height:20em" src="{% static 'icons/student/system_report.svg' %}" class="img-fluid" alt="">
+            <p>Issues like:</p>
+            <ul>
+                <li>Your challenges in school</li>
+                <li>The system functionalities</li>
+                <li>The system performance (Speed, User interface)</li>
+                <li>Update and Changes</li>
+                <li>What do you like</li>
+                <li>What do you hate</li>
+                <li>Contributions</li>
+            </ul>
+        </div>
+        <div class="col border p-3 rounded">
+            <p>View System report on</p>
+            <img style="height: 20em" src="{% static 'icons/student/graph_report.svg' %}" class="img-fluid" alt="">
+            <ul>
+                <li>Usage</li>
+                <li>Last login</li>
+                <li>Most used device or agent</li>
+                <li>Password Changes History</li>
+                <li>Failed logins</li>
+            </ul>
+        </div>
+    </div>
+    <h3 class="mt-4 text-center font-monospace"><u>Page Under construction</u></h3>
+    <p class="text-center mb-4"><span class="fa fa-spinner fa-spin fa-3x"></span></p>
+
+{% endblock %}

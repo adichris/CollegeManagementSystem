@@ -84,7 +84,6 @@ def get_next_url(request):
     next_url = request.GET.get('next')
     if next_url:
         return next_url
-    return get_back_url(request)
 
 
 MINIMUM_USER_AGE = 10

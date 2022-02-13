@@ -1,0 +1,81 @@
+{% extends 'base/student/home.html' %}
+{% load static %}
+{% block header %}
+    <link rel="stylesheet" href="{% static 'styles/sidebars.css' %}">
+{% endblock %}
+
+{% block container %}
+    <div class="container">
+        {% if back_url %} {% include 'institution/utils/back_snippet.html' %} {% endif %}
+    <div class="row my-4">
+        <div class="col-12 d-flex">
+             <div class="flex-shrink-0 p-3 bg-white sticky-top" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                <img  width="34" height="34" class="bi me-2" src="{% static 'icons/student/profile.svg' %}" alt="">
+            <span class="fs-5 fw-semibold">Accounts</span>
+            </a>
+            <ul class="list-unstyled ps-0">
+            <li class="mb-1">
+            <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+              Home
+            </button>
+            <div class="collapse show" id="home-collapse" style="">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li><a href="{% url 'Student:acc_overview' %}?back={{ request.path }}" class="link-dark rounded {% if page == 'ov' %} active {% endif %}">Overview</a></li>
+                <li><a href="{% url 'Student:acc_updates' %}?back={{ request.path }}" class="link-dark rounded {% if page == 'up' %} active {% endif %}">Updates</a></li>
+                <li><a href="{% url 'Student:acc_reports' %}?back={{ request.path }}" class="link-dark rounded {% if page == 'rp' %} active {% endif %}">Reports</a></li>
+              </ul>
+            </div>
+            </li>
+            <li class="mb-1">
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+              Dashboard
+            </button>
+            <div class="collapse" id="dashboard-collapse" style="">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li><a href="{% url 'Student:acc_overview' %}?back={{ request.path }}" class="link-dark rounded">Overview</a></li>
+                <li><a href="#" class="link-dark rounded">Weekly</a></li>
+                <li><a href="#" class="link-dark rounded">Monthly</a></li>
+                <li><a href="#" class="link-dark rounded">Annually</a></li>
+              </ul>
+            </div>
+            </li>
+            <li class="mb-1">
+            <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
+              Orders
+            </button>
+            <div class="collapse" id="orders-collapse" style="">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li><a href="#" class="link-dark rounded">Academic Year</a></li>
+                <li><a href="#" class="link-dark rounded">Semester</a></li>
+                <li><a href="#" class="link-dark rounded">Processed</a></li>
+                <li><a href="#" class="link-dark rounded">Shipped</a></li>
+                <li><a href="#" class="link-dark rounded">Returned</a></li>
+              </ul>
+            </div>
+            </li>
+            <li class="border-top my-3"></li>
+            <li class="mb-1">
+                <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
+                  Account
+                </button>
+                <div class="collapse show" id="account-collapse" style="">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="#" class="link-dark rounded">New...</a></li>
+                    <li><a href="#" class="link-dark rounded">Profile</a></li>
+                    <li><a href="#" class="link-dark rounded">Settings</a></li>
+                    <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                  </ul>
+                </div>
+                </li>
+            </ul>
+        </div>
+            <div class="flex-fill bg-white50">
+                {% block content %} {% endblock %}
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="{% static 'javaScripts/sidebars.js' %}"></script>
+{% endblock %}

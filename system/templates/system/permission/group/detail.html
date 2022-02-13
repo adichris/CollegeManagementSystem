@@ -13,6 +13,13 @@
             </div>
         </div>
 
+    <div class="row mt-2 mb-4">
+        <div class="col d-flex justify-content-end gap-3 table-responsive border rounded p-2">
+            <a href="{% url 'System:add_permission2group' group_name=group.name group_pk=group.pk %}?back={{ request.path }}" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Permission</a>|
+            <a href="{% url 'System:add_member2group' group_name=group.name group_pk=group.pk %}?back={{ request.path }}" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Members</a>
+        </div>
+    </div>
+
     {% if permission_list %}
         <div class="row my-4">
             <div class="col">
@@ -35,7 +42,7 @@
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{% url 'System:permission_detail' permission_pk=permission.pk %}?back={{ request.path }}" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">View</a>
-                                        <a href="" class="btn btn-outline-danger" onclick="dynamicSpinner(this)">Remove</a>
+                                        <a class="btn btn-outline-danger" onclick="rmPerm('{% url 'System:get_permission_ajax' permission_pk=permission.pk %}')">Remove</a>
                                     </div>
                                 </td>
                             </tr>
@@ -48,8 +55,8 @@
         <div class="row my-4">
             <div class="col">
                 <div class="alert alert-warning text-center">
-                    <h5>These permission group has no permission</h5>
-                    <a href="" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Permission</a>
+                    <h5>This group has no permission</h5>
+                    <a href="{% url 'System:add_permission2group' group_name=group.name group_pk=group.pk %}" class="alert-link stretched-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Permission</a>
                 </div>
             </div>
         </div>
@@ -77,7 +84,7 @@
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">View</a>
-                                        <a href="" class="btn btn-outline-danger" onclick="dynamicSpinner(this)">Remove</a>
+                                        <a class="btn btn-outline-danger" onclick="dynamicSpinner(this)">Remove</a>
                                     </div>
                                 </td>
                             </tr>
@@ -90,13 +97,59 @@
         <div class="row my-4">
             <div class="col">
                 <div class="alert alert-warning text-center">
-                    <h5>There no members in this group</h5>
-                    <a href="" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Members</a>
+                    <h5>There is no members in this group</h5>
+                    <a href="" class="alert-link stretched-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Members</a>
 
                 </div>
             </div>
         </div>
     {% endif %}
     </div>
+    <section>
+        {% include 'base/modelFooterless.html' with modal_title='Remove Permission' %}
+    </section>
+{% endblock %}
 
+{% block scripts %}
+    <script>
+        let mbody = document.getElementById('m_body');
+        mbody.innerHTML = `<div class="text-center h-100"><span class="spinner-border"></span><br><span>loading permission</span></div>`
+        function rmPerm(ulrlnk){
+            toggleModal();
+            $.ajax({
+                method:'get',
+                url:ulrlnk,
+                success:function (response) {
+                    document.getElementById('modalTitle').innerHTML = `<h5> Permission: <span class="text-primary">"${response.p_name}"</span></h5>`
+                    mbody.innerHTML=`Permission Details:<div class="card"><div class="card-body"><table class="table">
+<tr>
+    <td>Name</td>
+    <td>${response.p_name}</td>
+</tr>
+<tr>
+    <td>Code Name</td>
+    <td>${response.p_cd}</td>
+</tr>
+<tr>
+    <td>Content Type</td>
+    <td>${response.p_ctt}</td>
+</tr>
+
+</table></div>
+</div>
+<form action="" method="post" novalidate class="my-3">
+{% csrf_token %}
+<input type="hidden" name="p_pk" value="${response.p_pk}">
+<input type="hidden" name="p_name" value="${response.p_name}">
+<button onclick="dynamicSpinner(this)" type="submit" class="btn btn-primary w-100">Remove from this Permission Group</button>
+</form>
+`;
+                },
+                error:function (response) {
+                    console.warn(response);
+                    mbody.innerHTML = `<div class="alert alert-danger">Sorry, we can not fetch the information this time <br>Please try again!</div>`;
+                }
+            })
+        }
+    </script>
 {% endblock %}

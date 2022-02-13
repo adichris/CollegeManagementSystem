@@ -2,7 +2,7 @@ from .models import SemesterModel, Level
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_bootstrap5.bootstrap5 import FloatingField
-from crispy_forms.bootstrap import StrictButton, FormActions
+from crispy_forms.bootstrap import StrictButton, FormActions, Div
 from django.contrib.auth.models import Group
 
 
@@ -70,4 +70,25 @@ class LevelCreationForm(forms.ModelForm):
         )
 
         helper[0].wrap_together(FloatingField)
+        return helper
+
+
+class GroupPermissionAlterForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ('permissions', )
+        widgets = {
+            'permissions': forms.CheckboxSelectMultiple
+        }
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout.append(
+            FormActions(
+                StrictButton('Reset', type='reset', css_class='btn-light'),
+                StrictButton('Save', type='submit', onlcick='dynamicSpinner(this)', css_class='btn-primary', name='save_level'),
+                css_class='d-flex justify-content-end gap-3'
+            )
+        )
         return helper

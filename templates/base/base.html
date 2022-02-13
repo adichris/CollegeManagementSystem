@@ -27,6 +27,8 @@
         {% block navbar %}
             {% if request.user.is_superuser or request.user.is_admin %}
                 {% include 'base/admin/navbar.html' %}
+            {% elif request.user.student %}
+                {% include 'base/student/navbar.html' %}
             {% else %}
                 {% include 'base/navbar.html' %}
             {% endif %}

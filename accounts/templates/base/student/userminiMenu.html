@@ -1,0 +1,24 @@
+{% load static %}
+{% static 'favicon.png' as default_img %}
+{% with student=request.user.student %}
+{% with user=request.user  %}
+  <div class="d-flex flex-column align-items-center">
+      <div class="dropdown">
+          <button class="dropdown-toggle btn p-0 m-0" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{{ user.picture.url|default:default_img }}" alt="" srcset="" height="40" width="40" class="img-fluid rounded"> {{ user.get_short_name|title }}</button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
+              <li><small class="dropdown-item-text">Student Home</small></li>
+              <li><a class="dropdown-item" href="{{ student.get_absolute_url }}" title="Programme">Dashboard</a></li>
+              <li class="dropdown-divider"></li>
+              <li><small class="dropdown-item-text">Programme and Department</small></li>
+              <li><a class="dropdown-item" href="#" title="Programme">{{ student.programme }}</a></li>
+              <li><a class="dropdown-item" href="#" title="Department">{{ student.programme.department }}</a></li>
+              <li class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Fees & Financial Aid</a></li>
+              <li class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'Home:logout' %}">Logout</a></li>
+          </ul>
+      </div>
+  </div>
+{% endwith %}
+{% endwith %}

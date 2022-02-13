@@ -4,11 +4,15 @@
             <span class="fa fa-check-circle text-success fa-2x align-self-end"></span>
         {% endif %}
         <div class="text-center">
-            <img src="{{ img_src }}" alt="" style="height: 5em">
+            {% if fa_icon %}
+                <span class="fa {{ fa_icon }} fa-2x"></span>
+            {% else %}
+                <img src="{{ img_src }}" alt="" style="height: 5em">
+            {% endif %}
             {% if disable_why %}
                 <h5 title="{{ disable_why }}">{{ label }}</h5>
             {% else %}
-                <h5>{% if link %}<a href="{{ link }}?back={{ request.path }}{% if link_para_n and link_para_v %}&{{ link_para_n }}={{ link_para_v }}{% endif %}" class="card-link stretched-link {% if show_check %} link-success {% endif %}">{{ label }}</a>{% else %}{{ label }}{% endif %}</h5>
+                <h5 class="{{ klas }}">{% if link %}<a href="{{ link }}?back={{ request.path }}{% if link_para_n and link_para_v %}&{{ link_para_n }}={{ link_para_v }}{% endif %}" class="card-link stretched-link {% if show_check %} link-success {{ klas }} {% endif %}">{{ label }}</a>{% else %}{{ label }}{% endif %}</h5>
             {% endif %}
         </div>
     </div>

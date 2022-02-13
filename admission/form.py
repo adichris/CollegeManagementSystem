@@ -164,3 +164,4 @@ class AcceptanceConfirmationForm(forms.ModelForm):
         )
         helper[0].wrap(Fieldset, 'Programme Choices')
         return helper
+

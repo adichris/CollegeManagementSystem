@@ -38,8 +38,19 @@
                                         <div class="card-body alert-success">
                                             <p>{{ notice|safe }}</p>
                                         </div>
+                                        <span class="p-1">Your were given:</span>
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <small >Programme</small>
+                                                <p class="text-primary"><b>{{ student.programme }}</b></p>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <small >Department</small>
+                                                <p class="text-primary">{{ student.programme.department }}</p>
+                                            </li>
+                                        </ul>
                                         <div class="card-body d-flex flex-column justify-content-between flex-md-row gap-3">
-                                            <a href="#" class="btn btn-outline-primary shadow-sm flex-grow-1"><span class="fa fa-user-graduate me-2"></span>Student Page</a>
+                                            <a href="{% url 'Student:home' %}" class="btn btn-outline-primary shadow-sm flex-grow-1" onclick="dynamicSpinner(this)"><span class="fa fa-user-graduate me-2"></span>Student Page</a>
                                             <a href="#" class="btn btn-outline-primary shadow-sm flex-grow-1" onclick="toggleModal()"><span class="fa fa-user-lock me-2"></span>New Password</a>
                                         </div>
                                     </div>

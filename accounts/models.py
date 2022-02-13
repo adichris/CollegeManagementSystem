@@ -6,6 +6,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import user_logged_in, user_logged_out
 from CollegeManagementSystem.validation import validate_alphanumberic_space
 from django.contrib.sessions.models import Session
+from django.shortcuts import reverse
+
 
 class GenderChoices(models.TextChoices):
     MALE = ("m", "♂️ Male")
@@ -71,7 +73,7 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     # browser information
     computer_name = models.CharField(max_length=250, null=True, blank=True)
-    username = models.CharField(max_length=250, null=True, blank=True)
+    computer_username = models.CharField(max_length=250, null=True, blank=True)
     http_sec_ch_ua = models.CharField(max_length=250, null=True, blank=True)
     os = models.CharField(max_length=200, null=True, blank=True)
     
@@ -83,6 +85,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         permissions = [
             ('add_lecturerprofile', 'Add Lecturer Profile'),
             ('set_password4other', 'Set password for other user'),
+            ('self_change_password', 'Can user change his or her password'),
         ]
 
     def __str__(self):
@@ -127,6 +130,13 @@ class User(PermissionsMixin, AbstractBaseUser):
             return 'Superuser'
         elif self.is_staff:
             return 'Staff'
+
+    @property
+    def is_student(self):
+        return bool(self.student)
+
+    def get_absolute_url(self):
+        return reverse('Student:home')
 
 
 @receiver(models.signals.pre_save, sender=User)

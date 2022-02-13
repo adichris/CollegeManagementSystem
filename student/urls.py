@@ -17,6 +17,10 @@ from .views import (
     StaffAddPreviousEducation,
     StaffAddStudentForms,
     StaffStudentDetailView,
+    StudentHomePage,
+    AccountOverviewPage,
+    AccountsChangePasswordPage,
+    AccountsReportsPage,
 )
 
 app_name = 'Student'
@@ -41,6 +45,12 @@ staff_urlpatterns = [
     path('detail/<int:pk>/<str:profile__identity>/', StaffStudentDetailView.as_view(), name='staff_student_detail'),
 ]
 
+accounts_urlpatterns = [
+    path('overview/', AccountOverviewPage.as_view(), name='acc_overview'),
+    path('updates/', AccountsChangePasswordPage.as_view(), name='acc_updates'),
+    path('reports/', AccountsReportsPage.as_view(), name='acc_reports'),
+
+]
 urlpatterns = [
     path('staff/', include(staff_urlpatterns)),
     path('admissionredirect/<str:serial_number>', StudentAdmissionRedirectView.as_view(),
@@ -49,4 +59,6 @@ urlpatterns = [
     path('admissioncertificateexamsrecords/', AdmissionCertificateExaminationView.as_view(), name='admission_cert_exam_records'),
     path('studentpreviouseducation/', StudentPreviousEducationChangeView.as_view(), name='admission_previous_education'),
     path('admission/details/', StudentAdmissionDetails.as_view(), name='admission_detail'),
+    path('home/', StudentHomePage.as_view(), name='home'),
+    path('accounts/', include(accounts_urlpatterns)),
 ]

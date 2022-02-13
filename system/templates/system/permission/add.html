@@ -1,9 +1,90 @@
 {% extends 'base/admin/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block container %}
     <div class="container">
-        <div class="row my-4">
+        {% if back_url %}
+            {% include 'institution/utils/back_snippet.html' %}
+        {% endif %}
+        <div class="row my-4 text-warning">
             <h4 class="text-center display-6">{{ title|upper }}</h4>
         </div>
+        <div class="row">
+            <div class="col-auto mx-auto text-warning">
+                <h4 class="lead text-center">Add Permission on system programs</h4>
+            </div>
+        </div>
+
+{#        <div class="row my-4">#}
+{#            {% for content_type in content_types %}#}
+{#               <div class="col-md-4 col-lg-3 col-12 my-3">#}
+{#                    <div class="card hover_shadow">#}
+{#                        <div class="card-body">#}
+{#                            <h5 title="program name" class="text-center">{{ content_type.name|upper }}</h5>#}
+{#                            <p class="text-center m-0 p-0">{{ content_type.app_labeled_name|upper }}</p>#}
+{#                        </div>#}
+{#                        <p class="lead px-2" title="program permissions">Permissions ({{ content_type.permission_set.count }}):</p>#}
+{#                        <ul class="list-group list-group-flush">#}
+{#                            {% for perm in content_type.permission_set.all %}#}
+{#                                {% if perm in group.permissions.all %}#}
+{#                                    <li class="list-group-item list-group-item-action text-success" title='Members in "{{ group }}" group {{ perm.name }}'>#}
+{#                                        <span class="fa fa-user-check me-2"></span>#}
+{#                                        <b>{{ perm.name }}</b><br>#}
+{#                                        <small class="text-muted">{{ perm }}</small>#}
+{#                                    </li>#}
+{#                                {% else %}#}
+{#                                    <li class="list-group-item list-group-item-action text-danger" title='Members in "{{ group }} do not have this permission.'>#}
+{#                                        <span class="fa fa-user-times me-2"></span>#}
+{#                                        <b>{{ perm.name }}</b><br>#}
+{#                                        <small class="text-muted">{{ perm }}</small>#}
+{#                                    </li>#}
+{#                                {% endif %}#}
+{#                            {% endfor %}#}
+{#                        </ul>#}
+{#                        <div class="card-footer d-flex flex-column flex-md-row justify-content-between gap-2">#}
+{#                            <a href="#" class="btn btn-warning flex-grow-1">Mark All</a>#}
+{#                            <a href="#" class="btn btn-danger flex-grow-1">Unmark All</a>#}
+{#                        </div>#}
+{#                    </div>#}
+{#               </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+        <div class="row my-4">
+            <div class="col-auto mx-auto">
+                <div class="card hover_shadow">
+                    <div class="card-body">
+                        <h5 class="text-center">ALL PERMISSIONS</h5>
+                        <hr>
+                        {% crispy form %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{#        <div class="row my-4 p-3 d-flex justify-content-center border border-warning rounded">#}
+{#            <div class="col-md-6 col-lg-4 my-3">#}
+{#                <div class="card hover_shadow">#}
+{#                    <div class="card-body text-warning text-center">#}
+{#                        <p><span class="fa fa-user-check fa-4x"></span></p>#}
+{#                        <h6>Add All Permissions</h6>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="col-md-6 col-lg-4 my-3" >#}
+{#                <div class="card hover_shadow">#}
+{#                    <div class="card-body text-danger text-center">#}
+{#                        <p>#}
+{#                            <span class="fa fa-user-times fa-4x"></span>#}
+{#                        </p>#}
+{#                        <h6>Clear All Permissions</h6>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{##}
+{#            <div class="col-12 ">#}
+{#                <p class="text-center text-secondary">Add all permissions to the <b>{{ group.name|upper }}</b> group or remove all permissions from the <b>{{ group.name|upper }}</b> group.</p>#}
+{#            </div>#}
+{##}
+{#        </div>#}
     </div>
 {% endblock %}

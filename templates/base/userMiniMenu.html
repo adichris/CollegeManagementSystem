@@ -4,7 +4,7 @@
     {% elif user.is_superuser %}
         {% include 'base/admin/userMiniMenu.html' %}
     {% elif user.is_student %}
-
+        {% include 'base/student/userminiMenu.html' %}
     {% elif user.is_teaching_staff %}
 
     {% elif user.is_non_teaching_staff %}

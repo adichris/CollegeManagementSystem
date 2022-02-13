@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+
+{% comment %}
+
+{% block header %}
+    <style>
+        #left-side-menu {
+            background: #0E3155;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+        .bg-blue {
+            background-color: #103A65;
+            color: #fff;
+        }
+        .bg-blue:hover {
+            background-color:#fff;
+            color:  #103A65;
+        }
+        .bg-blue:active {
+            background-color:#cccccc;
+            color:  #103A65;
+        }
+        .bg-blue:focus {
+            border: 1px solid rgb(255, 255, 255);
+            color: #fff;
+            background-color:#103A65;
+        } 
+
+        @media (max-width: 900px) {
+            .bg-blue:focus {
+                background-color:#cccccc;
+                color:  #103A65;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block navbar %}
+
+{% endblock %}
+
+{% block container %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2 col-md-4 col-lg-3 sticky-top shadow p-1 p-md-2"  id="left-side-menu">
+                <div class="d-md-none d-flex justify-content-start flex-column gap-3 my-3">
+                    <div class="list-group list-group-flush gap-3">
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-cubes"></span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-book"></span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-building"></span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-calendar"></span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-mail-bulk"></span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-award"></span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg"><span class="fa fa-tools"></span></a>
+                    </div>
+                    <div class="mb-2">
+                        <a href="{% url 'Accounts:logout' %}" class="btn btn-info btn-lg text-start w-100"><span class="fa fa-sign-out-alt me-3"></span></a>
+                    </div>
+                </div>
+                <div class="d-none d-md-flex justify-content-start flex-column gap-3 my-3">
+                    <div style="padding: 3px" class="btn btn-primary rounded-circle bg-white50 align-self-center">
+                            <img style="height: 10em; width: 10em;" src="{{ request.user.picture.url }}" alt="" class="img-fluid rounded-circle" >
+                    </div>
+                    <h5 class="align-self-center text-white">{{ request.user }}</h5>
+                    <div class="list-group list-group-flush gap-3">
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-cubes"></span> <span class="ms-3">Class</span> </a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-book"></span> <span class="ms-3">My Courses</span> </a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-building"></span> <span class="ms-3">Organisation</span> </a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-calendar"></span> <span class="ms-3">Calendar</span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-mail-bulk"></span> <span class="ms-3">Messages</span></a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-award"></span> <span class="ms-3">Grade</span> </a>
+                        <a href="#" onclick="SpinBorderLeft(this)" class="btn bg-blue btn-lg text-start"><span class="fa fa-tools"></span> <span class="ms-3">Tools</span> </a>
+                    </div>
+                    <div class="mb-2">
+                        <a href="{% url 'Accounts:logout' %}" class="btn btn-info btn-lg text-start w-100"><span class="fa fa-sign-out-alt me-3"></span> Logout</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-10 col-md-8 col-lg-9 h-100 bg-white50">
+                {% block content %}
+
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% endcomment %}

@@ -31,6 +31,6 @@ class UserModelAdmin(UserAdmin):
          {"fields": ("groups", ), "classes": "wide"}),
     ]
 
-    readonly_fields = ('is_online', 'session_key', 'last_login', 'os', 'username', 'computer_name', 'http_sec_ch_ua')
+    readonly_fields = ('is_online', 'session_key', 'last_login', 'os', 'computer_username', 'computer_name', 'http_sec_ch_ua')
     ordering = ("first_name", "last_name", "email")
     filter_horizontal = ()

@@ -6,3 +6,10 @@
 .bg-light-success {
     background-color: rgba(0, 128, 0, 0.53) !important;
 }
+
+.bg-light-gold {
+    background-color: #edb40024 !important;
+}
+.bg-gold {
+    background-color: #e9b203 !important;
+}

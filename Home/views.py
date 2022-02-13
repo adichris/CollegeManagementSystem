@@ -67,6 +67,8 @@ class LoginPage(LoginView):
         user = self.request.user
         if user.is_admin or user.is_superuser:
             return reverse('Home:admin')
+        elif user.student:
+            return reverse('Student:home')
         return reverse('Home:landing_page')
 
 

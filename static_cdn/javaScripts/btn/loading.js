@@ -5,12 +5,25 @@ function SpinBorderRight(htmlElement) {
 
 function spinnerGrowRight(htmlElement) {
     let elm = htmlElement.innerText;
-    htmlElement.innerHTML = elm + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>'
+    htmlElement.innerHTML = elm + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>';
 }
 
 function spinnerGrowRightChangeText(text, htmlElement) {
+    htmlElement.innerHTML = text +'<span class="spinner-grow spinner-grow-sm ms-2 "></span>';
+}
+function SpinBorderLeft(htmlElement) {
     let elm = htmlElement.innerText;
-    htmlElement.innerHTML = text + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>'
+    htmlElement.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span>' + elm;
+}
+
+function spinnerGrowLeft(htmlElement) {
+    let elm = htmlElement.innerText;
+    htmlElement.innerHTML ='<span class="spinner-grow spinner-grow-sm ms-2 "></span>' + elm
+}
+
+function spinnerGrowLeftChangeText(text, htmlElement) {
+    let elm = htmlElement.innerText;
+    htmlElement.innerHTML ='<span class="spinner-grow spinner-grow-sm ms-2 "></span>' + elm
 }
 
 function rotateElement(htmlElement) {

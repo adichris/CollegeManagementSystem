@@ -111,3 +111,16 @@ class SetPasswordForm(AuthSetPasswordForm):
             )
         )
         return helper
+
+
+class ChangePasswordForm(SetPasswordForm):
+    current_password = forms.CharField(required=True, widget=forms.PasswordInput, help_text='Old password')
+
+    def clean_current_password(self):
+        crn_pwd = self.cleaned_data.get('current_password')
+        if crn_pwd == self.cleaned_data.get('password1'):
+            raise forms.ValidationError('Your new password is the same as the old one')
+        if not self.user.check_password(crn_pwd):
+            raise forms.ValidationError('incorrect current password')
+        return crn_pwd
+

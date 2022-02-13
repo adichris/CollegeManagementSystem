@@ -1,0 +1,41 @@
+{% extends 'student/self/accounts/template.html' %}
+
+{% block content %}
+    <p class="text-center lead">Overview</p>
+    <div class="d-flex justify-content-center">
+    <table class="table table-bordered">
+        <tr>
+            <td colspan="2">
+                <div class="text-center">
+                    <img src="{{ profile.picture.url }}" class="img-fluid rounded" style="height: 30em" alt="profile picture">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Full Name</td>
+            <td>{{ profile.get_full_name }}</td>
+        </tr>
+        <tr>
+            <td>Index Number</td>
+            <td>{{ student.index_number }}</td>
+        </tr>
+        <tr>
+            <td>Identity</td>
+            <td>{{ profile.identity }}</td>
+        </tr>
+        <tr>
+            <td>Programme</td>
+            <td>{{ student.programme }}</td>
+        </tr>
+        <tr>
+            <td>Admitted on Date</td>
+            <td>{{ student.date_admitted|date:'nS F, Y' }}</td>
+        </tr>
+        <tr>
+            <td>Completion Date</td>
+            <td>{{ student.date_completed|date:'nS F, Y' }}</td>
+        </tr>
+
+        </table>
+</div>
+{% endblock %}

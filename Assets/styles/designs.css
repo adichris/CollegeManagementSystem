@@ -49,7 +49,7 @@
 }
 
 
-@media (max-width:768px) {
+@media (max-width:900px) {
     .bord-width-nav {
         background-color: #ececec;
         width: 100%;
@@ -67,4 +67,9 @@
 
 .active-primary:past{
     background-color: lightgreen;
+}
+
+
+.hover-txt-primary:hover {
+    color: rgb(13, 110, 253);
 }

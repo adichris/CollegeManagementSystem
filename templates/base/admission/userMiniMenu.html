@@ -1,10 +1,10 @@
 {% load static %}
 {% static 'favicon.png' as default_img %}
 {% with user=request.user  %}
-  <div class="d-flex flex-column align-items-center ">
+  <div class="d-flex flex-column align-items-center">
       <div class="dropdown">
-          <button class="dropdown-toggle btn" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="{{ user.picture.url|default:default_img }}" alt="" srcset="" height="46" width="46" class="img-fluid rounded-circle"> {{ user.get_short_name|title }}</button>
+          <button class="dropdown-toggle btn p-0 m-0 dropdown-menu-start" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="{{ user.picture.url|default:default_img }}" alt="" srcset="" height="40" width="40" class="img-fluid rounded"> {{ user.get_short_name|title }}</button>
           <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
               <li><a class="dropdown-item" href="#">Dean of Students</a></li>
               <li><a class="dropdown-item" href="#">Your university</a></li>

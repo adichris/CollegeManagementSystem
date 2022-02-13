@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block container %}
+    <div class="container">
+        {% if back_url %}
+            <div class="row">
+                {% include 'institution/utils/back_snippet.html' %}
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-auto mx-auto text-center">
+                <h1 class="display-6 text-primary">{{ title }}</h1>
+                <h1 class="text-primary">{{ group|upper }}</h1>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            {% if is_student %}
+                <div class="col-md-6 mx-auto">
+
+                    <form action="" method="post">
+                        <div class="card hover_shadow {% if is_added %} shadow {% endif %}">
+                            {% if is_added %}
+                                <div class="card-title alert alert-success text-center m-2">
+                                    <span>Successfully added {{ is_added }} students</span>
+                                </div>
+                            {% endif %}
+                            <img src="{% static 'icons/new_students.svg' %}" alt="Student" class="img-fluid" style="height: 10em">
+                            <div class="card-body text-center">
+                                <button type="submit" class="btn btn-link stretched-link" onclick="spinnerGrowRightChangeText('Adding all students... ', this)">Add Student</button>
+                            </div>
+                            <div class="card-footer">
+                                <span>Add active student to this group. <br> New student will be added and continue student not in this group will be added</span>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                        <input type="hidden" name="addstudent" value="1">
+                    </form>
+                </div>
+            {% else %}
+                <div class="col">
+                    {% static 'icons/lecturer/lecturer.svg' as lecturer %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Lecturers' img_src=lecturer %}
+                </div>
+                <div class="col">
+                    {% static 'icons/lecturer/lecturer.svg' as admin %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Administrators' img_src=admin %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

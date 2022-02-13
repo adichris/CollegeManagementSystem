@@ -13,6 +13,7 @@ from Home.templatetags.institution_extra import get_institution_fullname_name
 from INSTITUTION.utils import get_not_allowed_render_response, get_next_url, get_back_url, get_admission_steps, \
     AcademicYear
 from accounts.models import User
+from accounts.forms import ChangePasswordForm
 from programme.models import Programme
 from department.models import Department
 from .models import (
@@ -43,7 +44,12 @@ class StudentAdmissionRedirectView(RedirectView):
             })
 
         if admission_form.status != FormStatusChoice.EXPIRED:
-            user = User.objects.get(identity=admission_form.serial_number)
+            try:
+                user = User.objects.get(identity=admission_form.serial_number)
+            except User.DoesNotExist:
+                user = admission_form.student.profile
+            except ObjectDoesNotExist:
+                raise Http404('Student with such admission serial number does not exists')
             if self.request.user != user:
                 if self.request.user.is_authenticated:
                     logout(request=self.request)
@@ -129,16 +135,15 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
             'subtitle': '3 programme of choice',
             'back_url': get_back_url(self.request)
         }
+        student = self.get_student()
         if self.kwargs.get('index_number'):
             kwargs['reuse'] = True
             kwargs['subtitle'] = 'Should be one of the student current programme'
-            kwargs['subtitle2'] = f'({self.get_student().programme})'
+            kwargs['subtitle2'] = f'({student.programme})'
             kwargs['header'] = 'What where the student programme selection'
-            return kwargs
         kwargs['step'] = 5
-        kwargs['steps'] = get_admission_steps(self.request.user.student_profile.admission_form.status),
-        kwargs['serial_number'] = self.request.user.identity
-
+        kwargs['steps'] = get_admission_steps(student.admission_form.status)
+        kwargs['serial_number'] = student.admission_form.serial_number
         return kwargs
 
     def get_object(self):
@@ -170,7 +175,7 @@ class StudentProgrammeSelectionView(LoginRequiredMixin, PermissionRequiredMixin,
         if form_instance.is_valid():
             student_instance = self.get_student()
             if programmes_choices_instance:
-                instance = form_instance.save(True)
+                form_instance.save(True)
             else:
                 programmes_choices_instance = form_instance.save(False)
                 programmes_choices_instance.student_id = student_instance.id
@@ -213,7 +218,7 @@ class AdmissionCertificateExaminationView(LoginRequiredMixin, PermissionRequired
         max_num=15,
         validate_max=True,
         extra=1,
-        min_num=6,
+        min_num=7,
         validate_min=True,
         absolute_max=15,
         can_delete=True,
@@ -348,7 +353,7 @@ class StudentPreviousEducationChangeView(LoginRequiredMixin, PermissionRequiredM
     form_class = modelformset_factory(
         model=model,
         form=StudentPreviousEducationChangeForm,
-        extra=0,
+        extra=1,
         max_num=3,
         validate_max=True,
         min_num=1,
@@ -434,6 +439,7 @@ class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, Detai
                     StrictButton('Reset', css_class='btn-light', type='reset'),
                 )
             )
+            helper.form_action = reverse('Accounts:set_pwd')
             m_form.helper = helper
             ctx['m_form'] = m_form
         return ctx
@@ -444,6 +450,12 @@ class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, Detai
 
     def status_accepted(self):
         return self.object.admission_form.status == FormStatusChoice.ACCEPTED
+
+    def get(self, request, *args, **kwargs):
+        if request.user.password:
+            logout(request)
+            return redirect('Student:home')
+        return super(request, *args, **kwargs)
 
 
 class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
@@ -960,4 +972,103 @@ class StaffStudentDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
             profile__identity=self.kwargs['profile__identity'],
             pk=self.kwargs['pk']
         )
+
+
+class StudentHomePage(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    permission_required = 'student.view_student'
+    template_name = 'student/self/home.html'
+
+    def get_context_data(self, **kwargs):
+        student = self.get_student()
+        ctx = super(StudentHomePage, self).get_context_data(**kwargs)
+        ctx['title'] = f'Student({student}) Home'
+        ctx['student'] = student
+        return ctx
+
+    def get_student(self):
+        try:
+            return self.request.user.student
+        except ObjectDoesNotExist:
+            raise Http404('Your not a student of %s.' % APP_SETTINGS.INSTITUTION_FULL_NAME)
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.password:
+            return redirect('Accounts:set_pwd')
+        return super(StudentHomePage, self).get(request, *args, **kwargs)
+
+
+class AccountOverviewPage(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    permission_required = 'student.view_student'
+    template_name = 'student/self/accounts/pages/overview.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AccountOverviewPage, self).get_context_data(**kwargs)
+        ctx['title'] = 'Student Accounts - Overview'
+        student = self.get_student()
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['student'] = student
+        ctx['profile'] = student.profile
+        ctx['page'] = 'ov'
+        return ctx
+
+    def get_student(self):
+        return self.request.user.student
+
+
+class AccountsChangePasswordPage(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    permission_required = 'accounts.self_change_password'
+    template_name = 'student/self/accounts/updates.html'
+    model = User
+    form_class = ChangePasswordForm
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AccountsChangePasswordPage, self).get_context_data(**kwargs)
+        ctx['title'] = 'Student Accounts - Updates'
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['page'] = 'up'
+        ctx['trials'] = 5 - (self.request.session.get('pwd_trial') or 0)
+        return ctx
+
+    def form_invalid(self, form):
+        returns = super(AccountsChangePasswordPage, self).form_invalid(form)
+        pwd_trial = self.request.session.get('pwd_trial')
+        if not pwd_trial:
+            self.request.session['pwd_trial'] = 1
+        elif pwd_trial >= 5:
+            self.request.session.clear()
+            logout(self.request)
+        self.request.session['pwd_trial'] += 1
+        return returns
+
+    def form_valid(self, form):
+        pwd_trial = self.request.session.get('pwd_trial')
+        if not pwd_trial:
+            self.request.session['pwd_trial'] = 1
+        elif pwd_trial >= 5:
+            self.request.session.clear()
+            logout(self.request)
+        else:
+            self.request.session['pwd_trial'] += 1
+        return super(AccountsChangePasswordPage, self).form_valid(form)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
+class AccountsReportsPage(LoginRequiredMixin, TemplateView):
+    template_name = 'student/self/accounts/pages/report.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AccountsReportsPage, self).get_context_data(**kwargs)
+        ctx['title'] = 'Student Accounts - Report'
+        ctx['page'] = 'rp'
+
+        # System reports
+        student_profile = self.request.user
+        ctx['computer_username'] = student_profile.computer_username
+        return ctx
+
+    def get_student(self):
+        return self.request.user.student
+
 

@@ -4,7 +4,9 @@ from .views import (
     StudentProfileCreateView,
     ContinuouStudentProfileCreateView,
     LecturerProfileCreateView,
-    SetPassword4other
+    SetPassword4other,
+    SetNewPassword,
+    logout_to_homepage,
 )
 
 app_name = 'Accounts'
@@ -19,5 +21,7 @@ urlpatterns = [
     path('add/student/profile/<str:index_number>/',
          ContinuouStudentProfileCreateView.as_view(), name='create_student_profile'),
     path('add/lecturer/<str:identity>/', LecturerProfileCreateView.as_view(), name='create_lecturer'),
-    path('ajax/', include(urlpatternsAjax))
+    path('ajax/', include(urlpatternsAjax)),
+    path('setnewpassword/', SetNewPassword.as_view(), name='set_pwd'),
+    path('logout/', logout_to_homepage, name='logout'),
 ]

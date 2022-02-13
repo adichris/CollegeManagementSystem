@@ -3,14 +3,36 @@ function SpinBorderRight(htmlElement) {
     htmlElement.innerHTML = elm + '<span class="spinner-border spinner-border-sm ms-2"></span> '
 }
 
-function spinnerGrowRight(htmlElement) {
+function spinnerGrowRight(htmlElement, text) {
     let elm = htmlElement.innerText;
-    htmlElement.innerHTML = elm + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>'
+    if (text){
+        elm=text
+    }
+    htmlElement.innerHTML = elm + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>';
 }
 
 function spinnerGrowRightChangeText(text, htmlElement) {
+    htmlElement.innerHTML = text +'<span class="spinner-grow spinner-grow-sm ms-2 "></span>';
+}
+function SpinBorderLeft(htmlElement, text) {
     let elm = htmlElement.innerText;
-    htmlElement.innerHTML = text + '<span class="spinner-grow spinner-grow-sm ms-2 "></span>'
+    if (text){
+        elm=text
+    }
+    htmlElement.innerHTML = '<span class="spinner-border spinner-border-sm me-3"></span>' + elm;
+}
+
+function spinnerGrowLeft(htmlElement, text) {
+    let elm = htmlElement.innerText;
+    if (text){
+        elm=text
+    }
+    htmlElement.innerHTML ='<span class="spinner-grow spinner-grow-sm me-2 "></span>' + elm
+}
+
+function spinnerGrowLeftChangeText(text, htmlElement) {
+    let elm = htmlElement.innerText;
+    htmlElement.innerHTML ='<span class="spinner-grow spinner-grow-sm me-2 "></span>' + elm
 }
 
 function rotateElement(htmlElement) {
@@ -32,6 +54,10 @@ function stopRotation(htmlElement) {
 
 function dynamicSpinner(htmlElement) {
     spinnerGrowRight(htmlElement)
+}
+
+function dynamicSpinnerPlusText(htmlElement, text) {
+    spinnerGrowRight(htmlElement, text)
 }
 
 function spinBack(htmlElement) {

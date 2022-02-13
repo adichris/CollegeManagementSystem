@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render, get_object_or_404, reverse
 from django.views.generic import View, UpdateView
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 
 from lecture.models import Lecturer
 from .forms import (
@@ -11,7 +11,7 @@ from .forms import (
 )
 from student.models import Student
 from .models import User
-from INSTITUTION.utils import get_admission_steps
+from INSTITUTION.utils import get_admission_steps, get_back_url, get_next_url
 from INSTITUTION.views import JsonResponseMixin
 
 
@@ -200,3 +200,32 @@ class SetPassword4other(LoginRequiredMixin, PermissionRequiredMixin, JsonRespons
 
     def get_success_url(self):
         return self.request.path
+
+
+class SetNewPassword(LoginRequiredMixin, UpdateView):
+    form_class = SetPasswordForm
+    model = User
+    template_name = 'accounts/setpassword.html'
+
+    def get_success_url(self):
+        nxt = get_next_url(self.request)
+        if nxt:
+            return nxt
+        if self.request.user.student:
+            return reverse(self.request.user.student)
+        else:
+            return logout(self.request)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        ctx = super(SetNewPassword, self).get_context_data(**kwargs)
+        ctx['title'] = 'Set a new password'
+        ctx['back'] = get_back_url(self.request)
+        return ctx
+
+
+def logout_to_homepage(request):
+    logout(request)
+    return redirect('Home:landing_page')

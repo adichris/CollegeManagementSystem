@@ -169,13 +169,23 @@ EXAMINATION_YEAR_END = datetime.date.today().year
 class WaecGradeChoices(models.TextChoices):
     A1 = 'A1', 'A1'
     B2 = 'B2', 'B2'
-    C3 = 'C3', 'C3'
+    C3 = 'B3', 'B3'
     C4 = 'C4', 'C4'
     C5 = 'C5', 'C5'
     C6 = 'C6', 'C6'
     D7 = 'D7', 'D7'
     E8 = 'E8', 'E8'
     F9 = 'F9', 'F9'
+
+
+def shs_subject_choices():
+    from pathlib import Path
+    subjects = None
+    filepath = Path(__file__).parent / 'shs_subjects.csv'
+    if filepath.is_file():
+        with filepath.open('r') as file:
+            subjects = tuple((subject.replace('\n', ''), subject.replace('\n', '')) for subject in set(file.readlines()))
+    return subjects
 
 
 def examination_year_tuple():
@@ -194,7 +204,7 @@ class CertExamRecord(models.Model):
                                     on_delete=models.CASCADE,
                                     related_name='certificate_records',
                                     )
-    subject = models.CharField(max_length=120)
+    subject = models.CharField(max_length=120, choices=shs_subject_choices())
     index_number = models.CharField(max_length=20, help_text=_('Examination number'))
     examination_year = models.IntegerField(choices=examination_year_tuple())
     school = models.CharField(max_length=200, help_text=_('School Name'), null=True, blank=True)
@@ -231,3 +241,4 @@ class StudentPreviousEducation(models.Model):
 
     def __str__(self):
         return self.school
+

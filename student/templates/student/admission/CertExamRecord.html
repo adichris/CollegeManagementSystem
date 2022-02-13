@@ -20,6 +20,15 @@
             {{ integrityError|safe }}
         </div>
     {% endif %}
+    {% if formset.non_form_errors %}
+        {% for non_field_error in formset.non_form_errors %}
+            <p class="alert alert-danger">
+                {{ non_field_error }}
+            </p>
+        {% endfor %}
+
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
         {{ formset.management_form }}
@@ -51,7 +60,7 @@
     <div class="d-flex justify-content-evenly">
         <div class="alert alert-info my-3">
             <span>To remove a {{ legend|lower }}, click on delete or tick/check the delete label.</span><br>
-            <span>The system will auto delete {{ legend|lower }} with the delete checked.</span>
+            <span>The system will auto delete {{ legend|lower }} with the <b><input type="checkbox" disabled> Delete</b> checked.</span>
         </div>
     </div>
 {% endblock %}
