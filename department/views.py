@@ -80,6 +80,7 @@ class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
         faculty_slug = self.request.GET.get('facultyslug')
         if faculty_slug:
             kwargs['faculty_queryset'] = Faculty.objects.filter(slug=faculty_slug)
+        kwargs['faculty_queryset'] = Faculty.objects.all()
         return kwargs
 
 

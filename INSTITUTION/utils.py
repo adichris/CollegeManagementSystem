@@ -32,6 +32,7 @@ def get_admission_steps(admission_status):
 class AcademicYear:
     FROM_YEAR = 2000
     TO_YEAR = datetime.date.today().year
+    separator = '/'
 
     def __iter__(self):
         self.choices()
@@ -54,7 +55,7 @@ class AcademicYear:
         :param year: the current year
         :return:  last_year/this_year
         """
-        return f'{year - 1}/{year}'
+        return f'{year - 1}{cls.separator}{year}'
 
     @classmethod
     def extract_academic_year(cls, date_admitted):

@@ -89,8 +89,8 @@
         {% if course.description %}
             <div class="row">
                 <div class="col-md-8 mx-auto">
-                    <span>Description</span>
-                    <p>{{ course.description }}</p>
+{#                    <span>Description</span>#}
+                    <p>{{ course.description|safe }}</p>
                 </div>
             </div>
         {% endif %}

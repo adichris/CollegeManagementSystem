@@ -1,0 +1,333 @@
+{% extends 'student/self/accounts/template.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-auto mx-auto">
+            <h1 class="text-center lead">Profile Details</h1>
+        </div>
+    </div>
+
+        <div class="row my-3">
+            <div class="col-auto mx-auto">
+                <div class="card shadow">
+                    <div class="card-img-top">
+                        <img style="width: 30em;" src="{{ profile.picture.url }}" alt="profile picture" class="img-fluid">
+                    </div>
+                </div>
+                <p class="text-center">{{ profile }} picture</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 sticky-md-top bg-white50 transparent-bg rounded p-2">
+                <h5>Profile</h5>
+            </div>
+            <div class="col-12">
+                <hr>
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            <th>First Name</th>
+                            <td>{{ profile.first_name|upper }}</td>
+                            <th>Last Name</th>
+                            <td>{{ profile.last_name|upper }}</td>
+                        </tr>
+                        <tr>
+                            <th>Gender</th>
+                            <td>{{ profile.get_gender_display|upper }}</td>
+                            <th>Date Of Birth</th>
+                            <td>{{ profile.date_of_birth }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone Number</th>
+                            <td>{{ profile.phone_number }}</td>
+                            <th>Email</th>
+                            <td>{{ profile.email|upper }}</td>
+                        </tr>
+
+                    </table>
+                    </div>
+
+            </div>
+        </div>
+
+        <div class="row my-3 my-xl-4">
+            <div class="col-12 sticky-md-top bg-white50 transparent-bg rounded p-2">
+                <h5>Address</h5>
+            </div>
+            <div class="col-12">
+                <hr>
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th>Country</th>
+                        <td>{{ address.country.name|upper }}</td>
+                        <th>Region</th>
+                        <td>{{ address.region|upper }}</td>
+                    </tr>
+                    <tr>
+                        <th>District</th>
+                        <td>{{ address.district|upper }}</td>
+                        <th>Home Town</th>
+                        <td>{{ address.home_town|upper }}</td>
+                    </tr>
+                    <tr>
+                        <th>Region</th>
+                        <td>{{ address.current_region|upper }}</td>
+                        <th>Latitude, Longitude</th>
+                        <td title="open on map"><a href="#">{{ address.current_latitude|default_if_none:'N/A' }},
+                        {{ address.current_longitude|default_if_none:'N/A' }}</a></td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-3 my-xl-4">
+            <div class="col-12 sticky-md-top  bg-white50 transparent-bg rounded p-2">
+                <h5>Certificate</h5>
+            </div>
+            {% if cert_records %}
+                <div class="col-12">
+                <hr>
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th>#</th>
+                        <th>Subject</th>
+                        <th>Index Number</th>
+                        <th>Examination Year</th>
+                        <th>School</th>
+                        <th>Grade</th>
+                        <th>Examination Type</th>
+                    </tr>
+                    {% for cert_record in cert_records %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ cert_record.subject|upper }}</td>
+                            <td>{{ cert_record.index_number|upper }}</td>
+                            <td>{{ cert_record.examination_year }}</td>
+                            <td>{{ cert_record.school|upper }}</td>
+                            <td>{{ cert_record.grade|upper }}</td>
+                            <td>{{ cert_record.get_examination_type_display|upper }}</td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+                </div>
+            </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <p class="m-0 text-center">Your <b>admission certificate records</b> is not available or has not been processed yet</p>
+                    <span class="d-block text-center">You can contact your Head of Department for more information</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row my-3 my-xl-4">
+            <div class="col-12 sticky-md-top  bg-white50 transparent-bg rounded p-2">
+                <h5>Employment History</h5>
+            </div>
+            <div class="col-12">
+                <hr>
+                <h6>Student Employment History: <span class="badge bg-primary"><span class="h5">{{ employment_history.has_history|yesno|title|default_if_none:'N/A' }}</span></span></h6>
+                {% if not employment_history.has_history or not employment_history.job_title %}
+                    <small>This student has no employment history</small>
+                {% endif %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                    <tr>
+                        <th>Job</th>
+                        <td colspan="3">{{ employment_history.job_title|upper|default_if_none:'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Specific Duty</th>
+                        <td colspan="3">{{ employment_history.specific_duty|safe|default_if_none:'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Company Name</th>
+                        <td>{{ employment_history.company_name|upper|default:'N/A' }}</td>
+                        <th>Address</th>
+                        <td>{{ employment_history.address|upper|default:'N/A'  }}</td>
+                    </tr>
+                    <tr>
+                        <th>State, City</th>
+                        <td>{{ employment_history.state|upper|default_if_none:'N/A'  }},
+                        {{ employment_history.city|upper|default_if_none:'N/A' }}</td>
+                        <th>Supervisor</th>
+                        <td>{{ employment_history.supervisor|upper|default_if_none:'N/A'  }}</td>
+                    </tr>
+                    <tr>
+                        <th>Employed From</th>
+                        <td>{{ employment_history.employed_from|default_if_none:'N/A'  }}</td>
+                        <th>Employed To</th>
+                        <td>{{ employment_history.employed_to|default_if_none:'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Why leave</th>
+                        <td colspan="3">{{ employment_history.why_leave|default_if_none:'N/A' }}</td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-3 my-xl-4">
+            <div class="col-12 sticky-md-top  bg-white50 transparent-bg rounded p-2">
+                <h5>Sponsorship</h5>
+            </div>
+            {% if sponsor %}
+                <div class="col-12">
+                <hr>
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ sponsor.name|upper|default_if_none:'N/A' }}</td>
+                        <th>Email</th>
+                        <td>{{ sponsor.email|upper|default_if_none:'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Number</th>
+                        <td>{{ sponsor.phone_number|default_if_none:'N/A' }}</td>
+                        <th>City</th>
+                        <td>{{ sponsor.city|upper|default_if_none:'N/A'  }}</td>
+                    </tr>
+                    <tr>
+                        <th>State</th>
+                        <td>{{ sponsor.state|upper|default_if_none:'N/A'  }}</td>
+                        <th>Address</th>
+                        <td>{{ sponsor.address|upper|default_if_none:'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Relationship</th>
+                        <td>{{ sponsor.relationship|upper|default_if_none:'N/A' }}</td>
+                        <th>Scholarship</th>
+                        <td>{{ sponsor.scholarship|upper|default_if_none:'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Government Sponsorship</th>
+                        <td>{{ sponsor.on_government_support|yesno|upper|default_if_none:'N/A' }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                </table>
+                </div>
+            </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <p class="m-0 text-center">Your <b>sponsorship form information</b> is not available or has not been processed yet</p>
+                    <span class="d-block text-center">You can contact your Head of Department for more information</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="row my-3 my-xl-4">
+            <div class="col-12 sticky-md-top  bg-white50 transparent-bg rounded p-2">
+                <h5>Programme Choices</h5>
+            </div>
+            <div class="col-12">
+                <hr>
+                <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th colspan="2">First Choice</th>
+                        <td colspan="2">{{ programme_choices.first_choice|default_if_none:'N/A'  }}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Second Choice</th>
+                        <td colspan="2">{{ programme_choices.second_choice|default_if_none:'N/A'  }}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Third Choice</th>
+                        <td colspan="2">{{ programme_choices.third_choice|default_if_none:'N/A' }}</td>
+                    </tr>
+                </table>
+                <table class="table table-bordered table-primary">
+                    <tr>
+                        <td>Pursued Programme</td>
+                        <th>{{ student.programme }}</th>
+                        <td>Department</td>
+                        <th>{{ student.programme.department }}</th>
+                    </tr>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-3 my-xl-4">
+            <div class="col-12 sticky-md-top  bg-white50 transparent-bg rounded p-2">
+                <h5>Previous Education</h5>
+            </div>
+            <div class="col-12">
+                <hr>
+                {% if previous_education %}
+                    <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <tr>
+                        <th colspan="2">School</th>
+                        <td colspan="2">{{ previous_education.school|upper }}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">Region</th>
+                        <td colspan="2">{{ previous_education.region|upper }}</td>
+                    </tr>
+                    <tr>
+                        <th>From Year</th>
+                        <td>{{ previous_education.from_year }}</td>
+                        <th title="year completed">To Year</th>
+                        <td>{{ previous_education.to_year }}</td>
+                    </tr>
+                </table>
+                </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <p class="m-0 text-center">Your <b>previous education form data</b> is not available or has not been processed yet</p>
+                        <span class="d-block text-center">You can contact your Head of Department for more information</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    <div class="row my-3 my-md-4">
+        <div class="col mx-auto">
+            <h4 class="text-center">Student Admission Form</h4>
+            {% if studentforms %}
+                <div class  ="table-responsive">
+                    <table class="table table-bordered table-hover">
+                            <tr>
+                                <th>Serial Number</th>
+                                <td>{{ studentforms.serial_number }}</td>
+                                <th>Pin Code</th>
+                                <td>{{ studentforms.pin_code }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sale Point</th>
+                                <td>{{ studentforms.sales_point|default_if_none:'N/A' }}</td>
+                                <th>Sales Agent</th>
+                                <td>{{ studentforms.sales_agent|default_if_none:'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Cost</th>
+                                <td>{{ studentforms.cost|default_if_none:'N/A' }}</td>
+                                <th>Form Type</th>
+                                <td>{{ studentforms.form_type }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ studentforms.get_status_display }}</td>
+                                <th>Academic Year</th>
+                                <td>{{ studentforms.academic_year|default_if_none:'N/A' }}</td>
+                            </tr>
+                            </table>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <p class="m-0">Your <b>Admission for data</b> is not present in the system yet!</p>
+                    <span class="d-block text-center">Contact your Head of Department</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

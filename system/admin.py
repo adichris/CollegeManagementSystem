@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import SemesterModel, Level
+from .models import SemesterAcademicYearModel, Level
 
 
-@admin.register(SemesterModel)
+@admin.register(SemesterAcademicYearModel)
 class SemesterModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'timestamp', 'is_current')
+    list_display = ('name', 'academic_year', 'is_current', 'timestamp')
     list_filter = ('is_current', )
     readonly_fields = ('is_current', )
 

@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from INSTITUTION.views import JsonResponseMixin, JsonResponse
 from INSTITUTION.utils import get_back_url
-from .models import SemesterModel, Level
+from .models import SemesterAcademicYearModel, Level
 from .forms import (
     SemesterCreationForm,
     GroupCreationForm,
@@ -17,7 +17,7 @@ from .forms import (
 
 
 class SemesterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    model = SemesterModel
+    model = SemesterAcademicYearModel
     form_class = SemesterCreationForm
     permission_required = 'system.add_semestermodel'
     template_name = 'system/semester/create.html'
@@ -34,7 +34,7 @@ class SemesterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
 
 
 class SemesterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    model = SemesterModel
+    model = SemesterAcademicYearModel
     form_class = SemesterCreationForm
     permission_required = 'system.change_semestermodel'
     template_name = 'system/semester/create.html'
@@ -59,7 +59,7 @@ class SemesterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
 
 class SemesterAcademicYearView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = 'system/semesteracademicyear.html'
-    model = SemesterModel
+    model = SemesterAcademicYearModel
     permission_required = 'system.view_semestermodel'
     level_form = LevelCreationForm
 
@@ -74,8 +74,10 @@ class SemesterAcademicYearView(LoginRequiredMixin, PermissionRequiredMixin, List
         return ctx
 
     def get_academic_year(self):
-        # return (CURRENT, NEXT) academic_semester
-        return '2021 / 2022', '2022 / 2023'
+        # return (CURRENT, NEXT) academic_semester in tuple/list
+        academic_year = self.model.objects.filter(is_current=True).first()
+        nxt_academic_yr = int(academic_year.academic_year.split('/')[-1])
+        return academic_year.get_academic_year_display(), (nxt_academic_yr, nxt_academic_yr+1)
 
     def get_levels(self):
         return Level.objects.all()

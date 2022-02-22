@@ -32,7 +32,6 @@ from .forms import (
 )
 from django.conf import settings as APP_SETTINGS
 
-
 class StudentAdmissionRedirectView(RedirectView):
     #  check the admission status and redirect the student to the require path
 
@@ -1055,20 +1054,81 @@ class AccountsChangePasswordPage(LoginRequiredMixin, PermissionRequiredMixin, Up
         return self.request.user
 
 
-class AccountsReportsPage(LoginRequiredMixin, TemplateView):
+class AccountsReportsPage(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'student/self/accounts/pages/report.html'
+    permission_required = 'student.view_student'
 
     def get_context_data(self, **kwargs):
         ctx = super(AccountsReportsPage, self).get_context_data(**kwargs)
         ctx['title'] = 'Student Accounts - Report'
         ctx['page'] = 'rp'
 
-        # System reports
+        # browser information
         student_profile = self.request.user
         ctx['computer_username'] = student_profile.computer_username
+        ctx['computer_name'] = student_profile.computer_name
+        ctx['http_sec_ch_ua'] = student_profile.http_sec_ch_ua
+        ctx['computer_os'] = student_profile.os
+        ctx['last_login'] = student_profile.last_login
         return ctx
 
     def get_student(self):
         return self.request.user.student
 
+
+class AccountsProfilePage(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    permission_required = ('student.view_student', 'admission.view_own_forms')
+    template_name = 'student/self/accounts/pages/profile.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AccountsProfilePage, self).get_context_data(**kwargs)
+        user = self.request.user
+        student = self.request.user.student
+        ctx['title'] = 'Student - Accounts - Profile'
+        ctx['admission_form'] = student.admission_form
+        ctx['student'] = student
+        ctx['date_format'] = 'jS E, Y'
+        ctx['studentforms'] = student.admission_form
+        ctx['profile'] = user
+        ctx['address'] = user.address
+        ctx['cert_records'] = student.cert_student.certificate_records.all()
+        ctx['employment_history'] = user.employment_history
+        ctx['sponsor'] = student.student_sponsored
+        ctx['programme_choices'] = StudentProgrammeChoice.objects.filter(student_id=student.id).first()
+        ctx['previous_education'] = student.previous_education.first()
+
+        return ctx
+
+
+class AccountsAcademicYearSemester(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    permission_required = 'system.can_student_view_semester_and_academic_year'
+    permission_denied_message = 'You need permission to access this page'
+    from system.models import SemesterAcademicYearModel
+    model = SemesterAcademicYearModel
+    template_name = 'student/self/accounts/pages/semesterAcademic.html'
+
+    def get_object(self, queryset=None):
+        try:
+            return self.model.objects.get(is_current=True)
+        except self.model.DoesNotExist:
+            raise Http404('Please try again later')
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AccountsAcademicYearSemester, self).get_context_data(**kwargs)
+        ctx['title'] = 'Semester and Academic Year'
+        return ctx
+
+
+class AccountsPermissions(LoginRequiredMixin, ListView):
+    model = Group
+    template_name = 'student/self/accounts/pages/permissions.html'
+    permission_denied_message = 'You need permission to view this page'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(AccountsPermissions, self).get_context_data(**kwargs)
+        ctx['title'] = 'Permissions Group'
+        return ctx
+
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
 

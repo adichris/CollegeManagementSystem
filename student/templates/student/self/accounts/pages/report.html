@@ -3,26 +3,31 @@
 {% load static %}
 
 {% block content %}
-    <p class="lead text-center">Report</p>
-    <p class="text-center p-0 m-0">any issues that need to be address</p>
+    <p class="lead text-center">System Usage Report</p>
     <div class="row">
-        <div class="col border p-3 rounded">
-            <p>Report an Issue to us</p>
-            <img style="height:20em" src="{% static 'icons/student/system_report.svg' %}" class="img-fluid" alt="">
-            <p>Issues like:</p>
-            <ul>
-                <li>Your challenges in school</li>
-                <li>The system functionalities</li>
-                <li>The system performance (Speed, User interface)</li>
-                <li>Update and Changes</li>
-                <li>What do you like</li>
-                <li>What do you hate</li>
-                <li>Contributions</li>
-            </ul>
-        </div>
-        <div class="col border p-3 rounded">
-            <p>View System report on</p>
-            <img style="height: 20em" src="{% static 'icons/student/graph_report.svg' %}" class="img-fluid" alt="">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tr>
+                    <td>Last Login</td>
+                    <td>{{ last_login }}</td>
+                </tr>
+                <tr>
+                    <td>Computer Name</td>
+                    <td>{{ computer_name }}</td>
+                </tr>
+                <tr>
+                    <td>Computer username</td>
+                    <td>{{ computer_username }}</td>
+                </tr>
+                <tr>
+                    <td>Operating System</td>
+                    <td>{{ computer_os }}</td>
+                </tr>
+                <tr>
+                    <td>HTTP SEC CH UA</td>
+                    <td>{{ http_sec_ch_ua }}</td>
+                </tr>
+            </table>
             <ul>
                 <li>Usage</li>
                 <li>Last login</li>

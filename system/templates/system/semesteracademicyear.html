@@ -11,29 +11,31 @@
             <div class="col-12">
                 <h5>Semester</h5>
             </div>
-            {% if semestermodel_list %}
-                {% for semestermodel in semestermodel_list %}
+            {% if semesteracademicyearmodel_list %}
+                {% for semesteracademicyearmodel in semesteracademicyearmodel_list %}
                     <div class="col-md-6 col-lg-4 my-3">
-                        <div class="card {% if semestermodel.is_current %} shadow {% else %} hover_shadow {% endif %}">
+                        <div class="card {% if semesteracademicyearmodel.is_current %} shadow " id="currentsemesteracademicyear" {% else %} hover_shadow" {% endif %}>
                             <ul class="list-group list-group-flush">
                                <li class="list-group-item d-flex justify-content-between">
                                    <div>
                                        <span>Name</span>
-                                       <h4>{{ semestermodel.name }}</h4>
+                                       <h4>{{ semesteracademicyearmodel.name }}</h4>
                                    </div>
                                    <div class="">
-                                       <a href="{{ semestermodel.get_absolute_update_url }}" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary">
-                                            Edit <span class="fa fa-edit"></span>
-                                        </a>
+                                       <a href="{{ semesteracademicyearmodel.get_absolute_update_url }}" class="card-link"> Edit <span class="fa fa-edit"></span></a>
                                    </div>
                                </li>
-                                <li class="list-group-item {% if semestermodel.is_current %} text-success {% else %} text-danger {% endif %}">
+                                <li class="list-group-item text-primary">
+                                    <span>Academic Year</span>
+                                    <h4 class="">{{ semesteracademicyearmodel.academic_year }}</h4>
+                                </li>
+                               <li class="list-group-item {% if semesteracademicyearmodel.is_current %} text-success {% else %} text-danger {% endif %}">
                                     <span>Is Current</span>
-                                    <h4 class="">{{ semestermodel.is_current|yesno|title }}</h4>
+                                    <h4 class="">{{ semesteracademicyearmodel.is_current|yesno|title }}</h4>
                                 </li>
                                 <li class="list-group-item">
                                     <span>Timestamp</span>
-                                    <h4>{{ semestermodel.timestamp }}</h4>
+                                    <h4>{{ semesteracademicyearmodel.timestamp }}</h4>
                                 </li>
                             </ul>
                         </div>
@@ -69,7 +71,7 @@
                 <div class="card shadow h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-end">
-                            <a href="#"  class="btn btn-link" onclick="dynamicSpinner(this)"><span class="fa fa-edit"></span> Change</a>
+                            <a href="#currentsemesteracademicyear"  class="btn btn-link"><span class="fa fa-edit"></span> Change</a>
                         </div>
                         <div class="d-flex flex-column gap-3 justify-content-center text-center">
                             <span class="fa fa-calendar fa-3x align-self-center"></span>

@@ -21,6 +21,9 @@ from .views import (
     AccountOverviewPage,
     AccountsChangePasswordPage,
     AccountsReportsPage,
+    AccountsProfilePage,
+    AccountsAcademicYearSemester,
+    AccountsPermissions,
 )
 
 app_name = 'Student'
@@ -49,6 +52,9 @@ accounts_urlpatterns = [
     path('overview/', AccountOverviewPage.as_view(), name='acc_overview'),
     path('updates/', AccountsChangePasswordPage.as_view(), name='acc_updates'),
     path('reports/', AccountsReportsPage.as_view(), name='acc_reports'),
+    path('profile/', AccountsProfilePage.as_view(), name='acc_profile'),
+    path('semesteracademicyear/', AccountsAcademicYearSemester.as_view(), name='acc_semesterAcademicYear'),
+    path('permissions/', AccountsPermissions.as_view(), name='acc_permission'),
 
 ]
 urlpatterns = [

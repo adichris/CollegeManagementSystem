@@ -1,8 +1,8 @@
-from .models import SemesterModel, Level
+from .models import SemesterAcademicYearModel, Level
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_bootstrap5.bootstrap5 import FloatingField
-from crispy_forms.bootstrap import StrictButton, FormActions, Div
+from crispy_forms.bootstrap import StrictButton, FormActions
 from django.contrib.auth.models import Group
 
 
@@ -27,8 +27,8 @@ class GroupCreationForm(forms.ModelForm):
 
 class SemesterCreationForm(forms.ModelForm):
     class Meta:
-        model = SemesterModel
-        fields = ('name', 'is_current')
+        model = SemesterAcademicYearModel
+        fields = ('name', 'academic_year', 'is_current')
 
     @property
     def helper(self):
@@ -47,7 +47,7 @@ class SemesterCreationForm(forms.ModelForm):
         is_current = self.cleaned_data.get('is_current')
 
         if is_current:
-            query = self.Meta.model.objects.filter(is_current=is_current)
+            query = self.Meta.model.objects.filter(is_current=is_current).exclude(pk=self.instance.pk)
             if query.exists():
                 raise forms.ValidationError('There is a semester marked as Current please change that first.')
         return is_current

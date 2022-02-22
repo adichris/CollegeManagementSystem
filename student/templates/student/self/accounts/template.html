@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block container %}
-    <div class="container">
+    <div class="container-fluid">
         {% if back_url %} {% include 'institution/utils/back_snippet.html' %} {% endif %}
     <div class="row my-4">
-        <div class="col-12 d-flex">
-             <div class="flex-shrink-0 p-3 bg-white sticky-top" style="width: 280px;">
+        <div class="col-12 d-flex flex-column flex-sm-row gap-3">
+             <div  class="flex-shrink-0 flex-grow-0 p-3 bg-white sticky-sm-top d-print-none shadow-sm " style="width: 280px; height: fit-content">
             <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
                 <img  width="34" height="34" class="bi me-2" src="{% static 'icons/student/profile.svg' %}" alt="">
             <span class="fs-5 fw-semibold">Accounts</span>
@@ -17,7 +17,7 @@
             <ul class="list-unstyled ps-0">
             <li class="mb-1">
             <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-              Home
+              Dashboard
             </button>
             <div class="collapse show" id="home-collapse" style="">
               <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
@@ -28,27 +28,13 @@
             </div>
             </li>
             <li class="mb-1">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-              Dashboard
-            </button>
-            <div class="collapse" id="dashboard-collapse" style="">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li><a href="{% url 'Student:acc_overview' %}?back={{ request.path }}" class="link-dark rounded">Overview</a></li>
-                <li><a href="#" class="link-dark rounded">Weekly</a></li>
-                <li><a href="#" class="link-dark rounded">Monthly</a></li>
-                <li><a href="#" class="link-dark rounded">Annually</a></li>
-              </ul>
-            </div>
-            </li>
-            <li class="mb-1">
             <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="true">
-              Orders
+              Others
             </button>
             <div class="collapse" id="orders-collapse" style="">
               <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                <li><a href="#" class="link-dark rounded">Academic Year</a></li>
-                <li><a href="#" class="link-dark rounded">Semester</a></li>
-                <li><a href="#" class="link-dark rounded">Processed</a></li>
+                <li><a href="{% url 'Student:acc_semesterAcademicYear' %}" class="link-dark rounded">Academic Year and Semester</a></li>
+                <li><a href="{% url 'Student:acc_permission' %}" class="link-dark rounded">Permissions</a></li>
                 <li><a href="#" class="link-dark rounded">Shipped</a></li>
                 <li><a href="#" class="link-dark rounded">Returned</a></li>
               </ul>
@@ -62,15 +48,15 @@
                 <div class="collapse show" id="account-collapse" style="">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li><a href="#" class="link-dark rounded">New...</a></li>
-                    <li><a href="#" class="link-dark rounded">Profile</a></li>
+                    <li><a href="{% url 'Student:acc_profile' %}?back={{ request.path }}" class="link-dark rounded">Profile</a></li>
                     <li><a href="#" class="link-dark rounded">Settings</a></li>
-                    <li><a href="#" class="link-dark rounded">Sign out</a></li>
+                    <li><a href="{% url 'Home:logout' %}" class="link-dark rounded">Sign out</a></li>
                   </ul>
                 </div>
                 </li>
             </ul>
         </div>
-            <div class="flex-fill bg-white50">
+            <div class="flex-fill flex-grow-1 bg-white50">
                 {% block content %} {% endblock %}
             </div>
         </div>

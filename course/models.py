@@ -1,7 +1,7 @@
 from django.db import models
 from django.shortcuts import reverse
 
-from system.models import SemesterModel, Level
+from system.models import SemesterAcademicYearModel, Level
 from accounts.models import User
 from programme.models import Programme
 from CollegeManagementSystem.validation import validate_alphanumberic_space
@@ -20,7 +20,7 @@ class Course(models.Model):
                             help_text='Course Code')
     programme = models.ForeignKey(Programme, on_delete=models.CASCADE, related_name='course_programme')
     created_by = models.ForeignKey(on_delete=models.CASCADE, to=User)
-    semester = models.ForeignKey(SemesterModel, related_name='course_semester', on_delete=models.CASCADE)
+    semester = models.ForeignKey(SemesterAcademicYearModel, related_name='course_semester', on_delete=models.CASCADE)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='course_level')
     credit_hours = models.IntegerField()
     description = RichTextField(null=True, blank=True)

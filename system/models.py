@@ -3,28 +3,36 @@ from CollegeManagementSystem.validation import validate_alphanumberic_space
 from django.shortcuts import reverse
 from INSTITUTION.utils import AcademicYear
 from programme.models import Programme
-from django.utils.translation import gettext_lazy as  _
+from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 
+academic_year = AcademicYear()
 
-class SemesterModel(models.Model):
-    name = models.CharField(max_length=60, help_text=_('Semester/term name. Eg. First Semester'), validators=[validate_alphanumberic_space], unique=True)
+
+class SemesterAcademicYearModel(models.Model):
+    name = models.CharField(max_length=60, help_text=_('Semester/term name. Eg. First Semester'),
+                            validators=[validate_alphanumberic_space], unique=True)
     timestamp = models.DateTimeField(auto_now=True)
     is_current = models.BooleanField(default=False, verbose_name=_('Current Semester'))
+    academic_year = models.CharField(max_length=10, choices=academic_year.choices(),
+                                     default=academic_year.default())
 
     def __str__(self):
         return self.name
 
     class Meta:
-        db_table = 'institution_semester'
-        verbose_name_plural = 'Semesters'
-        verbose_name = 'Semester'
+        verbose_name_plural = 'Semesters and Academic Year'
+        verbose_name = verbose_name_plural
+        db_table = 'SemesterAcademicYear'
         constraints = [
             models.UniqueConstraint(
                 fields=['is_current'],
                 condition=models.Q(is_current=True),
                 name='unique_active_semester'
             )
+        ]
+        permissions = [
+            ('can_student_view_semester_and_academic_year', 'Can student view semester and Academic Year'),
         ]
 
     def get_absolute_url(self):
@@ -38,13 +46,6 @@ class SemesterModel(models.Model):
                        })
 
 
-academic_year = AcademicYear()
-
-
-class System(models.Model):
-    current_academic_year = models.CharField(max_length=10, choices=academic_year.choices(), default=academic_year.default())
-
-
 class LevelManager(models.Manager):
     def get_4first_year(self):
         level = self.filter(index=1)
@@ -54,7 +55,8 @@ class LevelManager(models.Manager):
 
 
 class Level(models.Model):
-    name = models.CharField(max_length=10, validators=[validate_alphanumberic_space], help_text="Example: Level 100", unique=True)
+    name = models.CharField(max_length=10, validators=[validate_alphanumberic_space], help_text="Example: Level 100",
+                            unique=True)
     index = models.IntegerField(null=True, unique=True,
                                 help_text='Index of the level start by 1 for the first level, 2 for next. etc')
     objects = LevelManager()

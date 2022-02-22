@@ -1,0 +1,28 @@
+{% extends 'student/self/accounts/template.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="h4 text-center">{{ title }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col my-sm-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h1>Current <br>Semester</h1>
+                        <h2 class="display-4 text-primary">{{ semesteracademicyearmodel.name }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col my-sm-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <h1>Current <br>Academic Year</h1>
+                        <h2 class="display-4 text-primary">{{ semesteracademicyearmodel.get_academic_year_display }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

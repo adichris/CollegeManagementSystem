@@ -106,6 +106,7 @@ class StudentForms(models.Model):
             ('can_reject_studentform', 'can reject student admission form'),
             ('can_accept_studentform', 'can accept student admission form'),
             ('view_studentform_detail', 'view student admission form detail'),
+            ('view_own_forms', 'Can student view their own admission form detail'),
         ]
 
     def __str__(self):
