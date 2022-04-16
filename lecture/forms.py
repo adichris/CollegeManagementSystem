@@ -7,6 +7,29 @@ from INSTITUTION.utils import file_size_validator, pdf_ext_validator
 FILE_SIZE = (1800, 1800)
 
 
+def form_helper(self):
+    helper = FormHelper(self)
+    helper.layout.append(
+        FormActions(
+            StrictButton('Reset', type='reset', css_class='btn-light shadow-sm'),
+            StrictButton('Save Change', type='submit', css_class='btn-primary', onclick='dynamicSpinner(this)'),
+            css_class='d-flex gap-3'
+        )
+    )
+    return helper
+
+
+class InitialCreationForm(forms.ModelForm):
+    class Meta:
+        model = Lecturer
+        fields = ['identity', 'is_active']
+
+    @property
+    def helper(self):
+        helper = form_helper(self)
+        return helper
+
+
 class LecturerCreationForm(forms.ModelForm):
     """Form definition for Lecturer."""
 
@@ -35,15 +58,7 @@ class LecturerApplicationChangeForm(forms.ModelForm):
 
     @property
     def helper(self):
-        helper = FormHelper(self)
-        helper.layout.append(
-            FormActions(
-                StrictButton('Reset', type='reset', css_class='btn-light shadow-sm'),
-                StrictButton('Save Change', type='submit', css_class='btn-primary', onclick='dynamicSpinner(this)'),
-                css_class='d-flex gap-3'
-            )
-        )
-        return helper
+        return form_helper(self)
 
     def clean_application_letter(self):
         app_letter = self.cleaned_data.get('application_letter')
@@ -65,17 +80,4 @@ class DepartmentAssigmentForm(forms.ModelForm):
 
     @property
     def helper(self):
-        helper = FormHelper(self)
-        helper.layout.append(
-            FormActions(
-                StrictButton(
-                    'Reset', type='reset', css_class='btn btn-light'
-                ),
-                StrictButton(
-                    'Save', type='submit', css_class='btn btn-primary', onclick='dynamicSpinner(this)'
-                ),
-                css_class='d-flex justify-content-end'
-            )
-        )
-        return helper
-
+        return form_helper(self)

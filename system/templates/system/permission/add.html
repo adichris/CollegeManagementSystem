@@ -8,12 +8,9 @@
         {% endif %}
         <div class="row my-4 text-warning">
             <h4 class="text-center display-6">{{ title|upper }}</h4>
+            <h4 class="lead text-center">Add Permission on system programs</h4>
         </div>
-        <div class="row">
-            <div class="col-auto mx-auto text-warning">
-                <h4 class="lead text-center">Add Permission on system programs</h4>
-            </div>
-        </div>
+
 
 {#        <div class="row my-4">#}
 {#            {% for content_type in content_types %}#}
@@ -61,30 +58,42 @@
             </div>
         </div>
 
-{#        <div class="row my-4 p-3 d-flex justify-content-center border border-warning rounded">#}
-{#            <div class="col-md-6 col-lg-4 my-3">#}
-{#                <div class="card hover_shadow">#}
-{#                    <div class="card-body text-warning text-center">#}
-{#                        <p><span class="fa fa-user-check fa-4x"></span></p>#}
-{#                        <h6>Add All Permissions</h6>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#            <div class="col-md-6 col-lg-4 my-3" >#}
-{#                <div class="card hover_shadow">#}
-{#                    <div class="card-body text-danger text-center">#}
-{#                        <p>#}
-{#                            <span class="fa fa-user-times fa-4x"></span>#}
-{#                        </p>#}
-{#                        <h6>Clear All Permissions</h6>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{##}
-{#            <div class="col-12 ">#}
-{#                <p class="text-center text-secondary">Add all permissions to the <b>{{ group.name|upper }}</b> group or remove all permissions from the <b>{{ group.name|upper }}</b> group.</p>#}
-{#            </div>#}
-{##}
-{#        </div>#}
+        <div class="row my-4 p-3 d-flex justify-content-center border border-warning rounded" title="#BETA">
+            <div class="col-md-4 col-lg-4 my-3" style="cursor: not-allowed">
+                <div class="card hover_shadow">
+                    <div class="card-body text-warning text-center">
+                        <p><span class="fa fa-user-check fa-4x"></span></p>
+                        <h6>Add All Permissions</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-lg-4 my-3" style="cursor: not-allowed">
+                <div class="card hover_shadow">
+                    <div class="card-body text-danger text-center">
+                        <p>
+                            <span class="fa fa-user-times fa-4x"></span>
+                        </p>
+                        <h6>Clear All Permissions</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-lg-4 my-3" style="cursor: not-allowed">
+                <div class="card hover_shadow">
+                    <div class="card-body text-primary text-center">
+                        <p>
+                            <span class="fa fa-user-shield fa-4x"></span>
+                        </p>
+                        <h6>Reset to Default</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 ">
+                <p class="text-center text-secondary">Add all permissions to the <b>{{ group.name|upper }}</b> group or remove all permissions from the <b>{{ group.name|upper }}</b> group.</p>
+            </div>
+
+        </div>
     </div>
 {% endblock %}

@@ -37,7 +37,8 @@ class Lecturer(models.Model):
     """Model definition for Lecturer."""
     identity = models.CharField(max_length=30, unique=True, blank=False, help_text='Lecturer identity')
     department = models.ForeignKey(null=True, to=Department, on_delete=models.CASCADE)
-    profile = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    profile = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, null=True, related_name='lecturer',
+                                   help_text='Lecturer profile')
     is_active = models.BooleanField(False)
     application_letter = models.FileField(null=True, help_text='Application/Résumé letter in pdf format',
                                           upload_to=upload_application_letter)
@@ -57,7 +58,7 @@ class Lecturer(models.Model):
 
     def __str__(self):
         """Unicode representation of Lecturer."""
-        return self.identity
+        return self.profile.get_full_name() + ' : ' + self.identity
 
     def get_absolute_url(self):
         pass
@@ -65,6 +66,10 @@ class Lecturer(models.Model):
         # return ('')
 
     def courses(self):
-        return self.course_lecturer
+        from course.models import Course
+        return Course.objects.filter(courseassignment__lecturer=self, courseassignment__is_tutor=True)
 
     # TODO: Define custom methods here
+
+    def slug(self):
+        return self.profile.slug

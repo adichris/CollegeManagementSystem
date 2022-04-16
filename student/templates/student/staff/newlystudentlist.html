@@ -8,6 +8,9 @@
             {% endif %}
             <div class="col-auto mx-auto">
                 <h4 class="display-6 text-center">{{ header }}</h4>
+                {% if programme %}
+                    <h6 class="text-primary text-center">{{ programme.name|upper }}</h6>
+                {% endif %}
             </div>
         </div>
 
@@ -41,6 +44,7 @@
                             <th>Index Number</th>
                             <th>Previous School</th>
                             <th>Programme</th>
+                            <th>Level</th>
                             <th>Action</th>
                         </tr>
                         {% for student in student_list %}
@@ -51,6 +55,7 @@
                                 <td>{{ student.index_number|default_if_none:'---' }}</td>
                                 <td>{{ student.get_previous_school }}</td>
                                 <td>{{ student.programme }}</td>
+                                <td>{{ student.level }}</td>
                                 <td><a href="#" onclick="dynamicSpinner(this)" class="btn btn-outline-primary">View student</a></td>
                             </tr>
 

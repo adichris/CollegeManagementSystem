@@ -9,7 +9,10 @@ from .views import (
     PermissionDetail,
     AddPermissionTemplateView,
     get_permission_ajax,
-    AddMemberToPermissionGroup
+    AddMemberToPermissionGroup,
+    get_group_members_ajax,
+    remove_group_member,
+    get_group_member_information,
 )
 
 
@@ -25,5 +28,9 @@ urlpatterns = [
     path('addpermission2group/<str:group_name>/<int:group_pk>/', AddPermissionTemplateView.as_view(),
          name='add_permission2group'),
     path('ajaxpermissioncall/<int:permission_pk>/', get_permission_ajax, name='get_permission_ajax'),
-    path('addmenbertogroup/<str:group_name>/<int:group_pk>/', AddMemberToPermissionGroup.as_view(), name='add_member2group')
+    path('ajaxgroupmemberscall/<str:group_name>/', get_group_members_ajax, name='get_group_members_ajax'),
+    path('removegroupmember/<str:group_name>/<str:member_identity>/', remove_group_member, name='remove_group_member'),
+    path('addmenbertogroup/<str:group_name>/<int:group_pk>/',
+         AddMemberToPermissionGroup.as_view(), name='add_member2group'),
+    path('staffuserinformation/<str:identity>/<str:group_name>/', get_group_member_information, name='get_user_shortInfo'),
 ]

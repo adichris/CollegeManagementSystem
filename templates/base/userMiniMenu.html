@@ -1,17 +1,21 @@
 {% with user=request.user  %}
-    {% if user.is_admin %}
-        {% include 'base/admin/userMiniMenu.html' %}
-    {% elif user.is_superuser %}
-        {% include 'base/admin/userMiniMenu.html' %}
-    {% elif user.is_student %}
-        {% include 'base/student/userminiMenu.html' %}
-    {% elif user.is_teaching_staff %}
+    {% if user.is_authenticated %}
+        {% if user.is_admin %}
+            {% include 'base/admin/userMiniMenu.html' %}
+        {% elif user.is_superuser %}
+            {% include 'base/admin/userMiniMenu.html' %}
+        {% elif user.is_student %}
+            {% include 'base/student/userminiMenu.html' %}
+        {% elif user.is_teaching_staff %}
+            {% include 'base/Lecturer/userMiniMenu.html' %}
+        {% elif user.is_non_teaching_staff %}
 
-    {% elif user.is_non_teaching_staff %}
-
-    {% elif user.is_authenticated %}
-        {% include 'base/admission/userMiniMenu.html' %}
-    {% else %}
+        {% elif user.is_authenticated %}
+            {% include 'base/admission/userMiniMenu.html' %}
+        {% else %}
+            <a href="{% url 'Home:login' %}" class="btn btn-primary" onclick="dynamicSpinner(this)">Login <span class="fa fa-sign-in-alt"></span></a>
+        {% endif %}
+     {% else %}
         <a href="{% url 'Home:login' %}" class="btn btn-primary" onclick="dynamicSpinner(this)">Login <span class="fa fa-sign-in-alt"></span></a>
-    {% endif %}
+     {% endif %}
 {% endwith %}

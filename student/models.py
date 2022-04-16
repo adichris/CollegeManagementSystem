@@ -13,18 +13,22 @@ from system.models import Level
 
 class StudentManager(models.Manager):
     def get_newly_admitted(self, query=None, **kwargs):
+        level100 = models.Q(date_admitted__year=today_time().year) | models.Q(level=1)
         if query:
-            q_query = models.Q(profile__email__icontains=query) | \
-                      models.Q(profile__first_name__icontains=query) | \
-                      models.Q(profile__last_name__icontains=query) | \
-                      models.Q(admission_form__serial_number__startswith=query) | \
-                      models.Q(index_number__startswith=query)
+            q_query = (
+                              models.Q(profile__email__icontains=query) |
+                              models.Q(profile__first_name__icontains=query) |
+                              models.Q(profile__last_name__icontains=query) |
+                              models.Q(admission_form__serial_number__startswith=query) |
+                              models.Q(index_number__startswith=query)
+                      ) & level100
+
             return self.filter(
                 q_query,
-                date_admitted__year=today_time().year,
+                is_active=True,
                 **kwargs
             )
-        return self.filter(**kwargs)
+        return self.filter(level100, is_active=True)
 
     def get_all_sort(self, by, query=None):
         return self.all(query=query).order_by(by)
@@ -61,7 +65,17 @@ class StudentManager(models.Manager):
             **kwargs
         )
 
+    def get_continuous(self, programme_slug=None, department_slug=None):
+        if not (programme_slug or department_slug):
+            return self.filter(profile__is_active=True, is_active=True)
+
+        return self.filter(self.get_programme_department_slugs_kwargs(programme_slug=programme_slug,
+                                                                      department_slug=department_slug)
+                           )
+
     def get_active_and_old(self, programme_slug=None, department_slug=None):
+        if not programme_slug and department_slug:
+            return self.filter(profile__is_active=True, is_active=True)
         kwargs = self.get_programme_department_slugs_kwargs(programme_slug=programme_slug,
                                                             department_slug=department_slug)
         return self.filter(

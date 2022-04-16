@@ -1,0 +1,48 @@
+{% extends 'base/admin/create.html' %}
+{% load crispy_forms_tags %}
+{% block col %}
+    {% if toupdate %}
+
+    {% else %}
+           col-md-8 col-lg-7
+    {% endif %}
+{% endblock %}
+
+{% block info %}
+    <div class="row my-3">
+        <div class="col-md-8 col-lg-7 mx-auto text-center bg-light-gold p-2 rounded">
+            <span>Assign lecture to</span>
+            <h4>{{ course_name }}</h4>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block form_render %}
+   {% if toupdate %}
+        <div class="card-group">
+        {% if lecturer_profile %}
+            <div class="card">
+                <h5 class="text-center text-primary">Current Lecturer</h5>
+                <p class="text-center text-gold">({{ lecturer_profile.identity }})</p>
+                <img src="{{ lecturer_profile.picture.url }}" alt="" class="img-fluid img-thumbnail">
+                <h6 class="text-center text-primary">{{ lecturer_profile.get_full_name }}</h6>
+            </div>
+        {% else %}
+            <div class="card ">
+                <div class="bg-light-red card-body d-flex flex-column justify-content-center align-items-center">
+                    <b class="text-danger">This Course has no Current Lecturer</b>
+                </div>
+            </div>
+        {% endif %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="text-primary text-center">Change Current Lecturer</h5>
+                    {% crispy form %}
+                </div>
+            </div>
+        </div>
+   {% else %}
+     {% crispy form %}
+    {% endif %}
+{% endblock %}

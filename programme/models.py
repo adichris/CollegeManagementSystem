@@ -4,7 +4,6 @@ from django.dispatch import receiver
 from django.shortcuts import reverse
 from django.utils.translation import gettext_lazy as _
 from department.models import Department
-from django.utils.timezone import now as today_time
 
 
 class ProgrammeManager(models.Manager):
@@ -54,11 +53,15 @@ class Programme(models.Model):
         )
 
     def count_new_student(self):
-        return self.student_set.filter(date_admitted__year=today_time().year).count()
+        return self.new_student().count()
+
+    def new_student(self):
+        from system.models import Level
+        return self.student_set.filter(level=Level.objects.get_4first_year())
 
     @property
     def students(self):
-        return self.student_set.filter(is_active=True)
+        return self.student_set.filter(is_active=True, profile__is_active=True)
 
     def get_absolute_delete_url(self):
         return reverse(

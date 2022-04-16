@@ -71,6 +71,15 @@ class LoginPage(LoginView):
             return reverse('Student:home')
         return reverse('Home:landing_page')
 
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            # user = self.request.user
+            # user.is_online = True
+            # user.save()
+            return redirect('Home:landing_page')
+        return super(LoginPage, self).get(request, *args, **kwargs)
+
+
 
 class LogoutPage(LogoutView):
 

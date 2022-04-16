@@ -3,7 +3,13 @@
 {% block info %}
     <div class="row">
         <div class="col-auto mx-auto">
-            <p class="display-6">Add Employment History</p>
+            <p class="display-6 text-center">Add Employment History</p>
+            {% if form.errors or form.non_field_errors %}
+                <div class="alert alert-danger d-flex justify-content-between align-items-center gap-3">
+                    <b>Please correct some few errors in the form fields. </b>
+                    <span class="fa fa-exclamation-circle "></span>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

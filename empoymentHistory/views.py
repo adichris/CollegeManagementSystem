@@ -1,5 +1,7 @@
-from django.shortcuts import reverse
+from django.shortcuts import reverse, get_object_or_404
 from django.views.generic import UpdateView, CreateView
+from django.http.response import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 from .models import EmploymentHistoryModel, User
@@ -19,7 +21,7 @@ class EmploymentHistoryCreateUpdateView(LoginRequiredMixin, PermissionRequiredMi
     def get_context_data(self, **kwargs):
         ctx = super(EmploymentHistoryCreateUpdateView, self).get_context_data(**kwargs)
         ctx['title'] = 'Employment History'
-        ctx['subtitle'] = 'Employment History'
+        ctx['subtitle'] = 'Employment History (Optional)'
         ctx['step'] = 3
         ctx['steps'] = get_admission_steps(self.request.user.student_profile.admission_form.status)
         ctx["serial_number"] = self.request.user.identity
@@ -86,3 +88,43 @@ class UserEmploymentHistoryCreateView(LoginRequiredMixin, PermissionRequiredMixi
             return next_url
         else:
             return super(UserEmploymentHistoryCreateView, self).get_success_url()
+
+
+@login_required
+def get_employment_history_ajax(request, profile_slug):
+    user = get_object_or_404(User, slug=request.user.slug)
+    if user.is_admin or user.is_superuser:
+        user = get_object_or_404(User, slug=profile_slug)
+    data = {
+        'description': 'Please try again.'
+    }
+    if user.has_perm('empoymentHistory.view_own_history'):
+        try:
+            eh_instance = EmploymentHistoryModel.objects.get(employee=user)
+        except EmploymentHistoryModel.DoesNotExist:
+            data = {
+                'description': 'You have no employment history associated to your profile'
+            }
+        else:
+            if eh_instance.has_history or eh_instance.job_title:
+                data = {
+                    'hasHistory': eh_instance.has_history,
+                    'companyName': eh_instance.company_name,
+                    'address': eh_instance.address,
+                    'state': eh_instance.state,
+                    'city': eh_instance.city,
+                    'specific_duty': eh_instance.specific_duty,
+                    'jobTitle': eh_instance.job_title,
+                    'supervisor': eh_instance.supervisor,
+                    'employedFrom': eh_instance.employed_from,
+                    'employedTo': eh_instance.employed_to,
+                    'whyLeave': eh_instance.why_leave
+                }
+            else:
+                data = {
+                    'hasHistory': False,
+                    'description': 'You do not have any employment history.'
+                }
+    else:
+        data['description'] = 'You need permission to view the employment history'
+    return JsonResponse(data)

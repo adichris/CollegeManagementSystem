@@ -7,7 +7,6 @@ from django.forms import modelformset_factory
 from django.db import IntegrityError
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.timezone import now as today_time
 
 from Home.templatetags.institution_extra import get_institution_fullname_name
 from INSTITUTION.utils import get_not_allowed_render_response, get_next_url, get_back_url, get_admission_steps, \
@@ -21,6 +20,7 @@ from .models import (
     CertExamRecord,
     AdmissionCertificate,
     StudentPreviousEducation,
+    Level
 )
 from admission.models import StudentForms, FormStatusChoice
 from .forms import (
@@ -31,6 +31,7 @@ from .forms import (
     StudentCreationForm,
 )
 from django.conf import settings as APP_SETTINGS
+
 
 class StudentAdmissionRedirectView(RedirectView):
     #  check the admission status and redirect the student to the require path
@@ -454,7 +455,7 @@ class StudentAdmissionDetails(LoginRequiredMixin, PermissionRequiredMixin, Detai
         if request.user.password:
             logout(request)
             return redirect('Student:home')
-        return super(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class StaffStudentTemplateView(LoginRequiredMixin, TemplateView):
@@ -629,11 +630,12 @@ class StaffSelectStudentProgramme(LoginRequiredMixin, PermissionRequiredMixin, L
         if self.is2_all_student:
             kwargs['student__isnull'] = False
         else:
-            kwargs['student__date_admitted__year'] = today_time().year
+            # kwargs['student__date_admitted__year'] = today_time().year
+            kwargs['student__level'] = Level.objects.get_4first_year()
 
         if q_programme:
             kwargs['name__icontains'] = q_programme
-        return self.model.objects.filter(**kwargs)
+        return self.model.objects.filter(**kwargs).distinct()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super(StaffSelectStudentProgramme, self).get_context_data(object_list=object_list, **kwargs)
@@ -643,13 +645,20 @@ class StaffSelectStudentProgramme(LoginRequiredMixin, PermissionRequiredMixin, L
             ctx['title'] = 'New Admitted Student \nby Programmes'
         ctx['header'] = ctx['title']
         ctx['in_tab'] = self.get_in_tab()
-        ctx['back_url'] = get_back_url(self.request)
+        ctx['back_url'] = get_back_url(self.request) or reverse('Student:staff_home')
         ctx['p_variable_name'] = self.programme_search_varname
         ctx['s_variable_name'] = self.student_search_varname
         ctx['p_searched'] = self.get_programme_search()
         ctx['s_action'] = self.get_search_student_action()
         ctx['is2_all_student'] = self.is2_all_student
+        ctx['student_total'] = self.get_total_students()
         return ctx
+
+    def get_total_students(self):
+        if self.is2_all_student:
+            return Student.objects.get_continuous().count()
+        else:
+            return Student.objects.get_newly_admitted().count()
 
     def get_in_tab(self):
         in_tab = self.request.GET.get('intab') == 't'
@@ -679,6 +688,30 @@ class StaffSelectStudentProgramme(LoginRequiredMixin, PermissionRequiredMixin, L
         return self.request.GET.get(self.student_search_varname)
 
 
+class AutoLevelNewAdmitted(LoginRequiredMixin, PermissionRequiredMixin, RedirectView):
+    permission_required = "student.change_student"
+
+    def get_redirect_field_name(self):
+        return 'next'
+
+    def get_redirect_url(self, *args, **kwargs):
+        if not super(AutoLevelNewAdmitted, self).get_redirect_url(*args, **kwargs):
+            return reverse('Student:staff_select_student_programme')
+
+    def level100_new_student(self):
+        students = Student.objects.filter(level__isnull=True,
+                                          is_active=True,
+                                          programme__isnull=False,
+                                          admission_form__status=FormStatusChoice.ACCEPTED
+                                          )
+        students.update(level=Level.objects.get_4first_year())
+
+    def get(self, request, *args, **kwargs):
+        get = super(AutoLevelNewAdmitted, self).get(request, *args, **kwargs)
+        self.level100_new_student()
+        return get
+
+
 class NewlyAdmittedStudentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Student
     permission_required = 'student.view_students'
@@ -692,7 +725,7 @@ class NewlyAdmittedStudentListView(LoginRequiredMixin, PermissionRequiredMixin, 
         ctx['header'] = 'New Admitted Student'
         if self.kwargs.get('programme_slug'):
             ctx['programme'] = self.get_programme()
-        ctx['back_url'] = get_back_url(self.request)
+        ctx['back_url'] = get_back_url(self.request) or reverse('Student:staff_select_student_programme')
         ctx['student_searched'] = self.get_student_query()
         ctx['student_total'] = self.student_total
         ctx['qvariable'] = self.query_variable
@@ -709,12 +742,11 @@ class NewlyAdmittedStudentListView(LoginRequiredMixin, PermissionRequiredMixin, 
 
     def get_queryset(self):
         kwargs = {}
-        programme__slug = self.kwargs.get('programme_slug')
-        if programme__slug:
-            kwargs['programme__slug'] = programme__slug
-        self.student_total = self.model.objects.filter(**kwargs).count()
-        return self.model.objects.get_newly_admitted(query=self.get_student_query(),
-                                                     **kwargs)
+        programme = self.get_programme()
+        if programme:
+            students = programme.new_student()
+        self.student_total = students.count()
+        return students
 
 
 class StaffAllStudentListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -991,6 +1023,11 @@ class StudentHomePage(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
             raise Http404('Your not a student of %s.' % APP_SETTINGS.INSTITUTION_FULL_NAME)
 
     def get(self, request, *args, **kwargs):
+        user = request.user
+        if not user.student:
+            return get_next_url(request) or redirect('Home:landing_page')
+        # if not user.student.is_active:
+        #     return 'Your not a student page'
         if not request.user.password:
             return redirect('Accounts:set_pwd')
         return super(StudentHomePage, self).get(request, *args, **kwargs)
@@ -1131,4 +1168,3 @@ class AccountsPermissions(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)
-

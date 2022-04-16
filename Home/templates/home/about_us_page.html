@@ -7,24 +7,22 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-             height: calc(100vh - 56px);
+             height: calc(100vh - 60px);
         }
     </style>
 {% endblock header %}
 
 {% block container %}
     <div class="container-fluid" id="AboutContainer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mx-auto mt-4 d-flex flex-column gap-3">
-                    <div class="align-self-center">
-                        <img src="{% static 'favicon.png' %}" alt="" class="img-fluid">
-                    </div>
-                    <div class="alert text-center">
-                        <h1>ABOUT <span class="badge bg-success50 transparent-bg">{{ institution_short_name }}</span></h1>
-                        <hr/>
-                        <h4>{{ institution_full_name }}</h4>
-                    </div>
+        <div class="row">
+            <div class="col-md-6 mx-auto mt-4 d-flex flex-column gap-3">
+                <div class="align-self-center">
+                    <img src="{% static 'favicon.png' %}" alt="" class="img-fluid">
+                </div>
+                <div class="text-center">
+                    <h1>ABOUT <span class="badge bg-success50 transparent-bg">{{ institution_short_name }}</span></h1>
+                    <hr/>
+                    <h4>{{ institution_full_name }}</h4>
                 </div>
             </div>
         </div>

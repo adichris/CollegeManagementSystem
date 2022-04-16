@@ -1,0 +1,100 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container-fluid">
+        <div class="row my-3">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-md-6 mx-auto">
+                <h4 class="text-center display-6"><b>{{ course }}</b></h4>
+            </div>
+        </div>
+
+    </div>
+    <div class="container-fluid">
+
+        <div class="row my-3">
+            <div class="col-md-auto my-2">
+                <a href="" class="w-100 mb-2 btn bg-light-blue hover_shadow">Current Activity</a>
+                <ul class="list-group" id="theOptions">
+                    <li class="list-group-item list-group-item-action" onclick="getDetail(`{% url 'Course:lec_detail_ajax' course_code=course.code %}`, this)">Details</li>
+                    <li class="list-group-item list-group-item-action" onclick="getAssessment(`{% url 'Course:lec_detail_ajax' course_code=course.code %}`, this)">Assessment</li>
+                    <li class="list-group-item list-group-item-action" onclick="getStudent(`{% url 'Course:lec_detail_ajax' course_code=course.code %}`, this)">Student</li>
+                    <li class="list-group-item list-group-item-action" onclick="getDetail(`{% url 'Course:lec_detail_ajax' course_code=course.code %}`, this)">History</li>
+                </ul>
+            </div>
+            <div class="col my-2" id="courseRoot">
+                {% if recentActivity %}
+                    <div class="bg-light-blue rounded">
+                    </div>
+                {% else %}
+                    <div class="col-md-6 mx-auto my-2">
+                        <p class="alert alert-warning text-center">
+                            <span>{{ noRecentActivityMsg }}</span>
+                            <span class="me-2 fa fa-exclamation-circle"></span>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'Jquery/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'javaScripts/course/lecturer/coursedetails.js' %}"></script>
+    <script>
+        const courseRoot = document.getElementById("courseRoot");
+        function getDetail(path, theTag) {
+            changeStatus(theTag)
+            let reason = "Please try again!"
+            let isRendered = true;
+            courseRoot.innerHTML = "<p class='my-3 text-center'><span class='spinner-border spinner-grow'></span><br><span>Loading details</span></p>"
+            $.ajax({
+                url:path,
+                success: response => {
+                    if (response.success){
+                        const course = new courseDetails(response, courseRoot);
+                        course.renderHtml();
+                        isRendered = course.isRendered;
+                    }
+                    else{
+                        isRendered = false;
+                        reason = response.description
+                    }
+
+
+                },
+                error: response => {
+                     isRendered = false;
+                    reason = "Sorry we can not show you details of this course at this moment"
+                }
+            })
+            if (isRendered === false){
+                courseRoot.innerHTML = "<p class='text-center my-3'><span class='alert alert-danger'>"+reason+" <span class='fa fa-exclamation-circle ms-3'></span> </span></p>"
+            }
+        }
+
+        function getAssessment(path, theTag){
+            changeStatus(theTag)
+            const assg = new Assignments(null, courseRoot);
+            assg.renderHtml()
+        }
+        function changeStatus(theTag) {
+            const theOptionParentChildren = document.getElementsByClassName("list-group-item-action active");
+            for (let i = 0; i < theOptionParentChildren.length; i++) {
+                theOptionParentChildren.item(i).classList.remove("active");
+            }
+            theTag.classList.add("active");
+        }
+        function getStudent(path, theTag) {
+            changeStatus(theTag);
+            const students = new Students(courseRoot)
+            students.renderHtml()
+        }
+    </script>
+{% endblock %}

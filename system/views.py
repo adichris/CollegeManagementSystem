@@ -1,12 +1,14 @@
 from django.shortcuts import reverse, get_object_or_404, render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView, DetailView, TemplateView, View
-from django.contrib.auth.models import Permission,  Group
+from django.contrib.auth.models import Permission, Group
 from django.http import Http404
+from django.contrib.auth import get_user
 from django.contrib.contenttypes.models import ContentType
 
 from INSTITUTION.views import JsonResponseMixin, JsonResponse
 from INSTITUTION.utils import get_back_url
+from accounts.models import User
 from .models import SemesterAcademicYearModel, Level
 from .forms import (
     SemesterCreationForm,
@@ -77,7 +79,7 @@ class SemesterAcademicYearView(LoginRequiredMixin, PermissionRequiredMixin, List
         # return (CURRENT, NEXT) academic_semester in tuple/list
         academic_year = self.model.objects.filter(is_current=True).first()
         nxt_academic_yr = int(academic_year.academic_year.split('/')[-1])
-        return academic_year.get_academic_year_display(), (nxt_academic_yr, nxt_academic_yr+1)
+        return academic_year.get_academic_year_display(), (nxt_academic_yr, nxt_academic_yr + 1)
 
     def get_levels(self):
         return Level.objects.all()
@@ -136,7 +138,7 @@ class PermissionGroupDetails(LoginRequiredMixin, PermissionRequiredMixin, Detail
         ctx = super(PermissionGroupDetails, self).get_context_data(**kwargs)
         ctx['title'] = str(self.object) + ' Detail'
         ctx['permission_list'] = self.get_group_permissions()
-        ctx['member_list'] = self.get_group_members()
+        ctx['member_count'] = self.get_group_members()
         ctx['back_url'] = get_back_url(self.request) or reverse('System:permission_group')
         return ctx
 
@@ -144,7 +146,7 @@ class PermissionGroupDetails(LoginRequiredMixin, PermissionRequiredMixin, Detail
         return self.object.permissions.all()
 
     def get_group_members(self):
-        return self.object.user_set.all()
+        return self.object.user_set.count()
 
     def post(self, request, *args, **kwargs):
         response = self.get(request, *args, **kwargs)
@@ -172,7 +174,7 @@ class PermissionDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         return self.model.objects.get(
-                pk=self.kwargs['permission_pk']
+            pk=self.kwargs['permission_pk']
         )
 
     def get_groups(self):
@@ -234,6 +236,67 @@ def get_permission_ajax(request, permission_pk):
         })
 
 
+def get_group_members_ajax(request, group_name):
+    members = User.objects.filter(groups__name=group_name)
+    data = [
+        {
+            'name': member.get_full_name(),
+            'identity': member.identity,
+            'type': member.get_category(),
+            'url': reverse('System:get_user_shortInfo', kwargs={'identity': member.identity, 'group_name': group_name})
+        }
+        for member in members
+    ]
+    return JsonResponse({'data': data})
+
+
+def remove_group_member(request, group_name, member_identity):
+    if request.user.is_authenticated:
+        user = get_user(request)
+        try:
+            group = Group.objects.get(name=group_name)
+            member = User.objects.get(identity=member_identity)
+        except Group.DoesNotExist or User.DoesNotExist:
+            pass
+        else:
+            if user.has_perm('change_group', group):
+                member.groups.remove(group)
+                return JsonResponse({
+                    'success': True,
+                    'description': f'Successfully removed {member.get_full_name()} from {group.name}.'
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'description': f'Can not remove {member.get_full_name()} from {group.name}.<br> Permission denied'
+                })
+    return {
+        'description': 'Not Found!'
+    }
+
+
+def get_group_member_information(request, identity, group_name):
+    if not (request.user.is_authenticated and request.user.is_active):
+        return
+    try:
+        user = User.objects.get(identity=identity, groups__name=group_name)
+    except User.DoesNotExist:
+        pass
+    else:
+        data = {
+            'identity': user.identity,
+            'name': user.get_full_name(),
+            'shortName': user.get_short_name(),
+            'department': user.get_department().name,
+            'email': user.email,
+            'removeMemberUrl': reverse('System:remove_group_member', kwargs={
+                'group_name': group_name,
+                'member_identity': user.identity
+            })
+        }
+        return JsonResponse(data)
+
+
 class AddMemberToPermissionGroup(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     permission_required = 'auth.change_group'
     template_name = 'system/permission/group/addmember.html'
@@ -257,16 +320,24 @@ class AddMemberToPermissionGroup(LoginRequiredMixin, PermissionRequiredMixin, Te
             return Http404('Permission group does not exists')
 
     def add_student(self):
-        from accounts.models import User
-        students = User.objects.filter(student__is_active=True)
+        students = User.objects.filter(student__is_active=True, is_active=True)
         self.get_object().user_set.add(*students)
         return students.count()
+
+    def add_lecturers(self):
+        lecturers = User.objects.filter(is_active=True, lecturer__is_active=True)
+        self.get_object().user_set.add(*lecturers)
+        return lecturers.count()
 
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
 
     def add_member(self):
-        is_add_student = self.request.POST.get('addstudent')
+        is_add_student = str(self.request.POST.get('addstudent')) == '1'
+        is_add_lecturers = str(self.request.POST.get('addlecturers')) == '1'
         if is_add_student:
             returns = self.add_student()
             return returns
+        elif is_add_lecturers:
+            return self.add_lecturers()
+

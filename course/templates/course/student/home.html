@@ -1,0 +1,148 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container">
+        {% if back_url %}
+            <div class="row">
+                {% include 'institution/utils/back_snippet.html' %}
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col">
+                <h4 class="text-center display-6">{{ header|upper }}</h4>
+            </div>
+        </div>
+        {% if course_list or course_query_data %}
+            <div class="row my-md-3">
+                <div class="col-12 alert-primary p-2 bg-light-blue rounded mt-2 mb-3 shadow-sm d-flex justify-content-between align-items-center gap-2">
+                    <span class="text-primary">Showing {{ course_list.count }} courses</span>
+                    <form action="" method="get">
+                        <div class="input-group">
+                            <input class="form-control" value="{{ course_query_data|default:'' }}" placeholder="Search course" type="search" name="{{ course_query_var }}" id="id_{{ course_query_var }}">
+                            <button type="submit" class="btn btn-primary" onclick="dynamicSpinner(this)"><span class="fa fa-search"></span> search</button>
+                        </div>
+                    </form>
+                </div>
+                {% for course in course_list %}
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 hover_shadow border border-primary">
+                            <div class="card-body">
+                                <h3 class="text-center text-primary">{{ course }}</h3>
+                            </div>
+                            <div class="px-2">
+                                <table class="table">
+                                <tr>
+                                    <td>Recent Activity</td>
+                                    <td>N/A</td>
+                                </tr>
+                                <tr>
+                                    <td>Quizzes</td>
+                                    <td>N/A</td>
+                                </tr>
+                                <tr>
+                                    <td>Lecturer</td>
+                                    <td>{{ course.lecturer|default_if_none:"N/A" }}</td>
+                                </tr>
+
+                            </table>
+                            </div>
+                            <div class="card-footer  alert-primary">
+                                <a href="{% url 'Course:stu_details' course_code=course.code %}" class="btn btn-primary btn-sm w-100">view</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+            {% if not object_list %}
+                <div class="row my-md-3">
+                    <div class="col-auto mx-auto text-center">
+                        <img src="{% static 'icons/Nothing_Found.svg' %}" alt="" srcset="" class="img-fluid" style="height: 5em;">
+                        <div class="alert alert-warning">
+                            <div>
+                                <h5><b>"{{ course_query_data }}"</b> does not match any course (name or code) in the system</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+         {% else %}
+            <div class="row my-md-3">
+                <div class="col">
+                    <div class="shadow-sm alert alert-warning d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>There are no courses available for this semester({{ current_semester }})</h5>
+                            <p>Please check if your have registered the courses for this {{ current_semester }}</p>
+                            <a href="#" class="alert-link"><span class="fa fa-hand-point-right me-2"></span>Check Courses Registration </a>
+                        </div>
+                        <span class="fa fa-exclamation-circle fa-2x"></span>
+                    </div>
+                </div>
+            </div>
+         {% endif %}
+        {% if not course_query_data %}
+
+        <div class="row my-md-4">
+            <div class="col">
+                <button type="button" class="btn btn-secondary hover_shadow w-100" onclick="loadMoreCourse()">View all Courses</button>
+            </div>
+            <div class="col-12 d-flex flex-column justify-content-center align-items-center my-3" id="moretable">
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'Jquery/jquery-3.4.1.min.js' %}"></script>
+    <script>
+        const courseBody = document.getElementById('moretable');
+        let isLoaded = false;
+        function loadMoreCourse() {
+            if (isLoaded === true){
+                courseBody.classList.remove('d-none');
+                return
+            }
+            courseBody.innerHTML = "<span class='fa fa-asterisk fa-4x fa-spin'></span><br><span>Loading courses ...</span>";
+            $.ajax({
+                url:"{% url 'Course:student_viewmore' %}",
+                data:null,
+                success: response => {
+                    const data = response['courses'];
+                    const rows = data.map(item => `<tr class="hover_shadow">
+                                                        <td>${ item.name }</td>
+                                                        <td>${ item.level }</td>
+                                                        <td>${ item.semester }</td>
+                                                        <td>${ item.lecturer === null ? 'N/A' : item.lecturer }</td>
+                                                        <td><button class="btn btn-sm btn-primary" href="${ item.link }">view</button></td>
+                                                    </tr>`
+                    );
+                    courseBody.innerHTML = `<table class="table">
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Level</th>
+                                                    <th>Semester</th>
+                                                    <th>Lecturer</th>
+                                                    <th></th>
+                                                </tr>
+                                                ${rows}
+                                                </table>
+                                            <div class="my-2"><button onclick="hideOtherCourse()" class="btn btn-info hover_shadow w-100">Hide Other Courses</button></div>`;
+                    isLoaded = true;
+                },
+                error: response => {
+                    courseBody.innerHTML = "<span class='alert alert-danger'>Sorry we couldn't load the contents. Please try again</span>"
+                },
+            })
+        }
+
+        function hideOtherCourse() {
+            courseBody.classList.add('d-none');
+            return
+        }
+
+    </script>
+{% endblock %}

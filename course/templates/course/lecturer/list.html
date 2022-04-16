@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+
+{% load static %}
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-md-auto mx-auto">
+                <h4 class="display-6">{{ header }}</h4>
+            </div>
+        </div>
+        {% if course_list or q %}
+            <div class="row my-3">
+                <div class="col d-flex justify-content-between align-items-center bg-light rounded p-2">
+                    <span>{{ info  }} {{ course_list.count }} Courses</span>
+                    <form method="get">
+                        <div class="input-group">
+                            <input class="form-control" type="search" name="q" id="" value="{{ q|default:'' }}" placeholder="course name or code">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% if q and not course_list %}
+                <div class="row my-4">
+                    <div class="col-md-6 mx-auto">
+                        <h6 class="alert alert-info"><b>{{ q }}</b> matches {{ course_list.count }} courses !</h6>
+                    </div>
+                </div>
+            {% endif %}
+            {% regroup course_list by programme as course_listByLevel %}
+                {% static 'icons/course.svg' as course_img %}
+                {% for course_lst in course_listByLevel %}
+                    <div class="row mt-4">
+                        <div class="col"><h5 class="bg-light-blue p-3 rounded"><b class="me-3">{{ course_lst.grouper }}</b> Courses</h5></div>
+                    </div>
+                    <div class="row">
+
+                        {% for course in course_lst.list %}
+                            <div class="col-md-4 col-lg-3 my-3">
+                                <div class="card hover_shadow">
+                                    <div class="card-img text-center">
+                                        <img src="{{ course_img }}" alt="" class="img-fluid" style="height: 10em;">
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="text-center">{{ course.name }}</h5>
+                                        <div class="d-flex flex-column flex-md-row justify-content-between">
+                                            <div><small class="me-2">Code</small><b>{{ course.code }}</b></div>
+                                            <div><small class="me-2">Credit Hours</small><b>{{ course.credit_hours }}</b></div>
+                                        </div>
+                                        <div class="d-flex flex-column flex-md-row justify-content-between">
+                                            <div><small class="me-2">Semester</small><small>{{ course.semester.name }}</small></div>
+                                        </div>
+                                        <div class="d-flex flex-column flex-md-row justify-content-between">
+                                            <div class="text-muted" title="Level for course"><small>{{ course.level }}</small></div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <a href="{% url 'Course:lec_detail' course_code=course.code %}?back={{ request.path }}" class="btn bg-light-blue text-primary stretched-link" onclick="dynamicSpinner(this)">view</a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <div class="alert alert-warning d-flex justify-content-between align-items-center">
+                        <span>Please you have not been assign to a course, yet!</span>
+                        <span class="fa fa-exclamation-circle fa-spin"></span>
+                    </div>
+                </div>
+            </div>
+
+
+        {% endif %}
+
+    </div>
+{% endblock %}

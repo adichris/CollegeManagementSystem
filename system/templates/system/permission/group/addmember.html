@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+
 {% block container %}
     <div class="container">
         {% if back_url %}
@@ -17,7 +18,6 @@
         <div class="row my-4">
             {% if is_student %}
                 <div class="col-md-6 mx-auto">
-
                     <form action="" method="post">
                         <div class="card hover_shadow {% if is_added %} shadow {% endif %}">
                             {% if is_added %}
@@ -38,10 +38,27 @@
                     </form>
                 </div>
             {% else %}
-                <div class="col">
-                    {% static 'icons/lecturer/lecturer.svg' as lecturer %}
-                    {% include 'dashboard/link_thumbnail.html' with label='Lecturers' img_src=lecturer %}
+                <div class="col-md-6 mx-auto">
+                    <form action="" method="post">
+                        <div class="card hover_shadow {% if is_added %} shadow {% endif %}">
+                            {% if is_added %}
+                                <div class="card-title alert alert-success text-center m-2">
+                                    <span>Successfully added {{ is_added }} Lecturers to the group</span>
+                                </div>
+                            {% endif %}
+                            <img src="{% static 'icons/lecturer/lecturer.svg' %}" alt="Lecturer" class="img-fluid" style="height: 10em">
+                            <div class="card-body text-center">
+                                <button type="submit" class="btn btn-link stretched-link" onclick="spinnerGrowRightChangeText('Adding all lecturers... ', this)">Add Lecturers</button>
+                            </div>
+                            <div class="card-footer">
+                                <span>Add active lecturers to this group. <br> New lecturers and old active lecturers will be add to this group</span>
+                            </div>
+                        </div>
+                        {% csrf_token %}
+                        <input type="hidden" name="addlecturers" value="1">
+                    </form>
                 </div>
+
                 <div class="col">
                     {% static 'icons/lecturer/lecturer.svg' as admin %}
                     {% include 'dashboard/link_thumbnail.html' with label='Administrators' img_src=admin %}

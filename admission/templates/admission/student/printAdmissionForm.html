@@ -1,5 +1,12 @@
 {% extends 'base/admission/admission_base.html' %}
 
+{% block header %}
+    <style>
+       @media print {
+           .row {min-height: 100vh}
+       }
+    </style>
+{% endblock %}
 
 {% block container %}
     <div class="container">
@@ -13,9 +20,8 @@
             </div>
         </div>
     </div>
-    <div class="container m-p-n">
-        <div class="">
-            <div class="row my-4">
+    <div class="container">
+            <div class="row my-0 my-md-3">
                 <div class="col-auto mx-auto d-flex flex-column align-items-center gap-4">
                     <h4>{{ institution_name|upper }} ADMISSION FORM</h4>
                     <img src="{{ profile.picture.url }}" alt="" class="img-fluid" height="300" width="300">
@@ -41,43 +47,42 @@
                             <td class="text-success">Admission is {{ admission_form.get_status_display }}</td>
                         </tr>
                     </table>
-                    <div class="d-none d-print-block" style="height: 35vh">
-                        <span></span>
+                </div>
+            </div>
+
+            <div class="row my-0 my-md-3">
+                <div class="col-12">
+                    <h4>PROFILE</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>First Name</th>
+                                <td>{{ profile.first_name }}</td>
+                                <th>Gender</th>
+                                <td>{{ profile.get_gender_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Name</th>
+                                <td>{{ profile.last_name }}</td>
+                                <th>Email</th>
+                                <td>{{ profile.email }}</td>
+                            </tr>
+                             <tr>
+                                <th>Phone Number</th>
+                                <td>{{ profile.phone_number.as_international }}</td>
+                                <th>Date of Birth</th>
+                                <td><abbr title="{{ profile.date_of_birth|date:'F dS, Y' }}">{{ profile.date_of_birth }}</abbr> </td>
+                            </tr>
+
+                        </table>
                     </div>
                 </div>
             </div>
-            <div class="row my-4">
-                <div class="col-12">
-                    <h4>PROFILE</h4>
-                </div>
-                <div class="table-responsive">
-                    <table class="table">
-                        <tr>
-                            <th>First Name</th>
-                            <td>{{ profile.first_name }}</td>
-                            <th>Gender</th>
-                            <td>{{ profile.get_gender_display }}</td>
-                        </tr>
-                        <tr>
-                            <th>Last Name</th>
-                            <td>{{ profile.last_name }}</td>
-                            <th>Email</th>
-                            <td>{{ profile.email }}</td>
-                        </tr>
-                         <tr>
-                            <th>Phone Number</th>
-                            <td>{{ profile.phone_number.as_international }}</td>
-                            <th>Date of Birth</th>
-                            <td><abbr title="{{ profile.date_of_birth|date:'F dS, Y' }}">{{ profile.date_of_birth }}</abbr> </td>
-                        </tr>
 
-                    </table>
-            </div>
-            </div>
-            <div class="row my-4">
+            <div class="row my-0 my-md-3">
                 <div class="col-12">
                     <h4>ADDRESS</h4>
-                </div>
+
                 <div class="table-responsive">
                     <table class="table">
                         <tr>
@@ -99,12 +104,13 @@
 
                     </table>
                 </div>
+                </div>
             </div>
-            <div class="row my-4">
+
+            <div class="row my-0 my-md-3">
                 <div class="col-12">
                     <h4>CERTIFICATE</h4>
-                </div>
-                <div class="table-responsive">
+                    <div class="table-responsive">
                     <table class="table">
                         <tr>
                             <th>#</th>
@@ -129,12 +135,13 @@
 
                     </table>
                 </div>
+                </div>
+
             </div>
-            <div class="row my-4">
+            <div class="row my-0 my-md-3">
                 <div class="col-12">
                     <h4>EMPLOYMENT HISTORY</h4>
-                </div>
-                {% if employment_history.has_history %}
+                     {% if employment_history.has_history %}
                     <div class="table-responsive">
                         <table class="table">
                             <tr>
@@ -178,13 +185,14 @@
                         <h5>No employment history</h5>
                     </div>
                 {% endif %}
+                </div>
+
 
             </div>
-            <div class="row my-4">
+            <div class="row my-0 my-md-3">
                 <div class="col-12">
                     <h4>SPONSOR</h4>
-                </div>
-                <div class="table-responsive">
+                    <div class="table-responsive">
                     <table class="table">
                         <tr>
                             <th>Name</th>
@@ -210,14 +218,15 @@
                         </tr>
                     </table>
                 </div>
+                </div>
+
 
 
             </div>
-            <div class="row my-4">
+            <div class="row my-0 my-md-3">
                 <div class="col-12">
                     <h4>PROGRAMME CHOICES</h4>
-                </div>
-                <div class="table-responsive">
+                    <div class="table-responsive">
                     <table class="table">
                         <tr>
                             <th>First Choice</th>
@@ -233,14 +242,15 @@
                         </tr>
                     </table>
                 </div>
+                </div>
+
 
 
             </div>
-            <div class="row my-4">
+            <div class="row my-0 my-md-3">
                 <div class="col-12">
                     <h4>PREVIOUS EDUCATION</h4>
-                </div>
-                <div class="table-responsive">
+                    <div class="table-responsive">
                     <table class="table">
                         <tr>
                             <th>School</th>
@@ -256,11 +266,12 @@
                         </tr>
                     </table>
                 </div>
+                </div>
+
             </div>
 
-        </div>
 
-        <div class="row my-4 d-print-none">
+        <div class="row my-0 my-md-3 d-print-none">
             <div class="col-md-6 mx-auto">
                 <button class="btn btn-primary btn-lg w-100" onclick="print()">PRINT <span class="fa fa-print"></span></button>
             </div>

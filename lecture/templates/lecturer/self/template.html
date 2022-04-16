@@ -1,0 +1,12 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row" style="min-height: 60vh">
+            <div class="col-auto mx-auto d-flex flex-column align-items-center justify-content-center">
+                <p class="lead">Lecturer</p>
+                <span class="display-3">{{ request.user|upper }}</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

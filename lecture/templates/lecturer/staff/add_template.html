@@ -1,0 +1,48 @@
+{% extends 'base/admin/base.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-auto">
+                <h4>{{ title|title }}</h4>
+            </div>
+        </div>
+
+        <div class="row my-4">
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/profile.svg' as profile_src %}
+                {% include 'dashboard/link_thumbnail.html' with label='Profile' show_check=1 img_src=profile_src  %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/view.svg' as img_src %}
+                {% url 'EmploymentHistory:staff_create' profile_slug=profile_slug as employHist_link %}
+                {% include 'dashboard/link_thumbnail.html' with label='Employment History' link=employHist_link show_check=has_employment_history img_src=img_src  %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/profile.svg' as img_src %}
+                {% url 'Lecturer:staff_app_change' identity=identity as app_link %}
+                {% include 'dashboard/link_thumbnail.html' with label='Application' show_check=has_app img_src=img_src link=app_link %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/school.svg' as img_src %}
+                {% url 'Lecturer:staff_assign_department' identity=identity as department_link %}
+                {% include 'dashboard/link_thumbnail.html' with label='Department' show_check=has_department img_src=img_src link=department_link  %}
+            </div>
+            <div class="col-md-6 col-lg-4 my-2">
+                {% static 'icons/lecturer/training.svg' as img_src %}
+                {% include 'dashboard/link_thumbnail.html' with label='Courses' show_check=has_course img_src=img_src  %}
+            </div>
+
+        </div>
+
+        {% if is_allowed2complete  %}
+            <div class="row my-4">
+                <div class="col-md-6 mx-auto">
+                    <a href="?{{ completed_var }}=1" class="btn btn-success btn-lg w-100">Complete</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock container %}
+    

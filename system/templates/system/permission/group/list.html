@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <div class="row my-4 p-2 shadow-sm rounded">
+        <div class="row my-4 p-2 shadow-sm rounded bg-light-gold">
             <div class="col-md-3 align-self-end my-2">
                 <a href="{% url 'System:permission_group_add' %}?back={{ request.path }}" class="btn btn-outline-secondary hover_shadow p-2"><span class="fa fa-plus-circle"></span> New Group</a>
             </div>
@@ -20,7 +20,7 @@
                     <label for="qpermission" class="form-label">Search permission</label>
                     <div class="input-group">
                         <input type="search" name="qpermission" id="qpermission" class="form-control">
-                        <button type="submit" class="btn btn-outline-secondary">Search</button>
+                        <button type="submit" class="btn btn-outline-secondary ">Search</button>
                     </div>
                 </form>
             </div>
@@ -31,7 +31,7 @@
                 {% for group in group_list %}
                     <div class="col-md-6 col-lg-4 my-2">
                         <div class="card hover_shadow">
-                            <div class="card-body">
+                            <div class="card-body bg-light-gold">
                                 <h5 class="text-center">{{ group.name|title }}</h5>
                             </div>
                             <ul class="list-group list-group-flush">
@@ -45,7 +45,7 @@
                                 </li>
                             </ul>
                             <div class="card-footer d-flex justify-content-end">
-                                <a href="{% url 'System:permission_group_detail' pk=group.pk %}" onclick="dynamicSpinner(this)" class="btn btn-outline-secondary stretched-link">View</a>
+                                <a href="{% url 'System:permission_group_detail' pk=group.pk %}" onclick="dynamicSpinner(this)" class="btn bg-light-gold text-gold stretched-link">View</a>
                             </div>
                         </div>
                     </div>

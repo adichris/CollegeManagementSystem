@@ -1,0 +1,232 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block container %}
+    <div class="container">
+        <div class="row my-3 rounded">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-md-auto mx-auto text-center"><h5 class="display-6">{{ title }}</h5></div>
+        </div>
+
+        <div class="row">
+            <nav>
+              <div class="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-overview-tab" data-bs-toggle="tab" data-bs-target="#nav-overview" type="button" role="tab" aria-controls="nav-overview" aria-selected="true">Overview</button>
+                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
+                <button class="nav-link" id="nav-employmentHist-tab" data-bs-toggle="tab" data-bs-target="#nav-employmentHist" type="button" role="tab" aria-controls="nav-employmentHist" aria-selected="false" onclick="loadEmployHist()">Employment History</button>
+                <button class="nav-link" id="nav-appform-tab" data-bs-toggle="tab" data-bs-target="#nav-appform" type="button" role="tab" aria-controls="nav-appform" aria-selected="false" onclick="getLecturerInfo()">Application Form</button>
+                <button class="nav-link" id="nav-system-tab" data-bs-toggle="tab" data-bs-target="#nav-system" type="button" role="tab" aria-controls="nav-system" aria-selected="false" onclick="loadSystemInfo()">System</button>
+              </div>
+            </nav>
+            <div class="tab-content mb-4" id="nav-tabContent">
+                <div class="tab-pane fade active show" id="nav-overview" role="tabpanel" aria-labelledby="nav-overview-tab">
+                    <div class="card-group">
+                        <div class="card">
+                            <img src="{{ user.picture.url }}" alt="" class="img-fluid user-select-none" style="user-select: none;">
+                        </div>
+                        <div class="card card-body">
+                            <table class="table border">
+                                <tr class="bg-light-blue">
+                                    <td colspan="2" class="text-center"><b>Credentials</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Identity</td>
+                                    <td>{{ user.identity }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Membership</td>
+                                    <td>{{ user.get_category }}</td>
+                                </tr>
+                                <tr class="bg-light-blue">
+                                    <td colspan="2" class="text-center"><b>Profile</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Short Name</td>
+                                    <td>{{ user.get_short_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Full Name</td>
+                                    <td>{{ user.get_full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>{{ user.email }}</td>
+                                </tr>
+                                <tr class="bg-light-blue">
+                                    <td colspan="2" class="text-center"><b>Department</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Faculty</td>
+                                    <td>{{ user.get_department.faculty }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Department</td>
+                                    <td>{{ user.get_department }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Number of Courses</td>
+                                    <td>{{ user.course_set.count }}</td>
+                                </tr>
+                                <tr class="bg-light-blue">
+                                    <td colspan="2" class="text-center"><b>System</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Last Login</td>
+                                    <td>{{ user.last_login }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Computer</td>
+                                    <td>{{ user.os }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Timestamp (DateTime you got registered)</td>
+                                    <td>{{ user.timestamp }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <div class="col-md-7 mx-auto">
+                        <div class="text-center my-3">
+                            <img alt="profile picture" class="img-thumbnail shadow-sm rounded-circle" src="{{ user.picture.url }}" style="height: 10em; width: 10em;">
+                        </div>
+                        <ul class="list-group shadow">
+                            <li class="list-group-item list-group-item-success text-center">Profile</li>
+                            <li class="list-group-item">
+                                <small>Identity</small><br>
+                                <b>{{ user.identity }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>First Name</small><br>
+                                <b>{{ user.first_name }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Last Name</small><br>
+                                <b>{{ user.last_name }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Gender</small><br>
+                                <b>{{ user.get_gender_display }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Date of Birth</small><br>
+                                <b>{{ user.date_of_birth }}</b>
+                            </li>
+
+                            <li class="list-group-item">
+                                <small>Email</small><br>
+                                <b><a href="mailto:{{ user.email }}">{{ user.email }}</a></b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Phone Number</small><br>
+                                <a href="tel:{{ user.phone_number }}"><b>{{ user.phone_number }}</b></a>
+                            </li>
+                        </ul>
+
+                        {% if address %}
+                        <ul class="list-group shadow my-3">
+                            <li class="list-group-item list-group-item-dark text-center">Address </li>
+                            <li class="list-group-item">
+                                <small>Home Town</small><br>
+                                <b>{{ address.home_town }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Region</small><br>
+                                <b>{{ address.region }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>District</small><br>
+                                <b>{{ address.district }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Country</small><br>
+                                <b>{{ address.country }}</b>
+                            </li>
+
+                            <li class="list-group-item">
+                                <small>Address</small><br>
+                                <b>{{ address.address }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Current Region</small><br>
+                                <b>{{ address.current_region }}</b>
+                            </li>
+                        </ul>
+                        {% else %}
+                            <div class="alert alert-warning my-3">You have no address information</div>
+                        {% endif %}
+
+                        <ul class="list-group shadow my-3">
+                            <li class="list-group-item list-group-item-info text-center">Status</li>
+                            <li class="list-group-item">
+                                <small>Membership</small><br>
+                                <b>{{ user.get_category|upper }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Online</small><br>
+                                <b>{{ user.is_online|yesno|upper }}</b>
+                            </li>
+
+                            <li class="list-group-item">
+                                <small>Active</small><br>
+                                <b>{{ user.is_active|yesno|upper }}</b>
+                            </li>
+                            <li class="list-group-item">
+                                <small>Username</small><br>
+                                <b>{{ user.get_username }}</b>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane fade" id="nav-employmentHist" role="tabpanel" aria-labelledby="nav-employmentHist-tab">
+                     <h4 class="display-6 text-center">Employment History</h4>
+                </div>
+
+                <div class="tab-pane fade" id="nav-appform" role="tabpanel" aria-labelledby="nav-appform-tab">
+                    <h4 class="display-6 text-center">Application Form</h4>
+                </div>
+
+                <div class="tab-pane fade" id="nav-system" role="tabpanel" aria-labelledby="nav-system-tab" >
+                     <h4 class="display-6">SYSTEM</h4>
+                    <ul>
+                        <li>Permissions</li>
+                        <li>Academic Year</li>
+                        <li>Semester</li>
+                        <li>Activities/History</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'Jquery/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'javaScripts/employmentHistory/getEmploymentHistory.js' %}"></script>
+    <script>
+        function loadEmployHist() {
+            const navEmploymentHist = document.getElementById('nav-employmentHist');
+            navEmploymentHist.innerHTML = '<p class="text-center my-3"> <span class="fa fa-spinner fa-spin fa-2x"></span><br><span>loading your employment history ...</span></p>'
+            getEmployHistoryAjaxCall('{% url "EmploymentHistory:old_employment_history" profile_slug=request.user.slug %}', navEmploymentHist)
+
+        }
+        function getLecturerInfo() {
+        const navAppForm = document.getElementById('nav-appform');
+        navAppForm.innerHTML = '<p class="text-center my-3"> <span class="fa fa-spinner fa-spin fa-2x"></span><br><span>loading your application forms please wait ...</span></p>';
+        loadMyInformationALecturer('{% url "Lecturer:get_my_info" %}', navAppForm);
+    }
+
+        function loadSystemInfo() {
+            const navSystem = document.getElementById('nav-system');
+            navSystem.innerHTML = '<p class="text-center my-3"> <span class="fa fa-cog fa-spin fa-2x"></span><br><span>loading your system information, please wait ...</span></p>';
+        }
+
+    </script>
+{% endblock %}

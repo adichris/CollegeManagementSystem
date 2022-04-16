@@ -16,6 +16,13 @@ class GenderChoices(models.TextChoices):
     OTHER = ("o", "Other ")
 
 
+# class UserType(models.TextChoices):
+#     ADMIN = ("admin", "Administrator")
+#     FEMALE = ("superuser", "SuperUser")
+#     TRANSGENDER = ("staff", "Staff")
+#     OTHER = ("lecturer", "Lecturer")
+
+
 def upload_user_to_path(instance, filename):
     import os
     unique = instance.id or instance.identity
@@ -83,14 +90,16 @@ class User(PermissionsMixin, AbstractBaseUser):
         verbose_name_plural = 'Users'
         ordering = ("first_name", "last_name", "email")
         permissions = [
+            ('can_view_profile', 'Can view their profile'),
             ('add_lecturerprofile', 'Add Lecturer Profile'),
+            ('view_lecturerprofile', 'Can View Lecturer Profile'),
             ('set_password4other', 'Set password for other user'),
             ('self_change_password', 'Can user change his or her password'),
         ]
 
     def __str__(self):
         """Unicode representation of User."""
-        return self.get_full_name()
+        return self.identity
 
     def get_full_name(self):
         return ' '.join([self.first_name, self.last_name])
@@ -98,12 +107,26 @@ class User(PermissionsMixin, AbstractBaseUser):
     def get_short_name(self):
         return self.first_name
 
+    def get_department(self):
+        if self.is_teaching_staff:
+            return self.lecturer.department
+        elif self.is_student:
+            return self.student.programme.department
+        return 'N/A'
+
     @property
     def student(self):
         try:
             return self.student_profile
         except models.ObjectDoesNotExist:
             return None
+
+    @property
+    def is_teaching_staff(self):
+        try:
+            return bool(self.lecturer)
+        except models.ObjectDoesNotExist:
+            return False
 
     def get_name_abr(self):
         f_abr = "".join([list(n)[0] for n in self.first_name.split(" ")]).upper()
@@ -130,10 +153,17 @@ class User(PermissionsMixin, AbstractBaseUser):
             return 'Superuser'
         elif self.is_staff:
             return 'Staff'
+        elif self.is_teaching_staff:
+            return 'Lecturer'
 
     @property
     def is_student(self):
-        return bool(self.student)
+        try:
+            student = self.student
+            if student:
+                return self.is_active and student.is_active
+        except models.ObjectDoesNotExist or AttributeError:
+            return False
 
     def get_absolute_url(self):
         return reverse('Student:home')

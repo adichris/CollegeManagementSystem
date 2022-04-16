@@ -24,11 +24,13 @@ from .views import (
     AccountsProfilePage,
     AccountsAcademicYearSemester,
     AccountsPermissions,
+    AutoLevelNewAdmitted,
 )
 
 app_name = 'Student'
 
 staff_urlpatterns = [
+    path('autolevel100newstudent/', AutoLevelNewAdmitted.as_view(), name='level100NewStudent'),
     path('', StaffStudentTemplateView.as_view(), name='staff_home'),
     path('add/', StaffStudentCreateView.as_view(), name='staff_register'),
     path('changeindexnumberandprogramme/<str:index_number>/', StaffStudentUpdateIndexNumProgrammeUpdateView.as_view(),
@@ -57,6 +59,7 @@ accounts_urlpatterns = [
     path('permissions/', AccountsPermissions.as_view(), name='acc_permission'),
 
 ]
+
 urlpatterns = [
     path('staff/', include(staff_urlpatterns)),
     path('admissionredirect/<str:serial_number>', StudentAdmissionRedirectView.as_view(),

@@ -7,7 +7,7 @@
                 <h5>DASHBOARD</h5>
             </div>
         </div>
-        <div class="row bg-light p-2 my-4 g-3">
+        <div class="row p-2 my-4 g-3 bg-light-gold text-gold rounded">
             <div class="col-12">
                 <span>System Control</span>
                 <hr>
@@ -32,7 +32,7 @@
             </div>
 
         </div>
-        <div class="row bg-light p-2 my-4 g-3">
+        <div class="row p-2 my-4 g-3 bg-light-gold text-gold rounded">
             <div class="col-12 my-3">
                 <span>Institution</span>
                 <hr>
@@ -56,11 +56,12 @@
             </div>
             <div class="col-6 col-md-4 col-lg-3">
                 {% static 'icons/blackboard.svg' as blackboard_src %}
-                {% include 'dashboard/link_thumbnail.html' with img_src=blackboard_src label='Courses' %}
+                {% url 'Course:staff_all' as course_link %}
+                {% include 'dashboard/link_thumbnail.html' with img_src=blackboard_src label='Courses' link=course_link %}
             </div>
         </div>
 
-        <div class="row bg-light p-2 my-4 g-3 my-3">
+        <div class="row p-2 my-4 g-3 my-3 bg-light-gold text-gold rounded">
                 <div class="col-12">
                     <span>School People</span>
                     <hr>

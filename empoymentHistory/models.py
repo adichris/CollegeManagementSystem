@@ -21,3 +21,6 @@ class EmploymentHistoryModel(models.Model):
     class Meta:
         verbose_name_plural = 'Employment Histories'
         db_table = 'employmentHistory'
+        permissions = [
+            ('view_own_history', 'Can view their employment History'),
+        ]

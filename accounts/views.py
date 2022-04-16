@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render, get_object_or_404, reverse
-from django.views.generic import View, UpdateView
+from django.views.generic import View, UpdateView, DetailView
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user
+from django.contrib.auth.decorators import login_required, permission_required
 
 from lecture.models import Lecturer
 from .forms import (
@@ -10,9 +11,10 @@ from .forms import (
     SetPasswordForm
 )
 from student.models import Student
+from address.models import Address
 from .models import User
 from INSTITUTION.utils import get_admission_steps, get_back_url, get_next_url
-from INSTITUTION.views import JsonResponseMixin
+from INSTITUTION.views import JsonResponseMixin, JsonResponse
 
 
 class StudentProfileCreateView(View):
@@ -221,11 +223,37 @@ class SetNewPassword(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         ctx = super(SetNewPassword, self).get_context_data(**kwargs)
-        ctx['title'] = 'Set a new password'
-        ctx['back'] = get_back_url(self.request)
+        ctx['title'] = 'Set your password'
+        ctx['back_url'] = get_back_url(self.request)
         return ctx
+
+    def get(self, *args, **kwargs):
+        get = super(SetNewPassword, self).get(*args, **kwargs)
+        user = self.request.user
+        if user.student and user.student.programme:
+            return get
+        else:
+            return get_next_url(self.request) or redirect('Home:landing_page')
 
 
 def logout_to_homepage(request):
     logout(request)
     return redirect('Home:landing_page')
+
+
+class LectureAccountDetails(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = User
+    permission_required = 'accounts.can_view_profile'
+    template_name = 'accounts/lecturer/self/detail.html'
+    permission_denied_message = 'You need permission to view your profile'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(LectureAccountDetails, self).get_context_data(**kwargs)
+        ctx['title'] = 'Your Profile'
+        ctx['back_url'] = get_back_url(self.request)
+        ctx['address'] = Address.objects.filter(profile=self.object).first()
+        return ctx
+
+    def get_object(self, queryset=None):
+        return get_user(self.request)
+

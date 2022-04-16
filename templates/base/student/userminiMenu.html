@@ -5,7 +5,7 @@
   <div class="d-flex flex-column align-items-center">
       <div class="dropdown">
           <button class="dropdown-toggle btn p-0 m-0" id="dropdownStudent" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="{{ user.picture.url|default:default_img }}" alt="" srcset="" height="40" width="40" class="img-fluid rounded"> {{ user.get_short_name|title }}</button>
+              <img src="{{ user.picture.url|default:default_img }}" alt="" srcset="" style="width: 2em; height:2em" class="img-fluid rounded-pill"> {{ user.get_short_name|title }}</button>
           <ul class="dropdown-menu" aria-labelledby="dropdownStudent">
               <li><small class="dropdown-item-text">Student Home</small></li>
               <li><a class="dropdown-item" href="{{ student.get_absolute_url }}" title="Programme">Dashboard</a></li>

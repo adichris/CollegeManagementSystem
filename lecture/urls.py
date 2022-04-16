@@ -7,9 +7,15 @@ from .views import (
     LecturerApplicationCreateView,
     LecturerDepartmentAssignment,
     LecturerListView,
+    LecturerDashboardView,
+    get_my_information_ajax,
 )
 
 app_name = 'Lecturer'
+
+my_ajax_urlpatterns = [
+    path('information/', get_my_information_ajax, name='get_my_info'),
+]
 
 staff_urlpatterns = [
     path('', StaffLecturerTemplateView.as_view(), name='staff_template'),
@@ -23,4 +29,6 @@ staff_urlpatterns = [
 
 urlpatterns = [
     path('staff/', include(staff_urlpatterns)),
+    path('', LecturerDashboardView.as_view(), name='dashboard'),
+    path('myrequest/', include(my_ajax_urlpatterns)),
 ]

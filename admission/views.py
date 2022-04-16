@@ -263,7 +263,7 @@ class StudentFormsDetailView(LoginRequiredMixin, PermissionRequiredMixin, Detail
         return not self.object.is_locked and self.request.user.has_perm('admission.can_audit_admission_form')
 
 
-class StudentFormsPrintView(TemplateView, LoginRequiredMixin):
+class StudentFormsPrintView(LoginRequiredMixin, TemplateView):
     template_name = 'admission/student/printAdmissionForm.html'
 
     def get(self, request, *args, **kwargs):

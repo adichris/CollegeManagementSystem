@@ -1,0 +1,43 @@
+{% extends 'lecturer/self/template.html' %}
+{% load static %}
+
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <h2 class="text-primary text-center display-6">Dashboard</h2>
+            <div class="row" data-masonry='{"percentPosition": true }'>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/notification.svg' as noti_ico %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Notifications'  img_src=noti_ico %}
+                </div>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/profile.svg' as profile_ico %}
+                    {% url 'Accounts:lec_detail' as accounts_lnk %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Accounts' link=accounts_lnk link_para_n='back' link_para_v=request.path  img_src=profile_ico %}
+                </div>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/library_96px.png' as lib_ico %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Library'  img_src=lib_ico %}
+                </div>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/report_card.svg' as report_ico %}
+                    {% url 'classRoom:templateview' as klass %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Class' link=klass footertext='Electronic Assessment System' img_src=report_ico %}
+                </div>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/report_card.svg' as report_ico %}
+                    {% url 'Course:lec_list' as course_url %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Courses'  img_src=report_ico link=course_url %}
+                </div>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/report_card.svg' as report_ico %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Organisations'  footertext='Organisation, Groups, and Campus Sociaties' img_src=report_ico %}
+                </div>
+                <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
+                    {% static 'icons/student/report_card.svg' as report_ico %}
+                    {% include 'dashboard/link_thumbnail.html' with label='Association'  img_src=report_ico %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

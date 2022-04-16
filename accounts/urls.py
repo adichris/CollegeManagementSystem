@@ -7,12 +7,17 @@ from .views import (
     SetPassword4other,
     SetNewPassword,
     logout_to_homepage,
+    LectureAccountDetails,
 )
 
 app_name = 'Accounts'
 
 urlpatternsAjax = [
-    path('staffsetpassword/<str:identity>/', SetPassword4other.as_view(), name='staff_set_password')
+    path('staffsetpassword/<str:identity>/', SetPassword4other.as_view(), name='staff_set_password'),
+]
+
+lecturer_urlpatterns = [
+    path('profile/', LectureAccountDetails.as_view(), name='lec_detail'),
 ]
 
 urlpatterns = [
@@ -24,4 +29,5 @@ urlpatterns = [
     path('ajax/', include(urlpatternsAjax)),
     path('setnewpassword/', SetNewPassword.as_view(), name='set_pwd'),
     path('logout/', logout_to_homepage, name='logout'),
+    path('lecturer/self/', include(lecturer_urlpatterns)),
 ]

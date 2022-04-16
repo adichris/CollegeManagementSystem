@@ -22,11 +22,13 @@
                     </div>
                     <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
                         {% static 'icons/student/report_card.svg' as report_ico %}
-                        {% include 'dashboard/link_thumbnail.html' with label='Class'  footertext='Electronic Assessment System' img_src=report_ico %}
+                        {% url 'classRoom:templateview' as klass %}
+                        {% include 'dashboard/link_thumbnail.html' with label='Class' link=klass footertext='Electronic Assessment System' img_src=report_ico %}
                     </div>
                     <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
                         {% static 'icons/student/report_card.svg' as report_ico %}
-                        {% include 'dashboard/link_thumbnail.html' with label='Courses'  img_src=report_ico %}
+                        {% url 'Course:student_current' as course_url %}
+                        {% include 'dashboard/link_thumbnail.html' with label='Courses'  img_src=report_ico link=course_url %}
                     </div>
                     <div class="col-11 col-sm-6 col-md-4 col-lg-3 my-2">
                         {% static 'icons/student/report_card.svg' as report_ico %}
@@ -36,7 +38,6 @@
                         {% static 'icons/student/report_card.svg' as report_ico %}
                         {% include 'dashboard/link_thumbnail.html' with label='SRC'  img_src=report_ico %}
                     </div>
-
 
                 </div>
             </div>

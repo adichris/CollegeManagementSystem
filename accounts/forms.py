@@ -9,7 +9,7 @@ from crispy_forms.bootstrap import StrictButton, FormActions
 
 
 MINIMUM_USER_AGE = 10
-PASSPORT_PICTURE_SIZE = (600, 600)
+PASSPORT_PICTURE_SIZE = (900, 900)
 
 
 class UserCreationForm(forms.ModelForm):

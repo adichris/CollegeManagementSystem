@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-3">
+            {% include 'institution/utils/back_snippet.html' %}
+            <div class="col-auto mx-auto text-center">
+                <span class="display-5">CLASS ROOM</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mx-auto rounded p-3 {% if user.is_teaching_staff %} bg-light-blue {% elif user.is_staff %} bg-light-gold {% else %} bg-light {% endif %} shadow-sm">
+                <form>
+                  <div class="form-floating w-100">
+                      <select name="" id="sCourse" class="form-select">
+                          <option>No Course selected</option>
+                          <option value="1">Course 1</option>
+                          <option value="2">Course 2</option>
+                          <option value="3">Course 3</option>
+                          <option value="4">Course 4</option>
+                          <option value="5">Course 5</option>
+                      </select>
+                    <label for="sCourse" class="form-label">Select Course</label>
+                  </div>
+                </form>
+                <hr>
+                <p class="alert alert-warning"> Class information will depend on the selected course <span class="float-end fa fa-exclamation-circle"></span></p>
+            </div>
+        </div>
+
+    <div class="row my-5">
+        <div class="col-md-auto mx-auto text-center">
+            <span class="fa fa-caret-up fa-3x"></span><br>
+            <span style="font-family: 'Ink Free', 'Bitstream Vera', monospace, serif; font-weight: bolder; font-size: larger">Select Course first!</span>
+        </div>
+    </div>
+
+    </div>
+{% endblock container %}
+

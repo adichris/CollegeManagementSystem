@@ -1,0 +1,101 @@
+{% extends 'base/admin/base.html' %}
+{% load static %}
+{% block container %}
+    <div class="container">
+        <div class="row">
+            {% if back_url %}
+                {% include 'institution/utils/back_snippet.html' %}
+            {% endif %}
+            <div class="col-auto mx-auto">
+                <h4 class="text-center display-6">{{ header|upper }}</h4>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-12 bg-light-gold p-2 rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Now <b>showing {{ page_obj.object_list.count }}</b> out of <b>{{ total_course }} courses</b></span>
+                    <button onclick="filterCourse()" class="btn bg-gold text-white hover_shadow"><span class="fa fa-filter me-2 "></span> Filter</button>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="table-responsive my-2">
+                <table class="table ">
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Course Code</th>
+                        <th>Credit Hours</th>
+                        <th>Semester</th>
+                        <th>Level</th>
+                        <th>Programme</th>
+                        <th></th>
+                    </tr>
+                    {% for course in page_obj %}
+                        <tr class="hover_shadow">
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ course.name }}</td>
+                            <td>{{ course.code }}</td>
+                            <td>{{ course.credit_hours }}</td>
+                            <td>{{ course.semester }}</td>
+                            <td>{{ course.level }}</td>
+                            <td>{{ course.programme }}</td>
+                            <td><a href="{{ course.get_absolute_url }}?back={{ request.path }}" class="btn btn-primary btn-sm">View</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+        </div>
+    </div>
+
+    <article>
+        {% include 'base/modelFooterless.html' with m_form=filter_form %}
+    </article>
+
+    <section class="container">
+        <div class="row">
+            <div class="col">
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <span class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        </span>
+                    {% endif %}
+                    {% for pg in  paginator.get_elided_page_range %}
+                        {% if pg == page_obj.number %}
+                            <span class="page-item disabled">
+                                <a class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                </a>
+                            </span>
+                        {% else %}
+                            <span class="page-item">
+                                <a href="?page={{ pg }}" class="page-link">{{ pg }}</a>
+                            </span>
+                        {% endif %}
+
+
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <span class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        </span>
+                        <span class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                        </span>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function filterCourse() {
+            modalTitle.innerText = 'Filter Courses By:'
+            toggleModal();
+        }
+    </script>
+{% endblock %}

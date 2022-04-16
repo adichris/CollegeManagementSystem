@@ -1,5 +1,5 @@
 {% extends 'base/admin/base.html' %}
-
+{% load static %}
 {% block container %}
 
     <div class="container">
@@ -14,7 +14,7 @@
         </div>
 
     <div class="row mt-2 mb-4">
-        <div class="col d-flex justify-content-end gap-3 table-responsive border rounded p-2">
+        <div class="col d-flex justify-content-end gap-3 bg-light-gold border rounded p-2">
             <a href="{% url 'System:add_permission2group' group_name=group.name group_pk=group.pk %}?back={{ request.path }}" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Permission</a>|
             <a href="{% url 'System:add_member2group' group_name=group.name group_pk=group.pk %}?back={{ request.path }}" class="alert-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Members</a>
         </div>
@@ -25,8 +25,8 @@
             <div class="col">
                 <div class="table-responsive">
                     <p>Members in this group have the follow permissions</p>
-                    <table class="table">
-                        <tr>
+                    <table class="table border">
+                        <tr class="table-warning">
                             <th>#</th>
                             <th>Permission Code Name</th>
                             <th>Permission Name</th>
@@ -62,35 +62,10 @@
         </div>
     {% endif %}
 
-    {% if member_list %}
+    {% if member_count %}
         <div class="row my-4">
-            <div class="col">
-                <div class="table-responsive">
-                    <p>Members in this group have the follow permissions</p>
-                    <table class="table">
-                        <tr>
-                            <th>#</th>
-                            <th>Member Name</th>
-                            <th>Member Identity</th>
-                            <th>Member Type</th>
-                            <th>Action</th>
-                        </tr>
-                        {% for member in member_list %}
-                            <tr class="hover_shadow">
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ member }}</td>
-                                <td>{{ member.identity }}</td>
-                                <td>{{ member.get_category }}</td>
-                                <td>
-                                    <div class="d-flex gap-2">
-                                        <a href="" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">View</a>
-                                        <a class="btn btn-outline-danger" onclick="dynamicSpinner(this)">Remove</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+            <div class="col" id="groupMembers">
+                <button onclick="getGroupMembers()" id="loadMembers" class="btn btn-primary w-100 shadow-sm">View All Members ({{ member_count }})</button>
             </div>
         </div>
     {% else %}
@@ -99,7 +74,6 @@
                 <div class="alert alert-warning text-center">
                     <h5>There is no members in this group</h5>
                     <a href="" class="alert-link stretched-link" onclick="dynamicSpinner(this)"><span class="fa fa-plus-circle"></span> Add Members</a>
-
                 </div>
             </div>
         </div>
@@ -111,7 +85,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
+    <script >
         let mbody = document.getElementById('m_body');
         mbody.innerHTML = `<div class="text-center h-100"><span class="spinner-border"></span><br><span>loading permission</span></div>`
         function rmPerm(ulrlnk){
@@ -151,5 +125,92 @@
                 }
             })
         }
+
+        function getGroupMembers() {
+            const loader = 'View All Members ({{ member_count }})';
+            const loading = 'Loading all members ({{ member_count }}) ...';
+            const loaderBtn = document.getElementById('loadMembers');
+            const container = document.getElementById('groupMembers');
+            if (loaderBtn){
+                loaderBtn.innerText = loading;
+            }
+            else{
+                container.innerHTML = `<div class="alert alert-info text-center">Reloading members please wait...</div>`
+            }
+            const url = '{% url "System:get_group_members_ajax" group_name=group.name %}'
+            const success = response => {
+              container.innerHTML = `<div class="table-responsive">
+                    <p>Members in this group have the follow permissions</p>
+                    <button class="btn btn-light shadow-sm" onclick="getGroupMembers()">Reload</button>
+                    <table class="table border">
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Member Identity</th>
+                            <th>Member Type</th>
+                            <th></th>
+                        </tr>
+
+                                ${response.data.map(
+                                    member =>
+                                        '<tr class="hover_shadow" id="row'+ member.identity +'">' +
+                                        '<td>' + member.name + '</td>' +
+                                        '<td> ' + member.identity +'</td>' +
+                                        '<td> ' + member.type +'</td>' +
+                                        '<td><div class="d-flex gap-2"><a href="" class="btn btn-outline-secondary" onclick="dynamicSpinner(this)">View</a><a class="btn btn-outline-danger" onclick="removeGroupMemberDialog(\'' + member.url + '\')">Remove</a> </div></td>'+
+                                        '</tr>'
+                                )}
+                        </table>
+                    </div>`;
+              if (loaderBtn ){
+                  loaderBtn.innerText = loader;
+              }
+                }
+            $.ajax({
+                data: null,
+                method: 'get',
+                url:url,
+                success:response=>success(response),
+                errors:(response)=>{
+                    console.log(response);
+                    container.innerHTML = `<div class="alert alert-danger">Sorry, we can not fetch the information this time <br>Please try again!</div>`;
+                }
+            })
+        }
+
+        function removeGroupMemberDialog(memberInfoUrl) {
+            modalTitle.innerText = 'Remove Group Member '
+            toggleModal();
+            mbody.innerHTML = `<div class="text-center h-100"><span class="spinner-border"></span><br><span>loading member information</span></div>`
+            $.ajax({
+                url:memberInfoUrl,
+                success: response => {
+                    const {identity, name, department, email, shortName, removeMemberUrl} = response;
+                    modalTitle.innerHTML = '<span>Remove <b>' + shortName +'</b> From {{ group.name }} Group</span>'
+                    mbody.innerHTML = `<table class="table">
+                        <tr><td>Full Name</td> <td>${name}</td> </tr>
+                        <tr><td>Department</td> <td>${department !== null ? department : 'N\\A'}</td> </tr>
+                        <tr><td>Email</td> <td>${email}</td> </tr>
+                    </table>
+                           <button class='btn btn-warning w-100' onclick="removeMember( '${removeMemberUrl}', '${identity}', this)">Remove Member</button>`
+                },
+                error: response => {alert('Please try again!')},
+            })
+        }
+        function removeMember(url, memberIdentity, theTag) {
+            dynamicSpinner(theTag);
+            $.ajax({
+                url:url,
+                success:response => {
+                    closeModal()
+                    const elem = document.getElementById('row'+memberIdentity);
+                    elem.innerHTML = '<td colspan="5" class="text-center">' + response.description + '</td>'
+                    elem.classList.add('table-danger');
+                    setTimeout(()=>{elem.remove()}, 1000);
+                },
+                errors:response => {alert(response.description)},
+            })
+        }
+
     </script>
+
 {% endblock %}

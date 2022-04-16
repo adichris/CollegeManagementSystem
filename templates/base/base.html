@@ -7,20 +7,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} 
-    {% if title %}
-        -
-    {% endif %}
-        {% institutionShortName %}
+    <title>{{ title }} {% if title %}-{% endif %}{% institutionShortName %}
     </title>
     <link rel="shortcut icon" href="{% static 'favicon.png' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'fontawesome5.1/css/all.min.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap5/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'colors/palette.css' %}">
     <link rel="stylesheet" href="{% static 'styles/designs.css' %}">
-    {% block header %}
-
-    {% endblock %}
+    {% block header %}{% endblock %}
 </head>
 <body>
     <div class="d-print-none">
@@ -29,6 +23,8 @@
                 {% include 'base/admin/navbar.html' %}
             {% elif request.user.student %}
                 {% include 'base/student/navbar.html' %}
+            {% elif request.user.is_teaching_staff %}
+                {% include 'base/Lecturer/navbar.html' %}
             {% else %}
                 {% include 'base/navbar.html' %}
             {% endif %}
@@ -39,8 +35,7 @@
     <script src="{% static 'fontawesome5.1/js/all.min.js' %}"></script>
     <script src="{% static 'bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'javaScripts/btn/loading.js' %} "> </script>
-{% block scripts %}
 
-{% endblock %}
+    {% block scripts %}{% endblock %}
 </body>
 </html>

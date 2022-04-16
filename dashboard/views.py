@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http.response import HttpResponseForbidden
 
 
@@ -15,4 +15,4 @@ class AdminDashboardTemplateView(LoginRequiredMixin, TemplateView):
         if request.user.is_staff:
             return super(AdminDashboardTemplateView, self).get(request, *args, **kwargs)
         else:
-            return HttpResponseForbidden
+            return HttpResponseForbidden(b"Out of bounds.".upper())

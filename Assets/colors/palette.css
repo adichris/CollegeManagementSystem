@@ -1,5 +1,5 @@
 .bg-light-red {
-    background-color:hsl(0deg 69% 59% / 20%);
+    background-color:hsl(0deg 69% 59% / 20%) !important;
     color: red;
 }
 
@@ -12,4 +12,22 @@
 }
 .bg-gold {
     background-color: #e9b203 !important;
+}
+.text-gold {
+    color: #664d03;
+}
+.text-golden {
+    color: #ffc107;
+}
+
+.bg-light-green {
+    background: hsl(148deg 69% 59% / 20%);
+}
+
+.text-green {
+    color: #0f5132;
+}
+
+.bg-light-blue {
+    background:hsl(198deg 69% 59% / 20%);
 }

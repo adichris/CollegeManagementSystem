@@ -3,7 +3,7 @@
 {% block header %}
     <style>
          .landingContainer {
-            {#background-image: url("{% static 'images/bg.jpg' %}");#}
+            background-image: url("{% static 'images/bg.jpg' %}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -12,46 +12,12 @@
     </style>
 {% endblock %}
 {% block container %}
-    <div class="container-fluid">
+    <div class="container-fluid landingContainer">
         <div class="row ">
-            <div class="col-12">
-                <div class="carousel slide" data-bs-ride="carousel" id="carouselAtHome">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselAtHome" data-bs-slide-to="0" class="active" aria-label="Slide 1" aria-current="true"></button>
-                        <button type="button" data-bs-target="#carouselAtHome" data-bs-slide-to="1" aria-label="Slide 2" class=""></button>
-                        <button type="button" data-bs-target="#carouselAtHome" data-bs-slide-to="2" aria-label="Slide 3" class=""></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <div style="background-image: url({% static 'images/google ceo.jpg' %});" class="landingContainer w-100 d-flex justify-content-center align-items-center">
-                                <div class="bg-white50 alert alert-light  transparent-bg">
-                                    <h1 class="text-center">WELCOME TO, <br>{{ institution_full_name|upper }}</h1>
-                                </div>
-                            </div>
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>welcome</h5>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div style="background-image: url({% static 'images/about_us.jpg' %});" class="landingContainer w-100 d-flex justify-content-center align-items-center">
-                                <div class="bg-white50 alert alert-light  transparent-bg">
-                                    <h1 class="text-center">WELCOME TO, <br>{{ institution_full_name|upper }}</h1>
-                                </div>
-                            </div>
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>Our Programmes</h5>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div style="background-image: url({% static 'images/building.jpg' %});" class="landingContainer w-100 d-flex justify-content-center align-items-center">
-                                <div class="bg-white50 alert alert-light  transparent-bg">
-                                    <h1 class="text-center">WELCOME TO, <br>{{ institution_full_name|upper }}</h1>
-                                </div>
-                            </div>
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5>The University</h5>
-                            </div>
-                        </div>
+            <div class="col-auto mx-auto">
+                <div class="mt-5 w-100 d-flex justify-content-center align-items-center">
+                    <div class="bg-white50 alert alert-light  transparent-bg">
+                        <h1 class="text-center">WELCOME TO, <br>{{ institution_full_name|upper }}</h1>
                     </div>
                 </div>
             </div>

@@ -18,6 +18,7 @@ class SemesterAcademicYearModel(models.Model):
                                      default=academic_year.default())
 
     def __str__(self):
+        # return f"{self.name}, {self.academic_year} academic year"
         return self.name
 
     class Meta:

@@ -51,12 +51,13 @@
 
 @media (max-width:900px) {
     .bord-width-nav {
-        background-color: #ececec;
+        background-color: rgba(255, 255, 255, 0.73);
         width: 100%;
         padding: 0.5em;
         border-radius: 3px;
         margin-bottom: 0.2em;
         margin-top: 0.5em;
+        box-shadow: #c6c6c6 0 0 2px 2px;
     }
 
 }

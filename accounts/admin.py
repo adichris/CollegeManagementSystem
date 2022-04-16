@@ -8,7 +8,7 @@ from .models import User
 class UserModelAdmin(UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
-    list_display = ("identity", "first_name", 'last_name', 'is_online')
+    list_display = ("identity", "name", "member_type", 'is_online')
     list_filter = ("is_online", 'is_active', 'is_admin', 'is_superuser')
 
     search_fields = ("identity", 'first_name', 'last_name', 'email')
@@ -24,7 +24,7 @@ class UserModelAdmin(UserAdmin):
         ("Permission", {'fields': ('is_admin', 'is_superuser')}),
         ("Active Status", {"fields": ("is_active", 'is_online', ), "classes": "wide"}),
         ("User Browser Information",
-         {"fields": ("session_key", 'last_login', 'os', 'username', 'computer_name', 'http_sec_ch_ua'),
+         {"fields": ("session_key", 'last_login', 'os', 'computer_username', 'computer_name', 'http_sec_ch_ua'),
           "classes": "wide"}
          ),
         ("Groups and Authorization",
@@ -34,3 +34,9 @@ class UserModelAdmin(UserAdmin):
     readonly_fields = ('is_online', 'session_key', 'last_login', 'os', 'computer_username', 'computer_name', 'http_sec_ch_ua')
     ordering = ("first_name", "last_name", "email")
     filter_horizontal = ()
+
+    def member_type(self, obj):
+        return obj.get_category()
+
+    def name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"

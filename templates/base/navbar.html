@@ -3,7 +3,7 @@
 {% url 'Home:about_institution' as about %}
 {% url 'Admission:main_template_page' as admission %}
 
-<nav class="navbar navbar-expand-lg sticky-lg-top navbar-light transparent-bg" aria-label="Navigation bar">
+<nav class="navbar navbar-expand-lg navbar-light transparent-bg" aria-label="Navigation bar">
     <div class="container">
         <a class="navbar-brand {% if request.path == home %} active {% endif %}" href="{{ home }}">{% institutionFullName %}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,11 +11,11 @@
         </button>
 
         <div class="collapse navbar-collapse" id="topNavbar">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0 mx-auto align-items-center ">
+            <ul class="navbar-nav me-auto mb-2 mx-auto align-items-center ">
                 {% if not request.user.is_authenticated %}
-                <li class="nav-item bord-width-nav">
-                    <a class="nav-link text-nowrap {% if request.path == about %} active-primary {% endif %}" aria-current="page" href="{{ about }}">About Us</a>
-                </li>
+                    <li class="nav-item bord-width-nav">
+                        <a class="nav-link text-nowrap {% if request.path == about %} active-primary {% endif %}" aria-current="page" href="{{ about }}">About Us</a>
+                    </li>
 
                 <li class="nav-item bord-width-nav dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownAcademics" data-bs-toggle="dropdown" aria-expanded="false">Academics</a>
@@ -83,10 +83,8 @@
             </ul>
           </li>
             {% endif %}
-
         </ul>
 
-        {# responsive user mini menu #}
         {% include 'base/userMiniMenu.html' %}
       </div>
     </div>

@@ -35,6 +35,7 @@ urlpatterns = [
     path('system/', include('system.urls')),
     path('course/', include('course.urls')),
     path('lecturer/', include('lecture.urls')),
+    path('klassrm/', include('classRoom.urls')),
 ]
 
 if settings.DEBUG:

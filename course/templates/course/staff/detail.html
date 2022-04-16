@@ -9,7 +9,8 @@
         </div>
 
         <div class="row my-4">
-            <div class="col-auto mx-auto">
+            <div class="col-auto mx-auto text-center">
+                <small>Course</small>
                 <h4>{{ course }}</h4>
             </div>
         </div>
@@ -17,7 +18,7 @@
         <div class="row my-4">
             <div class="col">
                 <div class="card-group shadow-sm">
-                    <div class="card">
+                    <div class="card bg-light-gold text-gold">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <span>Details</span>
@@ -52,7 +53,7 @@
                             <span>last modified: {{ course.updated_at }}</span>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card bg-light-gold text-gold">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <span>Programme</span>
@@ -73,26 +74,134 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="row my-4">
-            <div class="col-md-8 mx-auto">
-                <div class="card alert-primary">
-                    <div class="card-body text-center">
-                        <span>Course Lecture</span>
-                        <h4>#lecturer_name</h4>
-                        <h4>#lecturer_picture</h4>
-                        <h4>#link2lecturer</h4>
-                    </div>
+            <div class="col">
+                <div class="p-2 shadow-sm rounded bg-light-gold d-flex justify-content-between align-items-center">
+                    <span>Course Assignment Activity</span>
+                    <a href="{% url 'Course:assign2another' course_code=course.code %}?back={{ request.path }}" class="btn btn-warning">Assign to Another Lecturer</a>
                 </div>
             </div>
         </div>
+        {% if course_assignment %}
+            <div class="row my-4">
+                <div class="col-12">
+                    <span>Course Lecturers:</span>
+                </div>
+                {% for course_lecturer in course_assignment %}
+                    <div class="col-md-4 col-lg-3 my-2" id="cl{{ course_lecturer.id }}">
+                        <div class="card hover_shadow">
+                            {% with course_lecturer.lecturer.profile as profile %}
+                                <img src="{{ profile.picture.url }}" alt="" class="img-fluid">
+
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <small>Identity</small><br>
+                                    <b>{{ course_lecturer.lecturer.identity }}</b>
+                                </li>
+                                <li class="list-group-item">
+                                    <small>Name</small><br>
+                                    <b>{{ profile.get_full_name }}</b>
+                                </li>
+
+                                {% if course_lecturer.is_tutor %}
+                                    <li class="list-group-item p-3 list-group-item-success">
+                                        <small>Status</small><br>
+                                        <b class="mx-1">Is current tutor </b>
+                                    </li>
+                                {% else %}
+                                    <li class="list-group-item p-3 list-group-item-danger">
+                                        <small>Status</small><br>
+                                        <b class="mx-1">Is not current tutor </b>
+                                    </li>
+                                {% endif %}
+                                <li class="list-group-item">
+                                    <small>Date Time Assigned</small><br>
+                                    <b>{{ course_lecturer.timestamp }}</b>
+                                </li>
+                                <li class="list-group-item">
+                                    <small>Assigned By</small><br>
+                                    <span class="text-muted" title="{{ course_lecturer.assigned_by.get_full_name }}">{{ course_lecturer.assigned_by }}</span>
+                                </li>
+
+                            </ul>
+
+                            {% endwith %}
+                        <div class="card-footer d-flex flex-column gap-2 flex-lg-row ">
+                            <div class="flex-grow-1">
+                                <a href="{{ course_lecturer.get_absolute_update_url }}?back={{ request.path }}" class="w-100 btn {% if course_lecturer.is_tutor %} btn-warning">Unmake Tutor {% else %} btn-primary"> Make Tutor {% endif %}</a>
+                            </div>
+                            <div class="flex-grow-1">
+                                <button onclick="reMoveLecturer('{% url "Course:rm_lec_short_info" user_slug=course_lecturer.lecturer.slug assignment_id=course_lecturer.id %}')" class="w-100 btn btn-danger ">Remove</button>
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <div class="row my-4">
+                <div class="col-md-6 mx-auto">
+                    <div class="alert alert-dark text-center">
+                        <span>This course has not been assigned to a lecturer yet!</span>
+                        <hr>
+                        <span>Its also has no previous assigned lecturers.</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         {% if course.description %}
-            <div class="row">
+            <div class="row my-4">
+                <div class="rounded p-2 bg-light-gold">
+                    <h5 class="align-self-center">Description</h5>
+                </div>
                 <div class="col-md-8 mx-auto">
-{#                    <span>Description</span>#}
                     <p>{{ course.description|safe }}</p>
                 </div>
             </div>
         {% endif %}
     </div>
+
+    <section>
+        {% include 'base/modelFooterless.html' %}
+    </section>
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        function reMoveLecturer(url) {
+            modalTitle.innerText = 'Remove Lecturer ';
+            modalBody.innerHTML = '<p class="text-center mt-2"><span class="fa fa-spinner fa-spin fa-2x"></span></p> <p class="text-center">Loading lecturer information ...</p>'
+            toggleModal()
+            $.ajax({
+                url:url,
+                success: response => {
+                    modalBody.innerHTML = `<div>
+<img src="${response.picture_src}" alt="" class="img-fluid">
+<ul class="list-group">
+<li class="list-group-item"><small>Name</small><br><b>${response.full_name}</b></li>
+<li class="list-group-item"><small>Email</small><br><b>${response.email}</b></li>
+<li class="list-group-item"><small>Department</small><br><b>${response.department}</b></li>
+</ul>
+<button class="btn btn-warning w-100 my-2" onclick="remove4rmCourse('${response.removedUrl}', ${response.assignId})">Remove From Course</button>
+</div>`
+                }
+            })
+        }
+
+        function remove4rmCourse(rmUrl, id) {
+            const elem = document.getElementById("cl"+id);
+                $.ajax({
+                    url: rmUrl,
+                    success: response => {
+                        alert(response.description)
+                    }
+                })
+            toggleModal();
+            elem.remove();
+        }
+    </script>
+{% endblock scripts %}
