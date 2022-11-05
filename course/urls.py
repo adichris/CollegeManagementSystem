@@ -12,7 +12,7 @@ from .views import (
     get_lecturer_short_infor,
     remove_lecturer_from_course_history,
     LecturerCourseDetailView,
-    get_lecturer_course_details,
+    get_course_details,
 )
 
 app_name = 'Course'
@@ -38,11 +38,13 @@ student_urlpatterns = [
 lecturer_urlpatterns = [
     path('list/', LecturerCoursesListView.as_view(), name='lec_list'),
     path('details/<course_code>/', LecturerCourseDetailView.as_view(), name='lec_detail'),
-    path('<str:course_code>/details/', get_lecturer_course_details, name='lec_detail_ajax'),
 ]
-
+api_urlpatterns = [
+    path('<str:course_code>/details/', get_course_details, name='lec_detail_ajax'),
+]
 urlpatterns = [
-    path('staff/', include(staff_urlpatterns)),
+    path('staff/', include(api_urlpatterns)),
+    path('api/', include(staff_urlpatterns)),
     path('lecturer/', include(lecturer_urlpatterns)),
     path('addnew/', CourseCreationView.as_view(), name='create'),
     path('detail/<str:code>/<int:id>/', CourseDetailView.as_view(), name='detail'),

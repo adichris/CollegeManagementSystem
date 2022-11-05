@@ -1,10 +1,9 @@
-from django.views.generic import TemplateView, ListView, DetailView,  CreateView, UpdateView, View
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, View, DeleteView
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http.response import HttpResponseForbidden
 from django.utils.timezone import now as today_time
 from system.models import Level
-
 
 from .generate_serial_number import SerialNumberGenerator
 from .models import (
@@ -54,7 +53,7 @@ class AdmissionFormCreateView(PermissionRequiredMixin, LoginRequiredMixin, Creat
 
 class AdmissionFormChangeView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = 'admission/admin/create.html'
-    permission_required = ('admission.change_studentforms',  'admission.view_studentforms', )
+    permission_required = ('admission.change_studentforms', 'admission.view_studentforms',)
     model = StudentForms
     form_class = StudentFormsChange
 
@@ -427,9 +426,11 @@ class AdmissionCreateBatchFormsView(LoginRequiredMixin, PermissionRequiredMixin,
             qty = form_class.cleaned_data['quantity']
             academic_year = form_class.cleaned_data['academic_year']
             pin_code_length = form_class.cleaned_data.get('pin_code_length')
-            serial_number_generator = SerialNumberGenerator(prefix=prefix, suffix=suffix, quantity=qty, pin_code_len=pin_code_length)
+            serial_number_generator = SerialNumberGenerator(prefix=prefix, suffix=suffix, quantity=qty,
+                                                            pin_code_len=pin_code_length)
             objects_created = self.model.objects.bulk_create(
-                objs=[self.model(serial_number=sn, academic_year=academic_year, cost=cost, form_type=form_type, pin_code=serial_number_generator.pin_code()) for sn in serial_number_generator]
+                objs=[self.model(serial_number=sn, academic_year=academic_year, cost=cost, form_type=form_type,
+                                 pin_code=serial_number_generator.pin_code()) for sn in serial_number_generator]
             )
             if objects_created:
                 request.session['admission_objs_created'] = ','.join(sn.serial_number for sn in objects_created)
@@ -531,6 +532,39 @@ class FormTypeModelChangeView(LoginRequiredMixin, PermissionRequiredMixin, Updat
             title=self.kwargs['title'],
             id=self.kwargs['id'],
         )
+
+
+class FormTypeModelDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = FormTypeChoicesModel
+    permission_required = 'admission.delete_formtypechoicesmodel'
+    template_name = "admission/formtype/delete.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["title"] = "Delete %s" % self.object
+        student_form = self.get_student_forms()
+        ctx["warning_msg"] = self.get_warning_message(student_form)
+        ctx["student_forms"] = student_form
+        return ctx
+
+    def delete(self, request, *args, **kwargs):
+        if self.get_student_forms().exists():
+            return redirect(self.get_success_url())
+        else:
+            return super(FormTypeModelDelete, self).delete(request, *args, **kwargs)
+
+    def get_student_forms(self):
+        return StudentForms.objects.filter(form_type=self.object)
+
+    def get_success_url(self):
+        return reverse("Admission:form_type_list")
+
+    def get_warning_message(self, student_form):
+        if student_form.exists():
+            return "This form category has student-forms attached." \
+                   "In other to delete this form. Remove all attached student forms."
+        return "This action will delete this form permanently from the system." \
+               "And all dependencies, that depends on it."
 
 
 class FormTypeModeDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):

@@ -1,0 +1,202 @@
+{% extends 'base/base.html' %}
+{% block header %}
+    <style>
+        .tab-active {
+            border-bottom: red .25em solid;
+            border-radius: 2px;
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+{% endblock %}
+{% block container %}
+    <div class="container">
+        <div class="row">
+            <div class="col-auto mx-auto">
+                <h1 style="font-family: 'Poppins SemiBold', 'sans-serif'">COURSE CLASSROOM</h1>
+                <h4 class="text-center">{{ course.name|upper }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 text-center" id="coursetabs">
+                        <button onclick="onTabClick(this)" id="tabRecord" class="btn btn-link "><strong>Record</strong></button>
+                        <button onclick="onTabClick(this)" id="tabConductQuiz" class="btn btn-link tab-active"><strong>Conduct Quiz</strong></button>
+                        <button onclick="onTabClick(this)" id="tabAcademicRecords" class="btn btn-link "><strong>Academic Records</strong></button>
+                        <button onclick="onTabClick(this)" id="tabStudent" class="btn btn-link "><strong>Students</strong></button>
+                    </div>
+                    <div class="list-group list-group-horizontal mb-1">
+                        <span class="list-group-item list-group-item-action" title="Course Code">{{ course.code|upper }}</span>
+                        <span class="list-group-item list-group-item-action" title="Your ID"><strong>{{ user.identity|upper }}</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <section class="container-fluid bg-light" id="tabBody">
+            <div class="row py-3" id="conductQuizPage">
+            <div class="col">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-plus"></span> Conduct New Quiz</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-filter"></span> Filter Quiz</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-search"></span> Search Quiz</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-calendar"></span> Today</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-check-square"></span> Selection</button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row mb-3 mt-2">
+            <div class="table-responsive">
+                <div class="d-flex justify-content-between my-2 bg-white50 rounded p-2 shadow-sm">
+                    <button class="btn btn-primary">Pagination</button>
+                    <div class="btn-group">
+                        <button class="btn btn-primary"><span class="fa fa-table"></span> List</button>
+                        <button class="btn btn-outline-primary"><span class="fa fa-th-large"></span> Grid</button>
+                    </div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Quiz</th>
+                            <th>Conducted</th>
+                            <th>Students Statistics</th>
+                            <th>Marked</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+<div class="row mt-5 d-none">
+    <div class="col-12">
+        <div class="d-flex">
+
+            <div class="">
+                <nav>
+                  <div class="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+                      <button class="nav-link" id="nav-record-tab" data-bs-toggle="tab" data-bs-target="#nav-record" type="button" role="tab" aria-controls="nav-record" aria-selected="false">
+                          <strong>Record</strong>
+                      </button>
+                      <button class="nav-link active" id="nav-conductQuiz-tab" data-bs-toggle="tab" data-bs-target="#nav-conductQuiz" type="button" role="tab" aria-controls="nav-conductQuiz" aria-selected="true"><strong>Conduct Quiz</strong></button>
+                      <button class="nav-link" id="nav-academicRecord-tab" data-bs-toggle="tab" data-bs-target="#nav-academicRecord" type="button" role="tab" aria-controls="nav-academicRecord" aria-selected="false"><strong>Academic Records</strong></button>
+                      <button class="nav-link" id="nav-student-tab" data-bs-toggle="tab" data-bs-target="#nav-student" type="button" role="tab" aria-controls="nav-student" aria-selected="false"><strong>Students</strong></button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade" id="nav-record" role="tabpanel" aria-labelledby="nav-record-tab">
+                    <p><strong>This is some placeholder content the Records tab's associated content.</strong> Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other <code>.nav</code>-powered navigation.</p>
+                  </div>
+                  <div class="tab-pane fade active show" id="nav-conductQuiz" role="tabpanel" aria-labelledby="nav-conductQuiz-tab">
+                    <p><strong>This is some placeholder content the Conduct Quiz tab's associated content.</strong> Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other <code>.nav</code>-powered navigation.</p>
+                  </div>
+                  <div class="tab-pane fade" id="nav-academicRecord" role="tabpanel" aria-labelledby="nav-academicRecord-tab">
+                    <p><strong>This is some placeholder content the Academic Records tab's associated content.</strong> Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other <code>.nav</code>-powered navigation.</p>
+                  </div>
+                  <div class="tab-pane fade" id="nav-student" role="tabpanel" aria-labelledby="nav-student-tab">
+                    <p><strong>This is some placeholder content the Students tab's associated content.</strong> Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling. You can use it with tabs, pills, and any other <code>.nav</code>-powered navigation.</p>
+                  </div>
+
+                </div>
+            </div>
+
+            <div class="list-group list-group-horizontal align-self-start">
+                <span class="list-group-item list-group-item-action" title="Course Code">{{ course.code|upper }}</span>
+                <span class="list-group-item list-group-item-action" title="Your ID"><strong>{{ user.identity|upper }}</strong></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block scripts %}
+    <script>
+        function onTabClick(htmlElement){
+            resetTabBorders()
+            htmlElement.classList.add("tab-active");
+            tabBodyRender(htmlElement);
+        }
+
+        const tabRenders = [{
+                "render":renderConductQuiz(),
+                'name':"tabConductQuiz",
+            }]
+
+        function resetTabBorders() {
+            const tabs = document.getElementById("coursetabs").children;
+            for (let x=0; x<tabs.length; x++) {
+                tabs[x].classList.remove("tab-active");
+            }
+        }
+
+        function tabBodyRender(htmlElement) {
+            const courseRoot = document.getElementById("tabBody");
+
+            let tabBody = tabRenders.filter(item => item.name == htmlElement.id)
+            if (tabBody[0]) {
+                courseRoot.innerHTML = tabBody[0].render;
+                console.log(tabBody)
+                return
+            }
+            courseRoot.innerHTML =`<div class="row py-5"><div class="col-md-6   mx-auto text-center">
+                    <div class="card card-body shadow-lg"><h4>${htmlElement.innerText} Page </h4><div><span class="fa fa-spin fa-cog fa-4x"></span></div><p>Under Development</p></div></div> </div>`
+        }
+
+        function renderConductQuiz() {
+            return `<div class="row py-3" id="conductQuizPage">
+            <div class="col">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-plus"></span> Conduct New Quiz</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-filter"></span> Filter Quiz</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-search"></span> Search Quiz</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-calendar"></span> Today</button>
+                    <button class="btn bg-light-blue hover_shadow"><span class="fa fa-check-square"></span> Selection</button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row mb-3 mt-2">
+            <div class="table-responsive">
+                <div class="d-flex justify-content-between my-2 bg-white50 rounded p-2 shadow-sm">
+                    <button class="btn btn-primary">Pagination</button>
+                    <div class="btn-group">
+                        <button class="btn btn-primary"><span class="fa fa-table"></span> List</button>
+                        <button class="btn btn-outline-primary"><span class="fa fa-th-large"></span> Grid</button>
+                    </div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Quiz</th>
+                            <th>Conducted</th>
+                            <th>Students Statistics</th>
+                            <th>Marked</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>`
+        }
+    </script>
+{% endblock %}

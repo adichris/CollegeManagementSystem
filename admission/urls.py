@@ -19,6 +19,7 @@ from .views import (
     FormTypeModeDetailView,
     FormTypeModelChangeView,
     HandleAdmissionExceptions,
+    FormTypeModelDelete,
 )
 
 
@@ -45,6 +46,7 @@ staff_urlpatterns = [
     path('formtype/list/', FormTypeModelListView.as_view(), name='form_type_list'),
     path('formtype/detail/<str:title>/<int:id>', FormTypeModeDetailView.as_view(), name='form_type_detail'),
     path('formtype/change/<str:title>/<int:id>', FormTypeModelChangeView.as_view(), name='form_type_update'),
+    path('formtypedelete/<str:title>/<pk>/', FormTypeModelDelete.as_view(), name="form_type_delete"),
 ]
 
 urlpatterns = [

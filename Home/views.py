@@ -1,8 +1,11 @@
+from re import I
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import reverse, resolve_url, redirect
+from student.models import Student
+
 
 INSTITUTION_NAME = dict(
     institution_full_name=settings.COLLEGE_FULL_NAME,
@@ -37,6 +40,15 @@ class AdministratorHomePage(LoginRequiredMixin, TemplateView):
     def get_login_url(self):
         return reverse('Home:login')
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["last_login"] = self.request.user.last_login
+        ctx["total_student"] = self.get_student_total()
+        return ctx
+    
+    def get_student_total(self):
+        students = Student.objects.get_continuous().count(), Student.objects.get_graduated().count()
+        return students 
 
 class LoginPage(LoginView):
     template_name = 'home/login.html'

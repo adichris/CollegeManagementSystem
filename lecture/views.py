@@ -63,6 +63,9 @@ class AddLecturerView(LoginRequiredMixin, PermissionRequiredMixin, View):
         ctx['err_msg'] = err_msg
         return render(request, self.template_name, ctx)
 
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context_data())
+
 
 class AddLecturerTemplateView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     model = Lecturer

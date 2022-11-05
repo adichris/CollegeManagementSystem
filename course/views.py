@@ -281,7 +281,7 @@ def remove_lecturer_from_course_history(request, course_assignment_id, course_co
 @login_required
 def get_lecturer_short_infor(request, user_slug, assignment_id):
     try:
-        assignment = CourseAssignment.objects.get(lecturer__profile__slug=user_slug, id=assignment_id)
+        assignment = CourseAssignment.lecturer_objects.get(lecturer__profile__slug=user_slug, id=assignment_id)
         user = assignment.lecturer.profile
     except CourseAssignment.DoesNotExist:
         data = {
@@ -330,14 +330,22 @@ class LecturerCourseDetailView(LoginRequiredMixin, PermissionRequiredMixin, Deta
 
 
 @login_required
-def get_lecturer_course_details(request, course_code):
+def get_course_details(request, course_code):
     try:
-        course = Course.objects.get(
-            code=course_code,
-            courseassignment__lecturer__profile=request.user,
-        )
+        course = None
+        user_profile = request.user
+        if user_profile.is_teaching_staff:
+            course = Course.objects.get(
+                code=course_code,
+                courseassignment__lecturer__profile=user_profile,
+            )
+        elif user_profile.is_student:
+            course = Course.objects.get(
+                code=course_code,
+                programme__student__profile=user_profile,
+            )
 
-        if course.lecturer == request.user.lecturer:
+        if course is not None:
             return JsonResponse({
                 'description': course.description,
                 'creditHours': course.credit_hours,
@@ -345,11 +353,12 @@ def get_lecturer_course_details(request, course_code):
                 'semester': course.semester.name,
                 'academicYear': course.semester.academic_year,
                 'level': str(course.level),
-                'lecturer': course.lecturer.profile.get_full_name(),
+                'lecturer': course.lecturer.profile.get_full_name() if course.lecturer else "No lecturer",
                 'Assessment':  3,
                 'name': course.name,
                 'code': course.code,
                 'success': True,
+                'picture': course.picture.url if bool(course.picture) else ''
             })
         else:
             return JsonResponse({

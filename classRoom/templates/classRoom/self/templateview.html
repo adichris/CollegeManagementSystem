@@ -1,5 +1,5 @@
 {% extends 'base/base.html' %}
-
+{% load static %}
 {% block container %}
     <div class="container">
         <div class="row my-3">
@@ -13,13 +13,11 @@
             <div class="col-md-6 mx-auto rounded p-3 {% if user.is_teaching_staff %} bg-light-blue {% elif user.is_staff %} bg-light-gold {% else %} bg-light {% endif %} shadow-sm">
                 <form>
                   <div class="form-floating w-100">
-                      <select name="" id="sCourse" class="form-select">
-                          <option>No Course selected</option>
-                          <option value="1">Course 1</option>
-                          <option value="2">Course 2</option>
-                          <option value="3">Course 3</option>
-                          <option value="4">Course 4</option>
-                          <option value="5">Course 5</option>
+                      <select id="idSelect" onchange="onCourseChange()" name="" id="sCourse" class="form-select">
+                          <option value="">No Course selected</option>
+                          {% for course in courses %}
+                            <option detailurl="{% url 'Course:lec_detail_ajax' course_code=course.code %}" value="{{ course.code }}">{{ course.name }}</option>
+                          {% endfor %}
                       </select>
                     <label for="sCourse" class="form-label">Select Course</label>
                   </div>
@@ -32,10 +30,73 @@
     <div class="row my-5">
         <div class="col-md-auto mx-auto text-center">
             <span class="fa fa-caret-up fa-3x"></span><br>
-            <span style="font-family: 'Ink Free', 'Bitstream Vera', monospace, serif; font-weight: bolder; font-size: larger">Select Course first!</span>
+        </div>
+        <div class="col-12 mx-auto" id="coursePreview">
+            <p class="text-center">
+                <span style="font-family: 'Ink Free', 'Bitstream Vera', monospace, serif; font-weight: bolder; font-size: larger">Select Course first!</span>
+            </p>
         </div>
     </div>
 
     </div>
 {% endblock container %}
 
+
+{% block scripts %}
+    <script src="{% static 'Jquery/jquery-3.4.1.min.js' %}"></script>
+    <script>
+        const coursePreviewElm = document.getElementById("coursePreview");
+        const selectElm = document.getElementById("idSelect");
+
+        function onCourseChange() {
+            const selectedOption = selectElm.selectedOptions[0]
+            if(!selectedOption.value) {
+                coursePreviewElm.innerHTML = `<p class="text-center"><span style="font-family: 'Ink Free', 'Bitstream Vera', monospace, serif; font-weight: bolder; font-size: larger">Select Course first!</span></p>`;
+                return;
+            }
+            let klasRmLnk = `<a href="{% url 'classRoom:course_classroom' course_code='COURSECODE' %}" class="btn btn-primary" onclick="dynamicSpinner(this)">Continue to ${selectedOption.text.bold()} class</a>`
+             klasRmLnk = klasRmLnk.replace("COURSECODE", selectedOption.value)
+            coursePreviewElm.innerHTML = `<h1 class="text-center">Name: ${selectedOption.text}</h1> <h1 class="text-center">Course     Code: ${selectedOption.value}</h1>`
+            $.ajax({
+                url:selectedOption.attributes.detailurl.value,
+                data:null,
+                success: response=>{
+                    pictureElm = response.picture ? `<div class="card"><div class="card-img"><img src="${response.picture}" alt="" class=""></div></div>` : ''
+                    coursePreviewElm.innerHTML = `<div>
+                    <div class="card-group">
+                        ${pictureElm}
+                        <div class="card">
+                            <div class="card-body">
+                                <p><small>Name</small><h4>${response.name}</h4></p>
+                                <p><small>Code</small><h4>${response.code}</h4></p>
+                                <p><small>Semester and Academic Year</small><h4>${response.semester} ${response.academicYear}</h4></p>
+                                <p><small>Credit Hours</small><h4>${response.creditHours}</h4></p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <p><small>Lecturer</small><h4>${response.lecturer}</h4></p>
+                                <p><small>Programme</small><h4>${response.programme}</h4></p>
+                                <p><small>Level</small><h4>${response.level}</h4></p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <p>Assessment</p>
+                                <h4>${response.Assessment} Assessments</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="my-3 text-center">
+                        ${klasRmLnk}
+                    </div>
+                    </div>`
+                },
+                error: response => {
+                    coursePreviewElm.innerHTML += `<div class="text-center"><p class="alert alert-warning">We can not load further detail for now</p>${klasRmLnk}</div>`
+                }
+            })
+        }
+    </script>
+{% endblock %}

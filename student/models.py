@@ -83,6 +83,9 @@ class StudentManager(models.Manager):
             date_completed__lt=today_time().date(),
             **kwargs
         )
+    
+    def get_graduated(self):
+        return self.filter(profile__is_active=True, has_graduate=True)
 
 
 class Student(models.Model):
@@ -100,6 +103,7 @@ class Student(models.Model):
     date_admitted = models.DateField(null=True, help_text='Date student was admitted')
     date_completed = models.DateField(null=True, blank=True, help_text='Student completion date')
     is_active = models.BooleanField(default=False, help_text='Is this student current or active')
+    has_graduate = models.BooleanField(default=False, help_text='Is the student a graduate')
     objects = StudentManager()
 
     @property

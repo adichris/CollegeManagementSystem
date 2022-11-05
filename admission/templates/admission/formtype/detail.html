@@ -45,6 +45,12 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="alert alert-danger hover_shadow h-100 text-center d-flex flex-column align-items-center justify-content-center">
+                    <p class="m-0"><span class="fa fa-trash fa-3x"></span></p>
+                    <h4><a onclick="dynamicSpinner(this)" href="{% url 'Admission:form_type_delete' title=formtypechoicesmodel.title pk=formtypechoicesmodel.pk %}" class="btn link-danger stretched-link">Delete</a></h4>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

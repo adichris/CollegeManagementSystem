@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'accounts',
     'crispy_forms',
     'crispy_bootstrap5',
@@ -95,12 +96,20 @@ WSGI_APPLICATION = 'CollegeManagementSystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
+DATABASES1 = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'CollegeManagementSystem.sqlite3',
-        # 'USER': 'postgres',
-        # 'PASSWORD': 'admin',
+    }
+}
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'CollegeManagementSystem',
+         'USER': 'postgres',
+         'PASSWORD': '419419',
     }
 }
 

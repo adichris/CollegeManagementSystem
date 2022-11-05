@@ -1,2 +1,69 @@
 {% extends 'base/admin/base.html' %}
+{% load static %}
 
+{% block container %}
+
+<div class="container">
+    <div class="row my-4">
+        <div class="col-auto mx-auto">
+            <h2 class="display-6">WELCOME <b class="text-uppercase">{{ request.user }}</b></h2>
+            <p class="text-center small text-muted">last login {{ last_login }}</p>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-3 mx-auto my-2">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="text-primary">Teaching Staff</h5>
+                    <hr>
+                    <h3 class="text-primary">{{ total_student|last }}</h3>
+                    <h5 class="text-primary">Non Teaching</h5>
+                    <h3 class="text-primary">{{ total_student|first }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mx-auto my-2">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="text-success">Continuous Students</h5>
+                    <hr>
+                    <h3 class="text-success">{{ total_student|last }}</h3>
+                    <h5 class="text-success"> Graduates</h5>
+                    <h3 class="text-success">{{ total_student|first }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-3 mx-auto my-2">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="text-gold">Faculties</h5>
+                    <hr>
+                    <h3 class="text-gold">{{ total_student|last }}</h3>
+                    <h5 class="text-gold">Departments</h5>
+                    <h3 class="text-gold">{{ total_student|first }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col2 col-md-6 col-lg-3 mx-auto my-2">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="text-info">Programme</h5>
+                        <hr>
+                        <h3 class="text-info">{{ total_student|last }}</h3>
+                        <h5 class="text-info">Courses</h5>
+                        <h3 class="text-info">{{ total_student|first }}</h3>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <hr>
+        </div>
+    </div>
+
+</div>
+    {% endblock container %}

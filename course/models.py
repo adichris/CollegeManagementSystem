@@ -25,6 +25,17 @@ class CourseManager(models.Manager):
         return self.filter(models.Q(name__icontains=query) | models.Q(code__icontains=query), **kwargs)
 
 
+def upload_course_picture_path(instance, filename):
+    import os
+    course_name = instance.name.replace(" ", "")
+    return os.path.join(
+        "programme",
+        instance.programme.name,
+        course_name,
+        course_name+os.path.splitext(filename)[-1]
+    )
+
+
 class Course(models.Model):
     name = models.CharField(max_length=120, unique=True, validators=[validate_alphanumberic_space])
     code = models.CharField(max_length=30, unique=True, validators=[validate_alphanumberic_space],
@@ -34,6 +45,7 @@ class Course(models.Model):
     semester = models.ForeignKey(SemesterAcademicYearModel, related_name='course_semester', on_delete=models.CASCADE)
     level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='course_level')
     credit_hours = models.IntegerField()
+    picture = models.ImageField(null=True, blank=True, upload_to=upload_course_picture_path, help_text="Course picture or logo")
     description = RichTextField(null=True, blank=True)
     updated_at = models.DateTimeField(help_text='Last modified', auto_now_add=True)
     # lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, null=True, blank=True,
@@ -69,12 +81,18 @@ class Course(models.Model):
         return reverse('Course:stu_details', kwargs={'course_code': self.code})
 
 
+class CourseAssignmentLecturerManager(models.Manager):
+    def get_lecturer_courses(self, identity):
+        return self.filter(lecturer__identity=identity, is_tutor=True)
+
+
 class CourseAssignment(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, unique=False)
     lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE)
     assigned_by = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
     is_tutor = models.BooleanField(default=False, help_text='Is the lecturer currently handling this course')
+    lecturer_objects = CourseAssignmentLecturerManager()
 
     class Meta:
         constraints = [

@@ -11,7 +11,8 @@ class JsonResponseMixin:
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        if self.request.is_ajax():
+        # TODO check if the request is  AJAX
+        if self.request.is_ajax:
             return JsonResponse(self.get_success_data())
         return response
 
@@ -22,7 +23,7 @@ class JsonResponseMixin:
 
     def form_invalid(self, form):
         response = super().form_invalid(form)
-        if self.request.is_ajax():
+        if self.request.is_ajax:
             ctx = {}
             ctx.update(csrf(self.request))
             form_html = render_crispy_form(form, context=ctx)

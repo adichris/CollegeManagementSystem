@@ -35,7 +35,7 @@ class FacultyListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         ctx['empty_text'] = '"%s" matches no faculty in the system' % self.searched_query if self.searched_query else\
             'There are no faculties in the system'
         ctx['facultyQry'] = self.searched_query
-        ctx['hadPerms'] = self.request.user.has_perms(*('faculty.change_faculty',  'faculty.add_faculty'))
+        ctx['hadPerms'] = self.request.user.has_perms(('faculty.change_faculty',  'faculty.add_faculty'))
         return ctx
 
     @property

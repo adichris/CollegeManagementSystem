@@ -1,0 +1,26 @@
+{% extends 'base/base.html' %}
+
+{% block container %}
+    <div class="container">
+        <div class="row my-2">
+            <div class="col-md-auto mx-auto">
+                <div class="d-flex border border-success rounded-pill p-1 gap-1 align-items-center justify-content-between">
+                    <div title="{{ course.name }}" class="alert-primary py-2 px-3 flex-grow-1 flex-fill" style="border-top-left-radius:inherit; border-bottom-left-radius: inherit">
+                        <h5>COURSE: {{ course.code|upper }}</h5>
+                    </div>
+                    <img src="{{ user.picture.url }}" class="rounded img-thumbnail user-select-none " style="height: 3em; width: 3em;" alt="">
+                    <div  title="{{ user.get_full_name }}" class="bg-light-green text-success text-center py-2 px-3 flex-grow-1 flex-fill" style="border-bottom-right-radius: inherit; border-top-right-radius: inherit">
+                        <h5 class="align-self-center">ID: {{ user.identity }}</h5>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-6 mx-auto"></div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-6 mx-auto"></div>
+        </div>
+    </div>
+{% endblock %}

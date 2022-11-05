@@ -17,7 +17,18 @@ class ProgrammeManager(models.Manager):
         return self.order_by('department__name', 'name')
 
 
+def programme_picture_path(instance, filename):
+    import os
+    programme_name = instance.name.replace(" ", "")
+    return os.path.join(
+        "programme",
+        programme_name,
+        programme_name[:20]+os.path.splitext(filename)[-1]
+    )
+
+
 class Programme(models.Model):
+    picture = models.ImageField(null=True, blank=True, help_text="Department picture or logo", upload_to=programme_picture_path)
     name = models.CharField(max_length=200, unique=True)
     department = models.ForeignKey(on_delete=models.CASCADE, to=Department, related_name='department',
                                    help_text=_('programmes\'s department'))

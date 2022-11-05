@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-auto mx-auto">
-                <h4> All Student Admission Form</h4>
+                <h4 class="text-primary"> All Student Admission Form</h4>
             </div>
         </div>
         <div class="row my-3 my-xl-4">
@@ -45,7 +45,7 @@
             <article>
             <div class="row">
                 <div style="max-height: 95vh !important; overflow-y: auto;" class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="table ">
                         <tr class="sticky-top bg-white50 transparent-bg">
                             <td>#</td>
                             <th>Type</th>
@@ -58,17 +58,17 @@
                             <th>Action</th>
                         </tr>
                         {% for studentform in page_obj %}
-                            <tr class="hover_shadow">
+                            <tr class="hover_shadow hover-txt-primary">
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ studentform.form_type }}</td>
-                                <td>{{ studentform.serial_number }}</td>
-                                <td>{{ studentform.pin_code }}</td>
+                                <td><b>{{ studentform.serial_number }}</b></td>
+                                <td><b>{{ studentform.pin_code }}</b></td>
                                 <td class="text-center" title="status | used by (identity)">
-                                    <span class="p-2 {% if studentform.status == form_status.COMPLETED %}text-primary{% elif studentform.status == form_status.SUBMITTED %}text-success{% else %}text-dark{% endif %}">
+                                    <span class="badge p-2 {% if studentform.status == form_status.COMPLETED %}bg-warning{% elif studentform.status == form_status.SUBMITTED %}bg-danger{% else %}bg-success{% endif %}">
                                         {{ studentform.get_status_display }} | {{ studentform.student.profile.identity|default:'Not Used' }}
                                     </span>
                                 </td>
-                                <td>{{ studentform.cost }}</td>
+                                <th><b>{{ studentform.cost }}</b></th>
                                 <td>{{ studentform.academic_year }}</td>
                                 <td>{{ studentform.updated_at }}</td>
                                 <td>
