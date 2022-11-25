@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+
+
+{% block container %}
+<div class="container">
+    <div class="row">
+        <div class="col-auto mx-auto text-center">
+            <h3 class="text-danger">{{ object }}</h3>
+            <p>remove <b>form catalog</b> permanently</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-body alert-danger">
+                    <p><span class="fa fa-exclamation-circle fa-spin m-1"></span> <span>{{ warning_msg }}</span></p>
+                    {% if student_forms.exists %}
+                        <p><em>Attached forms are:</em></p>
+                        <table class="table">
+                            {% for student_form in student_forms %}
+                                <tr>
+                                    <td>Form serial: <b>{{ student_form.serial_number }}</b> <span class="badge bg-warning">{{ student_form.status }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        <form action="" method="post" class="d-flex justify-content-end gap-3">
+                            {% csrf_token %}
+                            <a href="{% url 'Admission:form_type_list' %}" class="btn btn-primary" onclick="dynamicSpinner(this)">Discard</a>
+                            <button class="btn btn-danger" type="submit" onclick="dynamicSpinner(this)">Delete</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock container %}
